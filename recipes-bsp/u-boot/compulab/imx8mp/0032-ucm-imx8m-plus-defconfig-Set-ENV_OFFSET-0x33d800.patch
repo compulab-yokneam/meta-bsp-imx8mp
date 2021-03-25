@@ -1,0 +1,26 @@
+From b6f21a9c2429b2eada46444d7646c1b928a9f297 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 2 Mar 2021 12:36:17 +0200
+Subject: [PATCH] ucm-imx8m-plus: defconfig: Set ENV_OFFSET=0x33d800
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ configs/ucm-imx8m-plus_defconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configs/ucm-imx8m-plus_defconfig b/configs/ucm-imx8m-plus_defconfig
+index fc4cb53a4c..08c7e8a8f2 100644
+--- a/configs/ucm-imx8m-plus_defconfig
++++ b/configs/ucm-imx8m-plus_defconfig
+@@ -10,7 +10,7 @@ CONFIG_SYS_I2C_MXC_I2C1=y
+ CONFIG_SYS_I2C_MXC_I2C2=y
+ CONFIG_SYS_I2C_MXC_I2C3=y
+ CONFIG_ENV_SIZE=0x1000
+-CONFIG_ENV_OFFSET=0x4400
++CONFIG_ENV_OFFSET=0x33d800
+ CONFIG_DM_GPIO=y
+ CONFIG_TARGET_UCM_IMX8M_PLUS=y
+ CONFIG_SPL_SERIAL_SUPPORT=y
+-- 
+2.11.0
+

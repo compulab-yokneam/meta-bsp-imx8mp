@@ -1,0 +1,70 @@
+From de52980c53365eadeb1ac2501558eabddc2d0b4d Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 16 Feb 2021 14:56:04 +0200
+Subject: [PATCH] ucm-imx8m-plus: Add i2c5 bus + pca953x
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm/dts/ucm-imx8m-plus.dts | 32 ++++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
+
+diff --git a/arch/arm/dts/ucm-imx8m-plus.dts b/arch/arm/dts/ucm-imx8m-plus.dts
+index 16a09f889a..d30a083582 100644
+--- a/arch/arm/dts/ucm-imx8m-plus.dts
++++ b/arch/arm/dts/ucm-imx8m-plus.dts
+@@ -281,6 +281,24 @@
+ 	};
+ };
+ 
++&i2c5 {
++	clock-frequency = <100000>;
++	pinctrl-names = "default", "gpio";
++	pinctrl-0 = <&pinctrl_i2c5>;
++	pinctrl-1 = <&pinctrl_i2c5_gpio>;
++	scl-gpios = <&gpio3 21 GPIO_ACTIVE_HIGH>;
++	sda-gpios = <&gpio3 25 GPIO_ACTIVE_HIGH>;
++	status = "okay";
++
++        pca9555:pca9555@20 {
++                compatible = "nxp,pca9555";
++                gpio-controller;
++                #gpio-cells = <2>;
++                reg = <0x20>;
++        };
++
++};
++
+ &lcdif1 {
+ 	status = "disabled";
+ };
+@@ -431,6 +449,13 @@
+ 		>;
+ 	};
+ 
++	pinctrl_i2c5: i2c5grp {
++		fsl,pins = <
++			MX8MP_IOMUXC_SAI5_MCLK__I2C5_SDA		0x400001c3
++			MX8MP_IOMUXC_SAI5_RXD0__I2C5_SCL		0x400001c3
++		>;
++	};
++
+ 	pinctrl_i2c1_gpio: i2c1grp-gpio {
+ 		fsl,pins = <
+ 			MX8MP_IOMUXC_I2C1_SCL__GPIO5_IO14        	0x1c3
+@@ -452,6 +477,13 @@
+ 		>;
+ 	};
+ 
++	pinctrl_i2c5_gpio: i2c5grp-gpio {
++		fsl,pins = <
++			MX8MP_IOMUXC_SAI5_MCLK__GPIO3_IO25       	0x1c3
++			MX8MP_IOMUXC_SAI5_RXD0__GPIO3_IO21        	0x1c3
++		>;
++	};
++
+ 	pinctrl_mipi_dsi_en: mipi_dsi_en {
+ 		fsl,pins = <
+ 			MX8MP_IOMUXC_GPIO1_IO08__GPIO1_IO08	0x16
+-- 
+2.11.0
+

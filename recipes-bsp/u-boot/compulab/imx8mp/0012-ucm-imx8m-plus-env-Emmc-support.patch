@@ -1,0 +1,94 @@
+From 22b0cab695beb2dc457d7c30744ad78ec3742c6a Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Thu, 18 Feb 2021 15:16:55 +0200
+Subject: [PATCH] ucm-imx8m-plus: env: Emmc support
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ configs/ucm-imx8m-plus_defconfig      |  8 +-------
+ include/configs/compulab-imx8m-plus.h | 20 ++------------------
+ 2 files changed, 3 insertions(+), 25 deletions(-)
+
+diff --git a/configs/ucm-imx8m-plus_defconfig b/configs/ucm-imx8m-plus_defconfig
+index d038c866bd..235095e3da 100644
+--- a/configs/ucm-imx8m-plus_defconfig
++++ b/configs/ucm-imx8m-plus_defconfig
+@@ -10,8 +10,7 @@ CONFIG_SYS_I2C_MXC_I2C1=y
+ CONFIG_SYS_I2C_MXC_I2C2=y
+ CONFIG_SYS_I2C_MXC_I2C3=y
+ CONFIG_ENV_SIZE=0x1000
+-CONFIG_ENV_SECT_SIZE=0x10000
+-CONFIG_ENV_OFFSET=0x400000
++CONFIG_ENV_OFFSET=0x4400
+ CONFIG_DM_GPIO=y
+ CONFIG_TARGET_UCM_IMX8M_PLUS=y
+ CONFIG_SPL_SERIAL_SUPPORT=y
+@@ -64,9 +63,7 @@ CONFIG_CMD_FAT=y
+ CONFIG_CMD_FS_GENERIC=y
+ CONFIG_OF_CONTROL=y
+ CONFIG_DEFAULT_DEVICE_TREE="ucm-imx8m-plus"
+-CONFIG_ENV_IS_NOWHERE=y
+ CONFIG_ENV_IS_IN_MMC=y
+-CONFIG_ENV_IS_IN_SPI_FLASH=y
+ CONFIG_SYS_RELOC_GD_ENV_ADDR=y
+ CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG=y
+ CONFIG_REGMAP=y
+@@ -96,7 +93,6 @@ CONFIG_SF_DEFAULT_SPEED=40000000
+ CONFIG_SPI_FLASH_BAR=y
+ CONFIG_SPI_FLASH_STMICRO=y
+ CONFIG_PHY_ATHEROS=y
+-CONFIG_PHY_REALTEK=y
+ CONFIG_DM_ETH=y
+ CONFIG_PHY_GIGE=y
+ CONFIG_DWC_ETH_QOS=y
+@@ -128,8 +124,6 @@ CONFIG_USB_ETHER_ASIX88179=y
+ CONFIG_USB_ETHER_MCS7830=y
+ CONFIG_DM_VIDEO=y
+ CONFIG_SYS_WHITE_ON_BLACK=y
+-CONFIG_VIDEO_LCD_RAYDIUM_RM67191=y
+ CONFIG_VIDEO_IMX_SEC_DSI=y
+ CONFIG_VIDEO_IMX_LCDIFV3=y
+-CONFIG_VIDEO_ADV7535=y
+ CONFIG_OF_LIBFDT_OVERLAY=y
+diff --git a/include/configs/compulab-imx8m-plus.h b/include/configs/compulab-imx8m-plus.h
+index 977c2e999d..eb040c899f 100644
+--- a/include/configs/compulab-imx8m-plus.h
++++ b/include/configs/compulab-imx8m-plus.h
+@@ -36,19 +36,6 @@
+ 
+ #define CONFIG_SYS_I2C
+ 
+-#if defined(CONFIG_NAND_BOOT)
+-#define CONFIG_SPL_NAND_SUPPORT
+-#define CONFIG_SPL_DMA
+-#define CONFIG_SPL_NAND_MXS
+-#define CONFIG_SPL_NAND_BASE
+-#define CONFIG_SPL_NAND_IDENT
+-#define CONFIG_SYS_NAND_U_BOOT_OFFS 	0x4000000 /* Put the FIT out of first 64MB boot area */
+-
+-/* Set a redundant offset in nand FIT mtdpart. The new uuu will burn full boot image (not only FIT part) to the mtdpart, so we check both two offsets */
+-#define CONFIG_SYS_NAND_U_BOOT_OFFS_REDUND \
+-	(CONFIG_SYS_NAND_U_BOOT_OFFS + CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR * 512 - 0x8400)
+-#endif
+-
+ #endif
+ 
+ #define CONFIG_CMD_READ
+@@ -170,12 +157,9 @@
+ 	(CONFIG_SYS_INIT_RAM_ADDR + CONFIG_SYS_INIT_SP_OFFSET)
+ 
+ #define CONFIG_ENV_OVERWRITE
+-#define CONFIG_ENV_SPI_BUS		CONFIG_SF_DEFAULT_BUS
+-#define CONFIG_ENV_SPI_CS		CONFIG_SF_DEFAULT_CS
+-#define CONFIG_ENV_SPI_MODE		CONFIG_SF_DEFAULT_MODE
+-#define CONFIG_ENV_SPI_MAX_HZ		CONFIG_SF_DEFAULT_SPEED
++#define CONFIG_SYS_MMC_ENV_DEV      2   /* eMMC */
++#define CONFIG_SYS_MMC_ENV_PART     1
+ 
+-#define CONFIG_SYS_MMC_ENV_DEV		1   /* USDHC2 */
+ #define CONFIG_MMCROOT			"/dev/mmcblk1p2"  /* USDHC2 */
+ 
+ /* Size of malloc() pool */
+-- 
+2.11.0
+

@@ -1,0 +1,32 @@
+From fbe8a3eda8e9e89ff56c9cdb5239ac4fdd1236e6 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Mon, 15 Feb 2021 16:19:44 +0200
+Subject: [PATCH] Read lpddr4 mrX registers
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/plat/imx8mp/spl/spl.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/board/compulab/plat/imx8mp/spl/spl.c b/board/compulab/plat/imx8mp/spl/spl.c
+index 301f6f7825..d8bceab630 100644
+--- a/board/compulab/plat/imx8mp/spl/spl.c
++++ b/board/compulab/plat/imx8mp/spl/spl.c
+@@ -100,11 +100,10 @@ static unsigned int lpddr4_get_mr(void)
+ 
+ void spl_dram_init(void)
+ {
+-	unsigned int ddr_info_mrr = 0xdeadbeef;
++	unsigned int ddr_info = 0;
+ 	ddr_init(&dram_timing);
+-
+-	ddr_info_mrr = lpddr4_get_mr();
+-	printf("DDRINFO(M): mr5-8 [ 0x%x ] is invalid; reset\n", ddr_info_mrr);
++	ddr_info = lpddr4_get_mr();
++	printf("lpddr4_id [ 0x%x ]\n",ddr_info);
+ }
+ 
+ #define I2C_PAD_CTRL (PAD_CTL_DSE6 | PAD_CTL_HYS | PAD_CTL_PUE | PAD_CTL_PE)
+-- 
+2.11.0
+

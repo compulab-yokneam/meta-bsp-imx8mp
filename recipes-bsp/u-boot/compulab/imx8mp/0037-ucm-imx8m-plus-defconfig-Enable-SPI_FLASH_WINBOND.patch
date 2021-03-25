@@ -1,0 +1,26 @@
+From ef1cd9dee69f111c7eea14a134703001a2d95cb4 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Wed, 3 Mar 2021 16:18:27 +0200
+Subject: [PATCH] ucm-imx8m-plus: defconfig: Enable SPI_FLASH_WINBOND
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ configs/ucm-imx8m-plus_defconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configs/ucm-imx8m-plus_defconfig b/configs/ucm-imx8m-plus_defconfig
+index 08c7e8a8f2..f79145b851 100644
+--- a/configs/ucm-imx8m-plus_defconfig
++++ b/configs/ucm-imx8m-plus_defconfig
+@@ -91,7 +91,7 @@ CONFIG_DM_SPI_FLASH=y
+ CONFIG_SF_DEFAULT_MODE=0
+ CONFIG_SF_DEFAULT_SPEED=40000000
+ CONFIG_SPI_FLASH_BAR=y
+-CONFIG_SPI_FLASH_STMICRO=y
++CONFIG_SPI_FLASH_WINBOND=y
+ CONFIG_PHY_ATHEROS=y
+ CONFIG_DM_ETH=y
+ CONFIG_PHY_GIGE=y
+-- 
+2.11.0
+

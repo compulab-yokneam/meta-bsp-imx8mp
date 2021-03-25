@@ -1,0 +1,118 @@
+From ad4e6ecf285ec4f6bef00bce74eb5a25e2e5a508 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sun, 14 Feb 2021 15:36:08 +0200
+Subject: [PATCH] compulab: Add ucm-imx8m-plus support cont #00
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/plat/imx8mp/spl/spl.c | 49 ++++++++++++++++++++++++++++++++++++
+ drivers/ddr/imx/imx8m/ddr_init.c     | 10 ++++----
+ 2 files changed, 54 insertions(+), 5 deletions(-)
+
+diff --git a/board/compulab/plat/imx8mp/spl/spl.c b/board/compulab/plat/imx8mp/spl/spl.c
+index b26f5321bb..301f6f7825 100644
+--- a/board/compulab/plat/imx8mp/spl/spl.c
++++ b/board/compulab/plat/imx8mp/spl/spl.c
+@@ -53,9 +53,58 @@ int spl_board_boot_device(enum boot_device boot_dev_spl)
+ #endif
+ }
+ 
++static unsigned int lpddr4_mr_read(unsigned int mr_rank, unsigned int mr_addr)
++{
++	unsigned int tmp;
++	reg32_write(DRC_PERF_MON_MRR0_DAT(0), 0x1);
++	do {
++		tmp = reg32_read(DDRC_MRSTAT(0));
++	} while (tmp & 0x1);
++
++	reg32_write(DDRC_MRCTRL0(0), (mr_rank << 4) | 0x1);
++	reg32_write(DDRC_MRCTRL1(0), (mr_addr << 8));
++	reg32setbit(DDRC_MRCTRL0(0), 31);
++	do {
++		tmp = reg32_read(DRC_PERF_MON_MRR0_DAT(0));
++	} while ((tmp & 0x8) == 0);
++	tmp = reg32_read(DRC_PERF_MON_MRR1_DAT(0));
++	reg32_write(DRC_PERF_MON_MRR0_DAT(0), 0x4);
++	while(tmp) { //try to find a significant byte in the word
++		if(tmp & 0xff) {
++			tmp &= 0xff;
++			break;
++		}
++		tmp >>= 8;
++	}
++	return tmp;
++}
++
++static unsigned int lpddr4_get_mr(void)
++{
++	int i = 0, attempts = 5;
++	unsigned int ddr_info = 0;
++	unsigned int regs[] = { 5, 6, 7, 8 };
++
++	do {
++		for ( i = 0 ; i < ARRAY_SIZE(regs) ; i++ ) {
++			unsigned int data = 0;
++			data = lpddr4_mr_read(0xF, regs[i]);
++			ddr_info <<= 8;
++			ddr_info += (data & 0xFF);
++		}
++		if ((ddr_info != 0xFFFFFFFF) && (ddr_info != 0))
++			break; // The attempt was successfull
++	} while ( --attempts );
++	return	ddr_info;
++}
++
+ void spl_dram_init(void)
+ {
++	unsigned int ddr_info_mrr = 0xdeadbeef;
+ 	ddr_init(&dram_timing);
++
++	ddr_info_mrr = lpddr4_get_mr();
++	printf("DDRINFO(M): mr5-8 [ 0x%x ] is invalid; reset\n", ddr_info_mrr);
+ }
+ 
+ #define I2C_PAD_CTRL (PAD_CTL_DSE6 | PAD_CTL_HYS | PAD_CTL_PUE | PAD_CTL_PE)
+diff --git a/drivers/ddr/imx/imx8m/ddr_init.c b/drivers/ddr/imx/imx8m/ddr_init.c
+index 3d40ed70e3..af8cc3094a 100644
+--- a/drivers/ddr/imx/imx8m/ddr_init.c
++++ b/drivers/ddr/imx/imx8m/ddr_init.c
+@@ -107,7 +107,7 @@ int ddr_init(struct dram_timing_info *dram_timing)
+ 		reg32_write(SRC_DDRC_RCR_ADDR, 0x8F00000F);
+ 	}
+ 
+-	debug("DDRINFO: cfg clk\n");
++	printf("DDRINFO: cfg clk\n");
+ 	/* change the clock source of dram_apb_clk_root: source 4 800MHz /4 = 200MHz */
+ 	clock_set_target_val(DRAM_APB_CLK_ROOT, CLK_ROOT_ON | CLK_ROOT_SOURCE_SEL(4) |
+ 			     CLK_ROOT_PRE_DIV(CLK_ROOT_PRE_DIV4));
+@@ -125,9 +125,9 @@ int ddr_init(struct dram_timing_info *dram_timing)
+ 	reg32_write(SRC_DDRC_RCR_ADDR, 0x8F000006);
+ 
+ 	/* Step2: Program the dwc_ddr_umctl2 registers */
+-	debug("DDRINFO: ddrc config start\n");
++	printf("DDRINFO: ddrc config start\n");
+ 	ddr_cfg_umctl2(dram_timing->ddrc_cfg, dram_timing->ddrc_cfg_num);
+-	debug("DDRINFO: ddrc config done\n");
++	printf("DDRINFO: ddrc config done\n");
+ 
+ 	/* Step3: De-assert reset signal(core_ddrc_rstn & aresetn_n) */
+ 	reg32_write(SRC_DDRC_RCR_ADDR, 0x8F000004);
+@@ -169,13 +169,13 @@ int ddr_init(struct dram_timing_info *dram_timing)
+ 	 * Step8 ~ Step13: Start PHY initialization and training by
+ 	 * accessing relevant PUB registers
+ 	 */
+-	debug("DDRINFO:ddrphy config start\n");
++	printf("DDRINFO:ddrphy config start\n");
+ 
+ 	ret = ddr_cfg_phy(dram_timing);
+ 	if (ret)
+ 		return ret;
+ 
+-	debug("DDRINFO: ddrphy config done\n");
++	printf("DDRINFO: ddrphy config done\n");
+ 
+ 	/*
+ 	 * step14 CalBusy.0 =1, indicates the calibrator is actively
+-- 
+2.11.0
+

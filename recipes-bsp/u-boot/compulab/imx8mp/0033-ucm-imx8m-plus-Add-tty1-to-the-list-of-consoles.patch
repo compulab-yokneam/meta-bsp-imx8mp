@@ -1,0 +1,26 @@
+From effd7c53d1913a1344486692df76116d80bf4f56 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 2 Mar 2021 12:38:54 +0200
+Subject: [PATCH] ucm-imx8m-plus: Add tty1 to the list of consoles
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ include/configs/compulab-imx8m-plus.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/configs/compulab-imx8m-plus.h b/include/configs/compulab-imx8m-plus.h
+index d0948d80b5..45bde3c691 100644
+--- a/include/configs/compulab-imx8m-plus.h
++++ b/include/configs/compulab-imx8m-plus.h
+@@ -83,7 +83,7 @@
+ 	"script=boot.scr\0" \
+ 	"image=Image\0" \
+ 	"splashimage=0x50000000\0" \
+-	"console=ttymxc1,115200\0" \
++	"console=ttymxc1,115200 console=tty1\0" \
+ 	"fdt_addr=0x43000000\0"			\
+ 	"fdt_high=0xffffffffffffffff\0"		\
+ 	"boot_fit=no\0" \
+-- 
+2.11.0
+

@@ -1,0 +1,27 @@
+From 6a81c3701f00bec5d448a78821188ea5367b3c5a Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Thu, 25 Feb 2021 11:22:35 +0200
+Subject: [PATCH] compulab: common: Add mmc,fdt to build
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/common/Makefile | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/board/compulab/common/Makefile b/board/compulab/common/Makefile
+index 643fd14f5f..b57f589ec2 100644
+--- a/board/compulab/common/Makefile
++++ b/board/compulab/common/Makefile
+@@ -6,7 +6,9 @@
+ # SPDX-License-Identifier:	GPL-2.0+
+ #
+ 
++obj-y				+= fdt.o
+ obj-y				+= common.o
++obj-y				+= mmc.o
+ obj-y				+= ../../freescale/common/mmc.o
+ ifneq "$(or $(CONFIG_SYS_I2C),$(CONFIG_DM_I2C))" ""
+ obj-y				+= eeprom.o
+-- 
+2.11.0
+

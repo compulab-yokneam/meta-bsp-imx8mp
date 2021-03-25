@@ -1,0 +1,44 @@
+From b28d1a8a9da3cec03ed4046a410ddb258a6c2936 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Thu, 25 Feb 2021 11:05:59 +0200
+Subject: [PATCH] ucm-imx8m-plus: dts: Enable SoM/SB eeprom
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm/dts/ucm-imx8m-plus.dts | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/dts/ucm-imx8m-plus.dts b/arch/arm/dts/ucm-imx8m-plus.dts
+index 0a4d84f26d..eb643b1fa3 100644
+--- a/arch/arm/dts/ucm-imx8m-plus.dts
++++ b/arch/arm/dts/ucm-imx8m-plus.dts
+@@ -265,7 +265,13 @@
+ 	pinctrl-1 = <&pinctrl_i2c2_gpio>;
+ 	scl-gpios = <&gpio5 16 GPIO_ACTIVE_HIGH>;
+ 	sda-gpios = <&gpio5 17 GPIO_ACTIVE_HIGH>;
+-	status = "disabled";
++	status = "okay";
++
++	eeprom@50 {
++		compatible = "atmel,24c08";
++		reg = <0x50>;
++		pagesize = <16>;
++	};
+ };
+ 
+ &i2c3 {
+@@ -294,6 +300,11 @@
+                 reg = <0x20>;
+         };
+ 
++	eeprom@54 {
++		compatible = "atmel,24c08";
++		reg = <0x54>;
++		pagesize = <16>;
++	};
+ };
+ 
+ &lcdif1 {
+-- 
+2.11.0
+

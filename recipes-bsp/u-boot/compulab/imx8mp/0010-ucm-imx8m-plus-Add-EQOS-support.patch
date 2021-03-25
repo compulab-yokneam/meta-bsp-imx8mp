@@ -1,0 +1,402 @@
+From 987bde788f2abaf4c90dc9a5b340c3257da22a38 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 16 Feb 2021 14:51:44 +0200
+Subject: [PATCH] ucm-imx8m-plus: Add EQOS support
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm/dts/ucm-imx8m-plus-u-boot.dtsi  | 162 +++++++++++++++++++++++++++++++
+ arch/arm/dts/ucm-imx8m-plus.dts          |  62 +-----------
+ board/compulab/plat/imx8mp/board/board.c |  51 +++-------
+ configs/ucm-imx8m-plus_defconfig         |   2 +-
+ include/configs/compulab-imx8m-plus.h    |   5 +-
+ 5 files changed, 180 insertions(+), 102 deletions(-)
+ create mode 100644 arch/arm/dts/ucm-imx8m-plus-u-boot.dtsi
+
+diff --git a/arch/arm/dts/ucm-imx8m-plus-u-boot.dtsi b/arch/arm/dts/ucm-imx8m-plus-u-boot.dtsi
+new file mode 100644
+index 0000000000..83594391fc
+--- /dev/null
++++ b/arch/arm/dts/ucm-imx8m-plus-u-boot.dtsi
+@@ -0,0 +1,162 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Copyright 2019 NXP
++ * Copyright 2021 CompuLab
++ */
++
++/ {
++	firmware {
++		optee {
++			compatible = "linaro,optee-tz";
++			method = "smc";
++		};
++	};
++};
++
++&{/soc@0} {
++	u-boot,dm-pre-reloc;
++	u-boot,dm-spl;
++};
++
++&clk {
++	u-boot,dm-spl;
++	u-boot,dm-pre-reloc;
++	/delete-property/ assigned-clocks;
++	/delete-property/ assigned-clock-parents;
++	/delete-property/ assigned-clock-rates;
++
++};
++
++&osc_32k {
++	u-boot,dm-spl;
++	u-boot,dm-pre-reloc;
++};
++
++&osc_24m {
++	u-boot,dm-spl;
++	u-boot,dm-pre-reloc;
++};
++
++&aips1 {
++	u-boot,dm-spl;
++	u-boot,dm-pre-reloc;
++};
++
++&aips2 {
++	u-boot,dm-spl;
++};
++
++&aips3 {
++	u-boot,dm-spl;
++};
++
++&iomuxc {
++	u-boot,dm-spl;
++};
++
++&pinctrl_reg_usdhc2_vmmc {
++	u-boot,dm-spl;
++};
++
++&reg_usdhc2_vmmc {
++	u-boot,dm-spl;
++};
++
++&pinctrl_uart2 {
++	u-boot,dm-spl;
++};
++
++&pinctrl_usdhc2_gpio {
++	u-boot,dm-spl;
++};
++
++&pinctrl_usdhc2 {
++	u-boot,dm-spl;
++};
++
++&pinctrl_usdhc3 {
++	u-boot,dm-spl;
++};
++
++&gpio1 {
++	u-boot,dm-spl;
++};
++
++&gpio2 {
++	u-boot,dm-spl;
++};
++
++&gpio3 {
++	u-boot,dm-spl;
++};
++
++&gpio4 {
++	u-boot,dm-spl;
++};
++
++&gpio5 {
++	u-boot,dm-spl;
++};
++
++&uart2 {
++	u-boot,dm-spl;
++};
++
++&i2c1 {
++	u-boot,dm-spl;
++};
++
++&i2c2 {
++	u-boot,dm-spl;
++};
++
++&i2c3 {
++	u-boot,dm-spl;
++};
++
++&pinctrl_i2c1 {
++	u-boot,dm-spl;
++};
++
++&usdhc2 {
++	u-boot,dm-spl;
++	sd-uhs-sdr104;
++	sd-uhs-ddr50;
++	assigned-clocks = <&clk IMX8MP_CLK_USDHC2>;
++	assigned-clock-rates = <400000000>;
++	assigned-clock-parents = <&clk IMX8MP_SYS_PLL1_400M>;
++};
++
++&usdhc3 {
++	u-boot,dm-spl;
++	mmc-hs400-1_8v;
++	mmc-hs400-enhanced-strobe;
++	assigned-clocks = <&clk IMX8MP_CLK_USDHC3>;
++	assigned-clock-rates = <400000000>;
++	assigned-clock-parents = <&clk IMX8MP_SYS_PLL1_400M>;
++};
++
++&eqos {
++	compatible = "fsl,imx-eqos";
++	/delete-property/ assigned-clocks;
++	/delete-property/ assigned-clock-parents;
++	/delete-property/ assigned-clock-rates;
++};
++
++&flexspi {
++	assigned-clock-rates = <100000000>;
++	assigned-clocks = <&clk IMX8MP_CLK_QSPI>;
++	assigned-clock-parents = <&clk IMX8MP_SYS_PLL1_100M>;
++};
++
++&lcdif1 {
++	/delete-property/ assigned-clocks;
++	/delete-property/ assigned-clock-parents;
++	/delete-property/ assigned-clock-rates;
++};
++
++&mipi_dsi {
++	/delete-property/ assigned-clocks;
++	/delete-property/ assigned-clock-parents;
++	/delete-property/ assigned-clock-rates;
++};
+diff --git a/arch/arm/dts/ucm-imx8m-plus.dts b/arch/arm/dts/ucm-imx8m-plus.dts
+index 8954480d50..16a09f889a 100644
+--- a/arch/arm/dts/ucm-imx8m-plus.dts
++++ b/arch/arm/dts/ucm-imx8m-plus.dts
+@@ -60,18 +60,6 @@
+ 		off-on-delay-us = <12000>;
+ 	};
+ 	
+-	reg_reset: regulator-reset {
+-		compatible = "regulator-fixed";
+-		regulator-name = "enet_rst";
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&pinctrl_enet_rst>;
+-		regulator-min-microvolt = <3300000>;
+-		regulator-max-microvolt = <3300000>;
+-		gpio = <&gpio1 10 GPIO_ACTIVE_HIGH>;
+-		enable-active-high;
+-		regulator-always-on;
+-	};
+-
+ 	dsi_host: dsi-host {
+ 		compatible = "samsung,sec-mipi-dsi";
+ 		status = "disabled";
+@@ -111,29 +99,9 @@
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 
+-		ethphy0: ethernet-phy@1 {
++		ethphy0: ethernet-phy@0 {
+ 			compatible = "ethernet-phy-ieee802.3-c22";
+-			reg = <1>;
+-			eee-broken-1000t;
+-		};
+-	};
+-};
+-
+-&fec {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_fec>;
+-	phy-mode = "rgmii-id";
+-	phy-handle = <&ethphy1>;
+-	fsl,magic-packet;
+-	status = "disabled";
+-
+-	mdio {
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		ethphy1: ethernet-phy@1 {
+-			compatible = "ethernet-phy-ieee802.3-c22";
+-			reg = <1>;
++			reg = <0>;
+ 			eee-broken-1000t;
+ 		};
+ 	};
+@@ -421,26 +389,7 @@
+ 			MX8MP_IOMUXC_ENET_TD3__ENET_QOS_RGMII_TD3		0x1f
+ 			MX8MP_IOMUXC_ENET_TX_CTL__ENET_QOS_RGMII_TX_CTL	0x1f
+ 			MX8MP_IOMUXC_ENET_TXC__CCM_ENET_QOS_CLOCK_GENERATE_TX_CLK	0x1f
+-		>;
+-	};
+-
+-	pinctrl_fec: fecgrp {
+-		fsl,pins = <
+-			MX8MP_IOMUXC_SAI1_RXD2__ENET1_MDC		0x3
+-			MX8MP_IOMUXC_SAI1_RXD3__ENET1_MDIO		0x3
+-			MX8MP_IOMUXC_SAI1_RXD4__ENET1_RGMII_RD0		0x91
+-			MX8MP_IOMUXC_SAI1_RXD5__ENET1_RGMII_RD1		0x91
+-			MX8MP_IOMUXC_SAI1_RXD6__ENET1_RGMII_RD2		0x91
+-			MX8MP_IOMUXC_SAI1_RXD7__ENET1_RGMII_RD3		0x91
+-			MX8MP_IOMUXC_SAI1_TXC__ENET1_RGMII_RXC		0x91
+-			MX8MP_IOMUXC_SAI1_TXFS__ENET1_RGMII_RX_CTL	0x91
+-			MX8MP_IOMUXC_SAI1_TXD0__ENET1_RGMII_TD0		0x1f
+-			MX8MP_IOMUXC_SAI1_TXD1__ENET1_RGMII_TD1		0x1f
+-			MX8MP_IOMUXC_SAI1_TXD2__ENET1_RGMII_TD2		0x1f
+-			MX8MP_IOMUXC_SAI1_TXD3__ENET1_RGMII_TD3		0x1f
+-			MX8MP_IOMUXC_SAI1_TXD4__ENET1_RGMII_TX_CTL	0x1f
+-			MX8MP_IOMUXC_SAI1_TXD5__ENET1_RGMII_TXC		0x1f
+-			MX8MP_IOMUXC_SAI1_RXD0__GPIO4_IO02		0x19
++			MX8MP_IOMUXC_GPIO1_IO10__GPIO1_IO10	0x19
+ 		>;
+ 	};
+ 
+@@ -642,9 +591,4 @@
+ 		>;
+ 	};
+ 
+-	pinctrl_enet_rst: enet1rst {
+-		fsl,pins = <
+-			MX8MP_IOMUXC_GPIO1_IO10__GPIO1_IO10	0x19
+-		>;
+-	};
+ };
+diff --git a/board/compulab/plat/imx8mp/board/board.c b/board/compulab/plat/imx8mp/board/board.c
+index e9f92429ef..b286e9896b 100644
+--- a/board/compulab/plat/imx8mp/board/board.c
++++ b/board/compulab/plat/imx8mp/board/board.c
+@@ -65,44 +65,11 @@ int ft_board_setup(void *blob, bd_t *bd)
+ }
+ #endif
+ 
+-#ifdef CONFIG_FEC_MXC
+-#define FEC_RST_PAD IMX_GPIO_NR(4, 2)
+-static iomux_v3_cfg_t const fec1_rst_pads[] = {
+-	MX8MP_PAD_SAI1_RXD0__GPIO4_IO02 | MUX_PAD_CTRL(NO_PAD_CTRL),
+-};
+-
+-static void setup_iomux_fec(void)
+-{
+-	imx_iomux_v3_setup_multiple_pads(fec1_rst_pads,
+-					 ARRAY_SIZE(fec1_rst_pads));
+-
+-	gpio_request(FEC_RST_PAD, "fec1_rst");
+-	gpio_direction_output(FEC_RST_PAD, 0);
+-	mdelay(15);
+-	gpio_direction_output(FEC_RST_PAD, 1);
+-	mdelay(100);
+-}
+-
+-static int setup_fec(void)
+-{
+-	struct iomuxc_gpr_base_regs *gpr =
+-		(struct iomuxc_gpr_base_regs *)IOMUXC_GPR_BASE_ADDR;
+-
+-	setup_iomux_fec();
+-
+-	/* Enable RGMII TX clk output */
+-	setbits_le32(&gpr->gpr[1], BIT(22));
+-
+-	//return set_clk_enet(ENET_125MHZ);
+-	return 0;
+-}
+-#endif
+-
+ #ifdef CONFIG_DWC_ETH_QOS
+ 
+-#define EQOS_RST_PAD IMX_GPIO_NR(4, 22)
++#define EQOS_RST_PAD IMX_GPIO_NR(1, 10)
+ static iomux_v3_cfg_t const eqos_rst_pads[] = {
+-	MX8MP_PAD_SAI2_RXC__GPIO4_IO22 | MUX_PAD_CTRL(NO_PAD_CTRL),
++	MX8MP_PAD_GPIO1_IO10__GPIO1_IO10 | MUX_PAD_CTRL(NO_PAD_CTRL),
+ };
+ 
+ static void setup_iomux_eqos(void)
+@@ -131,6 +98,16 @@ static int setup_eqos(void)
+ 
+ 	return set_clk_eqos(ENET_125MHZ);
+ }
++
++void imx_get_mac_from_fuse(int dev_id, unsigned char *mac)
++{
++	mac[0] = 0x00; mac[1] = 0x01; mac[2] = 0x1C;
++	mac[3] = 0x11; mac[4] = 0x22; mac[5] = 0x33;
++
++	debug("%s: MAC%d: %02x.%02x.%02x.%02x.%02x.%02x\n",
++	      __func__, dev_id, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
++	return;
++}
+ #endif
+ 
+ #if defined(CONFIG_FEC_MXC) || defined(CONFIG_DWC_ETH_QOS)
+@@ -448,10 +425,6 @@ int board_init(void)
+ 	setup_typec();
+ #endif
+ 
+-#ifdef CONFIG_FEC_MXC
+-	setup_fec();
+-#endif
+-
+ #ifdef CONFIG_DWC_ETH_QOS
+ 	/* clock, pin, gpr */
+ 	setup_eqos();
+diff --git a/configs/ucm-imx8m-plus_defconfig b/configs/ucm-imx8m-plus_defconfig
+index 2c836d4ab1..d038c866bd 100644
+--- a/configs/ucm-imx8m-plus_defconfig
++++ b/configs/ucm-imx8m-plus_defconfig
+@@ -95,11 +95,11 @@ CONFIG_SF_DEFAULT_MODE=0
+ CONFIG_SF_DEFAULT_SPEED=40000000
+ CONFIG_SPI_FLASH_BAR=y
+ CONFIG_SPI_FLASH_STMICRO=y
++CONFIG_PHY_ATHEROS=y
+ CONFIG_PHY_REALTEK=y
+ CONFIG_DM_ETH=y
+ CONFIG_PHY_GIGE=y
+ CONFIG_DWC_ETH_QOS=y
+-CONFIG_FEC_MXC=y
+ CONFIG_MII=y
+ CONFIG_PINCTRL=y
+ CONFIG_PINCTRL_IMX8M=y
+diff --git a/include/configs/compulab-imx8m-plus.h b/include/configs/compulab-imx8m-plus.h
+index 5aae8dd85e..977c2e999d 100644
+--- a/include/configs/compulab-imx8m-plus.h
++++ b/include/configs/compulab-imx8m-plus.h
+@@ -59,13 +59,11 @@
+ /* ENET Config */
+ /* ENET1 */
+ #if defined(CONFIG_CMD_NET)
+-#define CONFIG_ETHPRIME                 "eth1" /* Set eqos to primary since we use its MDIO */
++#define CONFIG_ETHPRIME                 "eth0" /* Set eqos to primary since we use its MDIO */
+ 
+ #define CONFIG_FEC_XCV_TYPE             RGMII
+-#define CONFIG_FEC_MXC_PHYADDR          1
+ #define FEC_QUIRK_ENET_MAC
+ 
+-#define DWC_NET_PHYADDR			1
+ #ifdef CONFIG_DWC_ETH_QOS
+ #define CONFIG_SYS_NONCACHED_MEMORY     (1 * SZ_1M)     /* 1M */
+ #endif
+@@ -94,6 +92,7 @@
+ #define CONFIG_EXTRA_ENV_SETTINGS		\
+ 	CONFIG_MFG_ENV_SETTINGS \
+ 	JAILHOUSE_ENV \
++	"autoload=off\0" \
+ 	"script=boot.scr\0" \
+ 	"image=Image\0" \
+ 	"splashimage=0x50000000\0" \
+-- 
+2.11.0
+

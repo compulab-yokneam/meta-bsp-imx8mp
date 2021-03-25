@@ -1,0 +1,25 @@
+From 04c6721a853ba96e4075a1fae3b979a4427831a0 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sun, 28 Feb 2021 10:04:35 +0200
+Subject: [PATCH] ucm-imx8m-plus: dts: Make sd-card work with no-1-8-v
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm/dts/ucm-imx8m-plus.dts | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm/dts/ucm-imx8m-plus.dts b/arch/arm/dts/ucm-imx8m-plus.dts
+index eb643b1fa3..42a4d32237 100644
+--- a/arch/arm/dts/ucm-imx8m-plus.dts
++++ b/arch/arm/dts/ucm-imx8m-plus.dts
+@@ -367,6 +367,7 @@
+ 	cd-gpios = <&gpio2 12 GPIO_ACTIVE_LOW>;
+ 	vmmc-supply = <&reg_usdhc2_vmmc>;
+ 	bus-width = <4>;
++	no-1-8-v;
+ 	status = "okay";
+ };
+ 
+-- 
+2.11.0
+

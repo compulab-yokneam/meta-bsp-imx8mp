@@ -1,0 +1,26 @@
+From bf60fed6048260d29a4c581555a6a64bea690a3e Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Thu, 18 Feb 2021 15:17:10 +0200
+Subject: [PATCH] ucm-imx8m-plus: env: Emmc support fix
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm/mach-imx/imx8m/soc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/mach-imx/imx8m/soc.c b/arch/arm/mach-imx/imx8m/soc.c
+index 7ff8a8ade9..1d2f5f3956 100644
+--- a/arch/arm/mach-imx/imx8m/soc.c
++++ b/arch/arm/mach-imx/imx8m/soc.c
+@@ -1343,7 +1343,7 @@ void do_error(struct pt_regs *pt_regs, unsigned int esr)
+ #endif
+ 
+ #if defined(CONFIG_IMX8MN) || defined(CONFIG_IMX8MP)
+-enum env_location env_get_location(enum env_operation op, int prio)
++enum env_location _env_get_location(enum env_operation op, int prio)
+ {
+ 	enum boot_device dev = get_boot_device();
+ 	enum env_location env_loc = ENVL_UNKNOWN;
+-- 
+2.11.0
+

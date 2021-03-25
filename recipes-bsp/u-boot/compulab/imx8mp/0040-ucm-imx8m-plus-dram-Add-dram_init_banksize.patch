@@ -1,0 +1,72 @@
+From e7e271651f929db5ce38f5b105f105f9030528f6 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Wed, 10 Mar 2021 14:16:52 +0200
+Subject: [PATCH] ucm-imx8m-plus: dram: Add dram_init_banksize()
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/plat/imx8mp/board/board.c | 48 ++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+
+diff --git a/board/compulab/plat/imx8mp/board/board.c b/board/compulab/plat/imx8mp/board/board.c
+index dd2cd75f0e..4deb0c4371 100644
+--- a/board/compulab/plat/imx8mp/board/board.c
++++ b/board/compulab/plat/imx8mp/board/board.c
+@@ -49,6 +49,54 @@ int board_phys_sdram_size(phys_size_t *size)
+ 	return 0;
+ }
+ 
++int dram_init_banksize(void)
++{
++    int bank = 0;
++    phys_size_t sdram_size;
++    phys_size_t phys_sdram_1_size;
++    phys_size_t phys_sdram_2_size;
++    size_t dramsize = lppdr4_get_ramsize();
++
++    if (dramsize > 3072) {
++        phys_sdram_1_size = ((1L << 20) * 3072 );
++        phys_sdram_2_size = ((1L << 20) * ( dramsize - 3072 ));
++    } else {
++        phys_sdram_1_size = ((1L << 20) * dramsize );
++        phys_sdram_2_size = 0;
++    }
++
++    sdram_size = phys_sdram_1_size;
++
++    gd->bd->bi_dram[bank].start = PHYS_SDRAM;
++    if (rom_pointer[1]) {
++        phys_addr_t optee_start = (phys_addr_t)rom_pointer[0];
++        phys_size_t optee_size = (size_t)rom_pointer[1];
++
++        gd->bd->bi_dram[bank].size = optee_start -gd->bd->bi_dram[bank].start;
++        if ((optee_start + optee_size) < (PHYS_SDRAM + sdram_size)) {
++            if ( ++bank >= CONFIG_NR_DRAM_BANKS) {
++                puts("CONFIG_NR_DRAM_BANKS is not enough\n");
++                return -1;
++            }
++
++            gd->bd->bi_dram[bank].start = optee_start + optee_size;
++            gd->bd->bi_dram[bank].size = PHYS_SDRAM +
++                sdram_size - gd->bd->bi_dram[bank].start;
++        }
++    } else {
++        gd->bd->bi_dram[bank].size = sdram_size;
++    }
++
++    if ( ++bank >= CONFIG_NR_DRAM_BANKS) {
++        puts("CONFIG_NR_DRAM_BANKS is not enough for SDRAM_2\n");
++        return -1;
++    }
++    gd->bd->bi_dram[bank].start = PHYS_SDRAM_2;
++    gd->bd->bi_dram[bank].size = phys_sdram_2_size;
++
++    return 0;
++}
++
+ #ifdef CONFIG_OF_BOARD_SETUP
+ int ft_board_setup(void *blob, bd_t *bd)
+ {
+-- 
+2.11.0
+
