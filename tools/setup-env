@@ -1,0 +1,15 @@
+#!/bin/bash -e
+
+MACHINE=${MACHINE:-ucm-imx8m-plus}
+DISTRO=${DISTRO:-fsl-imx-xwayland}
+EULA=1
+T="../sources/meta-bsp-imx8mp/templates"
+
+. imx-setup-release.sh $@
+
+for _d in ${T}/*;do
+	_file=$(basename ${_d})
+	for _f in ${_d}/*;do
+		cat ${_f} >> conf/${_file}
+	done;
+done
