@@ -1,0 +1,53 @@
+From 3302dc4ad86ff39b2f9d655256181cf963611cae Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Thu, 18 Feb 2021 17:13:57 +0200
+Subject: [PATCH] ucm-imx8m-plus: dts: Update i2c
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+index 12b6c523e57d..fb10a6e63b01 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+@@ -367,7 +367,7 @@
+ };
+ 
+ &i2c2 {
+-	clock-frequency = <100000>;
++	clock-frequency = <400000>;
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_i2c2>;
+ 	status = "okay";
+@@ -432,7 +432,7 @@
+ 	clock-frequency = <100000>;
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_i2c3>;
+-	status = "okay";
++	status = "disabled";
+ 
+ 	pca6416: gpio@20 {
+ 		compatible = "ti,tca6416";
+@@ -443,7 +443,7 @@
+ };
+ 
+ &i2c5 {
+-	clock-frequency = <100000>;
++	clock-frequency = <400000>;
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_i2c5>;
+ 	status = "okay";
+@@ -463,7 +463,7 @@
+ };
+ 
+ &i2c6 {
+-	clock-frequency = <100000>;
++	clock-frequency = <400000>;
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_i2c6>;
+ 	status = "okay";
+-- 
+2.11.0
+

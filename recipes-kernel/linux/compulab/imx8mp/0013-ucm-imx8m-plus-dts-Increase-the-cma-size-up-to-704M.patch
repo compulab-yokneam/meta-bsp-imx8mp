@@ -1,0 +1,26 @@
+From 984ca9d8b2fa9d67691f7a88891ccc762fb7db9f Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Thu, 18 Feb 2021 08:39:40 +0200
+Subject: [PATCH] ucm-imx8m-plus: dts: Increase the cma size up to 704M
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+index 67f3295757c3..e11289d7369f 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+@@ -1257,7 +1257,7 @@
+ 	linux,cma {
+ 		compatible = "shared-dma-pool";
+ 		reusable;
+-		size = <0 0x10000000>;
++		size = <0 0x2c000000>;
+ 		alloc-ranges = <0 0x40000000 0 0x80000000>;
+ 		linux,cma-default;
+ 	};
+-- 
+2.11.0
+

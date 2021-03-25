@@ -1,0 +1,32 @@
+From 1b4f4dd8e93e8ffe2daab9475833e2c66dcbe18a Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Mon, 15 Feb 2021 16:23:24 +0200
+Subject: [PATCH] Change cma size,location
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+index abbf72b569cf..215e0762e965 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+@@ -1339,3 +1339,14 @@
+ &dsp {
+ 	status = "okay";
+ };
++
++&resmem {
++	/* global autoconfigured region for contiguous allocations */
++	linux,cma {
++		compatible = "shared-dma-pool";
++		reusable;
++		size = <0 0x10000000>;
++		alloc-ranges = <0 0x40000000 0 0x80000000>;
++		linux,cma-default;
++	};
++};
+-- 
+2.11.0
+

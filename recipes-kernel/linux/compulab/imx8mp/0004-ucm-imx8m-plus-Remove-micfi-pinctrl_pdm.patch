@@ -1,0 +1,50 @@
+From e950aab516cd4b595a2f4847811ce181ab53a9be Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 16 Feb 2021 15:11:03 +0200
+Subject: [PATCH] ucm-imx8m-plus: Remove micfi,pinctrl_pdm
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts | 19 -------------------
+ 1 file changed, 19 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+index f4de6359de8c..af14a255a321 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+@@ -656,15 +656,6 @@
+ 	status = "okay";
+ };
+ 
+-&micfil {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_pdm>;
+-	assigned-clocks = <&clk IMX8MP_CLK_PDM>;
+-	assigned-clock-parents = <&clk IMX8MP_AUDIO_PLL1_OUT>;
+-	assigned-clock-rates = <196608000>;
+-	status = "okay";
+-};
+-
+ &pcie{
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_pcie>;
+@@ -1010,16 +1001,6 @@
+ 		>;
+ 	};
+ 
+-	pinctrl_pdm: pdmgrp {
+-		fsl,pins = <
+-			MX8MP_IOMUXC_SAI5_RXC__AUDIOMIX_PDM_CLK			0xd6
+-			MX8MP_IOMUXC_SAI5_RXD0__AUDIOMIX_PDM_BIT_STREAM00	0xd6
+-			MX8MP_IOMUXC_SAI5_RXD1__AUDIOMIX_PDM_BIT_STREAM01	0xd6
+-			MX8MP_IOMUXC_SAI5_RXD2__AUDIOMIX_PDM_BIT_STREAM02	0xd6
+-			MX8MP_IOMUXC_SAI5_RXD3__AUDIOMIX_PDM_BIT_STREAM03	0xd6
+-		>;
+-	};
+-
+ 	pinctrl_sai2: sai2grp {
+ 		fsl,pins = <
+ 			MX8MP_IOMUXC_SAI2_TXC__AUDIOMIX_SAI2_TX_BCLK	0xd6
+-- 
+2.11.0
+

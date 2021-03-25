@@ -1,0 +1,109 @@
+From 509f95401e2e0fb61a070f880ba838e60cf4a4e1 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 16 Feb 2021 15:07:19 +0200
+Subject: [PATCH] ucm-imx8m-plus: Add EQOS support
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts | 63 ++++++++-----------------
+ 1 file changed, 20 insertions(+), 43 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+index 215e0762e965..f4de6359de8c 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+@@ -94,6 +94,18 @@
+ 		regulator-always-on;
+ 	};
+ 
++	reg_reset: regulator-reset {
++                compatible = "regulator-fixed";
++                regulator-name = "enet_rst";
++                pinctrl-names = "default";
++                pinctrl-0 = <&pinctrl_enet_rst>;
++                regulator-min-microvolt = <3300000>;
++                regulator-max-microvolt = <3300000>;
++                gpio = <&gpio1 10 GPIO_ACTIVE_HIGH>;
++                enable-active-high;
++                regulator-always-on;
++        };
++
+ 	cbtl04gp {
+ 		compatible = "nxp,cbtl04gp";
+ 		pinctrl-names = "default";
+@@ -264,29 +276,9 @@
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 
+-		ethphy0: ethernet-phy@1 {
+-			compatible = "ethernet-phy-ieee802.3-c22";
+-			reg = <1>;
+-			eee-broken-1000t;
+-		};
+-	};
+-};
+-
+-&fec {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_fec>;
+-	phy-mode = "rgmii-id";
+-	phy-handle = <&ethphy1>;
+-	fsl,magic-packet;
+-	status = "okay";
+-
+-	mdio {
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		ethphy1: ethernet-phy@1 {
++		ethphy0: ethernet-phy@0 {
+ 			compatible = "ethernet-phy-ieee802.3-c22";
+-			reg = <1>;
++			reg = <0>;
+ 			eee-broken-1000t;
+ 		};
+ 	};
+@@ -865,6 +857,12 @@
+ 		>;
+ 	};
+ 
++        pinctrl_enet_rst: enet1rst {
++                fsl,pins = <
++                        MX8MP_IOMUXC_GPIO1_IO10__GPIO1_IO10     0x19
++                >;
++        };
++
+ 	pinctrl_pwm1: pwm1grp {
+ 		fsl,pins = <
+ 			MX8MP_IOMUXC_GPIO1_IO01__PWM1_OUT	0x116
+@@ -913,27 +911,6 @@
+ 			MX8MP_IOMUXC_ENET_TD3__ENET_QOS_RGMII_TD3		0x1f
+ 			MX8MP_IOMUXC_ENET_TX_CTL__ENET_QOS_RGMII_TX_CTL	0x1f
+ 			MX8MP_IOMUXC_ENET_TXC__CCM_ENET_QOS_CLOCK_GENERATE_TX_CLK	0x1f
+-			MX8MP_IOMUXC_SAI2_RXC__GPIO4_IO22		0x19
+-		>;
+-	};
+-
+-	pinctrl_fec: fecgrp {
+-		fsl,pins = <
+-			MX8MP_IOMUXC_SAI1_RXD2__ENET1_MDC		0x3
+-			MX8MP_IOMUXC_SAI1_RXD3__ENET1_MDIO		0x3
+-			MX8MP_IOMUXC_SAI1_RXD4__ENET1_RGMII_RD0		0x91
+-			MX8MP_IOMUXC_SAI1_RXD5__ENET1_RGMII_RD1		0x91
+-			MX8MP_IOMUXC_SAI1_RXD6__ENET1_RGMII_RD2		0x91
+-			MX8MP_IOMUXC_SAI1_RXD7__ENET1_RGMII_RD3		0x91
+-			MX8MP_IOMUXC_SAI1_TXC__ENET1_RGMII_RXC		0x91
+-			MX8MP_IOMUXC_SAI1_TXFS__ENET1_RGMII_RX_CTL	0x91
+-			MX8MP_IOMUXC_SAI1_TXD0__ENET1_RGMII_TD0		0x1f
+-			MX8MP_IOMUXC_SAI1_TXD1__ENET1_RGMII_TD1		0x1f
+-			MX8MP_IOMUXC_SAI1_TXD2__ENET1_RGMII_TD2		0x1f
+-			MX8MP_IOMUXC_SAI1_TXD3__ENET1_RGMII_TD3		0x1f
+-			MX8MP_IOMUXC_SAI1_TXD4__ENET1_RGMII_TX_CTL	0x1f
+-			MX8MP_IOMUXC_SAI1_TXD5__ENET1_RGMII_TXC		0x1f
+-			MX8MP_IOMUXC_SAI1_RXD0__GPIO4_IO02		0x19
+ 		>;
+ 	};
+ 
+-- 
+2.11.0
+

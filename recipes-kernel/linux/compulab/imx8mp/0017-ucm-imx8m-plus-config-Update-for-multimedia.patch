@@ -1,0 +1,43 @@
+From df24b028bd437a1a6ac415e62a32c04ad3d4308d Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Thu, 18 Feb 2021 14:50:01 +0200
+Subject: [PATCH] ucm-imx8m-plus: config: Update for multimedia
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/configs/ucm-imx8m-plus_defconfig | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/configs/ucm-imx8m-plus_defconfig b/arch/arm64/configs/ucm-imx8m-plus_defconfig
+index 440fc06e9225..932ea016bdbd 100644
+--- a/arch/arm64/configs/ucm-imx8m-plus_defconfig
++++ b/arch/arm64/configs/ucm-imx8m-plus_defconfig
+@@ -491,7 +491,7 @@ CONFIG_VIDEO_MX8_CAPTURE=y
+ CONFIG_VIDEO_MXC_CAPTURE=y
+ CONFIG_VIDEO_MXC_CSI_CAMERA=y
+ CONFIG_MXC_MIPI_CSI=y
+-CONFIG_MXC_CAMERA_OV5640_MIPI_V2=y
++CONFIG_MXC_CAMERA_OV5640_MIPI_V2=m
+ CONFIG_V4L_MEM2MEM_DRIVERS=y
+ CONFIG_VIDEO_OV5640=y
+ CONFIG_IMX_DPU_CORE=y
+@@ -582,6 +582,7 @@ CONFIG_SND_SOC_PCM3168A_I2C=m
+ CONFIG_SND_SOC_SGTL5000=m
+ CONFIG_SND_SOC_SPDIF=m
+ CONFIG_SND_SOC_TAS571X=m
++CONFIG_SND_SOC_WM8731=m
+ CONFIG_SND_SIMPLE_CARD=y
+ CONFIG_SND_AUDIO_GRAPH_CARD=y
+ CONFIG_I2C_HID=m
+@@ -697,7 +698,7 @@ CONFIG_DMADEVICES=y
+ CONFIG_BCM_SBA_RAID=m
+ CONFIG_FSL_EDMA=y
+ CONFIG_FSL_EDMA_V3=y
+-CONFIG_IMX_SDMA=y
++CONFIG_IMX_SDMA=m
+ CONFIG_MV_XOR_V2=y
+ CONFIG_MXS_DMA=y
+ CONFIG_PL330_DMA=y
+-- 
+2.11.0
+

@@ -1,0 +1,193 @@
+From c8123efeee025617c1bcc944be78411d7d826488 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Thu, 18 Feb 2021 14:48:47 +0200
+Subject: [PATCH] ucm-imx8m-plus: dts: Add wm8731 sound support
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts | 120 +++++++-----------------
+ 1 file changed, 34 insertions(+), 86 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+index 9b2a15687187..501000291789 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+@@ -84,16 +84,6 @@
+ 		off-on-delay-us = <12000>;
+ 	};
+ 
+-	reg_audio_pwr: regulator-audio-pwr {
+-		compatible = "regulator-fixed";
+-		regulator-name = "audio-pwr";
+-		regulator-min-microvolt = <3300000>;
+-		regulator-max-microvolt = <3300000>;
+-		gpio = <&gpio4 29 GPIO_ACTIVE_HIGH>;
+-		enable-active-high;
+-		regulator-always-on;
+-	};
+-
+ 	reg_reset: regulator-reset {
+                 compatible = "regulator-fixed";
+                 regulator-name = "enet_rst";
+@@ -121,29 +111,6 @@
+ 		};
+ 	};
+ #endif
+-	bt_sco_codec: bt_sco_codec {
+-		#sound-dai-cells = <1>;
+-		compatible = "linux,bt-sco";
+-	};
+-
+-	sound-bt-sco {
+-		compatible = "simple-audio-card";
+-		simple-audio-card,name = "bt-sco-audio";
+-		simple-audio-card,format = "dsp_a";
+-		simple-audio-card,bitclock-inversion;
+-		simple-audio-card,frame-master = <&btcpu>;
+-		simple-audio-card,bitclock-master = <&btcpu>;
+-
+-		btcpu: simple-audio-card,cpu {
+-			sound-dai = <&sai2>;
+-			dai-tdm-slot-num = <2>;
+-			dai-tdm-slot-width = <16>;
+-		};
+-
+-		simple-audio-card,codec {
+-			sound-dai = <&bt_sco_codec 1>;
+-		};
+-	};
+ 
+ 	sound-hdmi {
+ 		compatible = "fsl,imx-audio-cdnhdmi";
+@@ -160,45 +127,6 @@
+ 		status = "okay";
+ 	};
+ 
+-	sound-wm8960 {
+-		compatible = "fsl,imx7d-evk-wm8960", "fsl,imx-audio-wm8960";
+-		model = "wm8960-audio";
+-		cpu-dai = <&sai3>;
+-		audio-codec = <&codec>;
+-		asrc-controller = <&easrc>;
+-		codec-master;
+-		/* JD2: hp detect high for headphone*/
+-		hp-det = <3 0>;
+-		hp-det-gpios = <&gpio4 28 0>;
+-		mic-det-gpios = <&gpio4 28 0>;
+-		audio-routing =
+-			"Headphone Jack", "HP_L",
+-			"Headphone Jack", "HP_R",
+-			"Ext Spk", "SPK_LP",
+-			"Ext Spk", "SPK_LN",
+-			"Ext Spk", "SPK_RP",
+-			"Ext Spk", "SPK_RN",
+-			"LINPUT1", "Mic Jack",
+-			"LINPUT3", "Mic Jack",
+-			"Mic Jack", "MICB",
+-			"CPU-Playback", "ASRC-Playback",
+-			"Playback", "CPU-Playback",
+-			"ASRC-Capture", "CPU-Capture",
+-			"CPU-Capture", "Capture";
+-	};
+-
+-	sound-micfil {
+-		compatible = "fsl,imx-audio-micfil";
+-		model = "imx-audio-micfil";
+-		cpu-dai = <&micfil>;
+-	};
+-
+-	sound-xcvr {
+-		compatible = "fsl,imx-audio-xcvr";
+-		model = "imx-audio-xcvr";
+-		cpu-dai = <&xcvr>;
+-	};
+-
+ 	lvds_backlight: lvds_backlight {
+ 		compatible = "pwm-backlight";
+ 		pwms = <&pwm2 0 100000>;
+@@ -217,6 +145,36 @@
+ 				    100>;
+ 		default-brightness-level = <80>;
+ 	};
++
++	simple_sound: sound {
++		compatible = "simple-audio-card";
++		simple-audio-card,name = "ucm-imx8m-plus";
++		simple-audio-card,widgets =
++			"Headphone", "Headphone Jack",
++			"Line", "Line Out",
++			"Microphone", "Mic Jack",
++			"Line", "Line In";
++		simple-audio-card,routing =
++			"Headphone Jack", "RHPOUT",
++			"Headphone Jack", "LHPOUT",
++			"MICIN", "Mic Bias",
++			"Mic Bias", "Mic Jack";
++		simple-audio-card,format = "i2s";
++		simple-audio-card,bitclock-master = <&sound_master>;
++		simple-audio-card,frame-master = <&sound_master>;
++
++		sound_master: simple-audio-card,cpu {
++			sound-dai = <&sai3>;
++			system-clock-frequency = <0>;
++			system-clock-direction = "out";
++		};
++
++		sound_codec: simple-audio-card,codec {
++			sound-dai = <&wm8731>;
++			system-clock-direction = "in";
++			system-clock-type = "mclk";
++		};
++	};
+ };
+ 
+ &aud2htx {
+@@ -483,15 +441,6 @@
+ 		gpio-controller;
+ 		#gpio-cells = <2>;
+ 	};
+-
+-	codec: wm8960@1a {
+-		compatible = "wlf,wm8960";
+-		reg = <0x1a>;
+-		clocks = <&audiomix_clk IMX8MP_CLK_AUDIOMIX_SAI3_MCLK1>;
+-		clock-names = "mclk";
+-		wlf,shared-lrclk;
+-		SPKVDD1-supply = <&reg_audio_pwr>;
+-	};
+ };
+ 
+ &i2c5 {
+@@ -524,6 +473,9 @@
+ 		#sound-dai-cells = <0>;
+ 		compatible = "wlf,wm8731";
+ 		reg = <0x1a>;
++		clocks = <&audiomix_clk IMX8MP_CLK_AUDIOMIX_SAI3_MCLK1>;
++		clock-names = "mclk";
++		wlf,shared-lrclk;
+ 		status = "okay";
+ 	};
+ 
+@@ -678,6 +630,7 @@
+ };
+ 
+ &sai3 {
++	#sound-dai-cells = <0>;
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_sai3>;
+ 	assigned-clocks = <&clk IMX8MP_CLK_SAI3>;
+@@ -691,11 +644,6 @@
+ 	status = "okay";
+ };
+ 
+-&xcvr {
+-	#sound-dai-cells = <0>;
+-	status = "okay";
+-};
+-
+ &sdma2 {
+ 	status = "okay";
+ };
+-- 
+2.11.0
+

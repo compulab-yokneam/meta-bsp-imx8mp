@@ -1,0 +1,27 @@
+From 5fcd91ca0e3d4323eddcdb3d39d62458e723ed7d Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 16 Feb 2021 15:15:14 +0200
+Subject: [PATCH] ucm-imx8m-plus: Enable PCIe recet on pca953x 0
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+index 46292ef047c3..b6ef22359c23 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+@@ -673,8 +673,7 @@
+ &pcie{
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_pcie>;
+-	disable-gpio = <&gpio2 6 GPIO_ACTIVE_LOW>;
+-	reset-gpio = <&gpio2 7 GPIO_ACTIVE_LOW>;
++	reset-gpio = <&pca9555 0 GPIO_ACTIVE_LOW>;
+ 	ext_osc = <1>;
+ 	clocks = <&clk IMX8MP_CLK_HSIO_AXI_DIV>,
+ 		 <&clk IMX8MP_CLK_PCIE_AUX>,
+-- 
+2.11.0
+

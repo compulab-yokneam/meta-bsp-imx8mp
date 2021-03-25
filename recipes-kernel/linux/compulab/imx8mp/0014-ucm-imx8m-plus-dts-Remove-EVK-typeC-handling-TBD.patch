@@ -1,0 +1,86 @@
+From 042ebd55ede11d6637337e94d4d2e9d45c042062 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Thu, 18 Feb 2021 14:32:41 +0200
+Subject: [PATCH] ucm-imx8m-plus: dts: Remove EVK typeC handling; TBD
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+index e11289d7369f..fb54e27572da 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+@@ -106,6 +106,7 @@
+                 regulator-always-on;
+         };
+ 
++#if 0
+ 	cbtl04gp {
+ 		compatible = "nxp,cbtl04gp";
+ 		pinctrl-names = "default";
+@@ -119,7 +120,7 @@
+ 			};
+ 		};
+ 	};
+-
++#endif
+ 	bt_sco_codec: bt_sco_codec {
+ 		#sound-dai-cells = <1>;
+ 		compatible = "linux,bt-sco";
+@@ -414,6 +415,7 @@
+ 	pinctrl-0 = <&pinctrl_i2c2>;
+ 	status = "okay";
+ 
++#if 0
+ 	ptn5110: tcpc@50 {
+ 		compatible = "nxp,ptn5110";
+ 		pinctrl-names = "default";
+@@ -453,6 +455,7 @@
+ 			};
+ 		};
+ 	};
++#endif
+ 
+ 	rtc@69 {
+ 		compatible = "ab1805";
+@@ -717,6 +720,9 @@
+ };
+ 
+ &usb3_phy0 {
++	fsl,phy-tx-preemp-amp-tune = <3>;
++	status = "okay";
++#if 0
+ 	vbus-power-supply = <&ptn5110>;
+ 	fsl,phy-tx-vref-tune = <6>;
+ 	fsl,phy-tx-rise-tune = <0>;
+@@ -725,6 +731,7 @@
+ 	fsl,pcs-tx-deemph-3p5db = <0x21>;
+ 	fsl,phy-pcs-tx-swing-full = <0x7f>;
+ 	status = "okay";
++#endif
+ };
+ 
+ &usb3_0 {
+@@ -732,6 +739,9 @@
+ };
+ 
+ &usb_dwc3_0 {
++	dr_mode = "host";
++	status = "okay";
++#if 0
+ 	dr_mode = "otg";
+ 	hnp-disable;
+ 	srp-disable;
+@@ -744,6 +754,7 @@
+ 			remote-endpoint = <&typec_dr_sw>;
+ 		};
+ 	};
++#endif
+ };
+ 
+ &usb3_phy1 {
+-- 
+2.11.0
+
