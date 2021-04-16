@@ -23,7 +23,7 @@ repo sync
 ```
 mkdir -p .repo/local_manifests
 cd .repo/local_manifests
-wget https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/devel/scripts/meta-bsp-imx8mp.xml
+wget https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/zeus/scripts/meta-bsp-imx8mp.xml
 cd -
 ```
 
