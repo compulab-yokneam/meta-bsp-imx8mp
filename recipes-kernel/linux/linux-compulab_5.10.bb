@@ -3,7 +3,7 @@ SUMMARY = "CompuLab Linux Kernel for ucm-imx8m-plus SOM"
 inherit kernel
 
 LICENSE = "GPLv2"
-LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
+LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 S = "${WORKDIR}/git"
 
@@ -27,9 +27,9 @@ KERNEL_EXTRA_ARGS += "LOADADDR=${UBOOT_ENTRYPOINT}"
 
 DEPENDS += "lzop-native bc-native"
 
-SRCBRANCH = "imx_5.4.70_2.3.0"
-LOCALVERSION = "-2.3.0"
-SRCREV = "4f2631b022d843c1f2a5d34eae2fd98927a1a6c7"
+SRCBRANCH = "lf-5.10.y"
+LOCALVERSION = "-1.0.0"
+SRCREV = "32513c25d8c7867f07b44900368346795357b48e"
 
 SRC_URI = "git://source.codeaurora.org/external/imx/linux-imx;protocol=https;branch=${SRCBRANCH} \
 "
@@ -39,6 +39,6 @@ SRC_URI = "git://source.codeaurora.org/external/imx/linux-imx;protocol=https;bra
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "5.4.70"
+LINUX_VERSION = "5.10.9"
 
 DEFAULT_PREFERENCE = "1"
