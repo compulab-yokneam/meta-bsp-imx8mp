@@ -15,7 +15,8 @@ export MACHINE=ucm-imx8m-plus
 
 * NXP
 ```
-repo init -u git://source.codeaurora.org/external/imx/imx-manifest.git -b imx-linux-zeus -m imx-5.4.70-2.3.0.xml
+repo init -u https://source.codeaurora.org/external/imx/imx-manifest  -b imx-linux-gatesgarth -m imx-5.10.9-1.0.0.xml
+
 repo sync
 ```
 
@@ -23,7 +24,7 @@ repo sync
 ```
 mkdir -p .repo/local_manifests
 cd .repo/local_manifests
-wget https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/devel/scripts/meta-bsp-imx8mp.xml
+wget https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/gatesgarth/scripts/meta-bsp-imx8mp.xml
 cd -
 ```
 
