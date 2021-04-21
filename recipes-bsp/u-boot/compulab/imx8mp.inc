@@ -40,5 +40,7 @@ SRC_URI_append_ucm-imx8m-plus = " \
 	file://0038-ucm-imx8m-plus-defconfig-Enable-USB_ETHER_SMSC95XX.patch \
 	file://0039-ucm-imx8m-plus-dram-Add-4G-and-8G-support.patch \
 	file://0040-ucm-imx8m-plus-dram-Add-dram_init_banksize.patch \
+	file://0041-ucm-imx8m-plus-Read-mac-from-eeprom.patch \
+	file://0042-eeprom-Fix-the-compiler-tag_serialnr-warning.patch \
 	file://ucm-imx8m-plus_defconfig \
 "
