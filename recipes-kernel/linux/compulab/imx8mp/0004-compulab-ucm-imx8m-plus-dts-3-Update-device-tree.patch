@@ -1,0 +1,80 @@
+From 455783f6283a616014b17246240f044c97614965 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Wed, 21 Apr 2021 22:09:03 +0300
+Subject: [PATCH] compulab: ucm-imx8m-plus: dts: [3] Update device tree
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ .../boot/dts/compulab/ucm-imx8m-plus.dts      | 20 +++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+index 24281d8a0709..41ce83045341 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+@@ -600,13 +600,14 @@
+ &pcie {
+ 	reset-gpio = <&pca9555 0 GPIO_ACTIVE_LOW>;
+ 	ext_osc = <1>;
+-	clocks = <&clk IMX8MP_CLK_HSIO_AXI_DIV>,
++	clocks = <&clk IMX8MP_CLK_HSIO_ROOT>,
+ 		 <&clk IMX8MP_CLK_PCIE_AUX>,
+-		 <&clk IMX8MP_CLK_PCIE_PHY>,
++		 <&clk IMX8MP_CLK_HSIO_AXI>,
+ 		 <&clk IMX8MP_CLK_PCIE_ROOT>;
+ 	clock-names = "pcie", "pcie_aux", "pcie_phy", "pcie_bus";
+-	assigned-clocks = <&clk IMX8MP_CLK_HSIO_AXI_SRC>,
++	assigned-clocks = <&clk IMX8MP_CLK_HSIO_AXI>,
+ 			  <&clk IMX8MP_CLK_PCIE_AUX>;
++	assigned-clock-rates = <500000000>, <10000000>;
+ 	assigned-clock-parents = <&clk IMX8MP_SYS_PLL2_500M>,
+ 				 <&clk IMX8MP_SYS_PLL2_50M>;
+ 	status = "okay";
+@@ -614,13 +615,14 @@
+ 
+ &pcie_ep {
+ 	ext_osc = <1>;
+-	clocks = <&clk IMX8MP_CLK_HSIO_AXI_DIV>,
++	clocks = <&clk IMX8MP_CLK_HSIO_ROOT>,
+ 		 <&clk IMX8MP_CLK_PCIE_AUX>,
+-		 <&clk IMX8MP_CLK_PCIE_PHY>,
++		 <&clk IMX8MP_CLK_HSIO_AXI>,
+ 		 <&clk IMX8MP_CLK_PCIE_ROOT>;
+ 	clock-names = "pcie", "pcie_aux", "pcie_phy", "pcie_bus";
+-	assigned-clocks = <&clk IMX8MP_CLK_HSIO_AXI_SRC>,
++	assigned-clocks = <&clk IMX8MP_CLK_HSIO_AXI>,
+ 			  <&clk IMX8MP_CLK_PCIE_AUX>;
++	assigned-clock-rates = <500000000>, <10000000>;
+ 	assigned-clock-parents = <&clk IMX8MP_SYS_PLL2_500M>,
+ 				 <&clk IMX8MP_SYS_PLL2_50M>;
+ 	status = "disabled";
+@@ -743,6 +745,8 @@
+ };
+ 
+ &usdhc1 {
++	assigned-clocks = <&clk IMX8MP_CLK_USDHC1>;
++	assigned-clock-rates = <400000000>;
+ 	pinctrl-names = "default", "state_100mhz", "state_200mhz";
+ 	pinctrl-0 = <&pinctrl_usdhc1>;
+ 	pinctrl-1 = <&pinctrl_usdhc1_100mhz>;
+@@ -753,6 +757,8 @@
+ };
+ 
+ &usdhc2 {
++	assigned-clocks = <&clk IMX8MP_CLK_USDHC2>;
++	assigned-clock-rates = <400000000>;
+ 	pinctrl-names = "default", "state_100mhz", "state_200mhz";
+ 	pinctrl-0 = <&pinctrl_usdhc2>, <&pinctrl_usdhc2_gpio>;
+ 	pinctrl-1 = <&pinctrl_usdhc2_100mhz>, <&pinctrl_usdhc2_gpio>;
+@@ -764,6 +770,8 @@
+ };
+ 
+ &usdhc3 {
++	assigned-clocks = <&clk IMX8MP_CLK_USDHC3>;
++	assigned-clock-rates = <400000000>;
+ 	pinctrl-names = "default", "state_100mhz", "state_200mhz";
+ 	pinctrl-0 = <&pinctrl_usdhc3>;
+ 	pinctrl-1 = <&pinctrl_usdhc3_100mhz>;
+-- 
+2.17.1
+
