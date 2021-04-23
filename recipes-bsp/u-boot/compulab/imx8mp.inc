@@ -32,7 +32,6 @@ SRC_URI_append_ucm-imx8m-plus = " \
 	file://0030-ucm-imx8m-plus-u-boot-Read-dram-size-by-memory-id.patch \
 	file://0031-ucm-imx8m-plus-dts-Make-sd-card-work-with-no-1-8-v.patch \
 	file://0032-ucm-imx8m-plus-defconfig-Set-ENV_OFFSET-0x33d800.patch \
-	file://0033-ucm-imx8m-plus-Add-tty1-to-the-list-of-consoles.patch \
 	file://0034-ucm-imx8m-plus-Update-std-out-err-in.patch \
 	file://0035-spi-nor-id-Add-w25q64dw-support.patch \
 	file://0036-ucm-imx8m-plus-Change-flash0-name-to-w25q64dw.patch \
@@ -42,5 +41,6 @@ SRC_URI_append_ucm-imx8m-plus = " \
 	file://0040-ucm-imx8m-plus-dram-Add-dram_init_banksize.patch \
 	file://0041-ucm-imx8m-plus-Read-mac-from-eeprom.patch \
 	file://0042-eeprom-Fix-the-compiler-tag_serialnr-warning.patch \
+	file://0043-ucm-imx8m-plus-Update-boot-environment.patch \
 	file://ucm-imx8m-plus_defconfig \
 "
