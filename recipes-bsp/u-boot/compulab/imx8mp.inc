@@ -42,5 +42,6 @@ SRC_URI_append_ucm-imx8m-plus = " \
 	file://0041-ucm-imx8m-plus-Read-mac-from-eeprom.patch \
 	file://0042-eeprom-Fix-the-compiler-tag_serialnr-warning.patch \
 	file://0043-ucm-imx8m-plus-Update-boot-environment.patch \
+	file://0044-ucm-imx8m-plus-defconfig-Update-defconfig.patch \
 	file://ucm-imx8m-plus_defconfig \
 "
