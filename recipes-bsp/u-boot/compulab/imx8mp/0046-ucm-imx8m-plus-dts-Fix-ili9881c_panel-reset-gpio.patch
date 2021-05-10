@@ -1,0 +1,26 @@
+From c971e10d7acc9c7ff69469ca43d4eb2d020d9a33 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Wed, 5 May 2021 11:43:14 +0300
+Subject: [PATCH] ucm-imx8m-plus: dts: Fix ili9881c_panel reset-gpio
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm/dts/ucm-imx8m-plus.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/dts/ucm-imx8m-plus.dts b/arch/arm/dts/ucm-imx8m-plus.dts
+index cb5ca18062..94d4c94d07 100644
+--- a/arch/arm/dts/ucm-imx8m-plus.dts
++++ b/arch/arm/dts/ucm-imx8m-plus.dts
+@@ -91,7 +91,7 @@
+ 
+ 	ili9881c_panel {
+ 		compatible = "startek,ili9881c";
+-		reset-gpio = <&pca9555 6 GPIO_ACTIVE_LOW>;
++		reset-gpio = <&pca9555 4 GPIO_ACTIVE_LOW>;
+ 		dsi-lanes = <4>;
+ 		panel-width-mm = <63>;
+ 		panel-height-mm = <115>;
+-- 
+2.11.0
+

@@ -43,5 +43,8 @@ SRC_URI_append_ucm-imx8m-plus = " \
 	file://0042-eeprom-Fix-the-compiler-tag_serialnr-warning.patch \
 	file://0043-ucm-imx8m-plus-Update-boot-environment.patch \
 	file://0044-ucm-imx8m-plus-defconfig-Update-defconfig.patch \
+	file://0045-ucm-imx8m-plus-dts-Declare-the-pca9555-20-on-i2c2.patch \
+	file://0046-ucm-imx8m-plus-dts-Fix-ili9881c_panel-reset-gpio.patch \
+	file://0047-ucm-imx8m-plus-Update-boot-environment.patch \
 	file://ucm-imx8m-plus_defconfig \
 "

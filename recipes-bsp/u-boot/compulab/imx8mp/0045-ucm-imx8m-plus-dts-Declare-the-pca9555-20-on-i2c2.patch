@@ -1,0 +1,45 @@
+From 63d7ef8377638056ba50d7f23cce52a94f38cb06 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Wed, 5 May 2021 11:42:36 +0300
+Subject: [PATCH] ucm-imx8m-plus: dts: Declare the pca9555@20 on i2c2
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm/dts/ucm-imx8m-plus.dts | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/arch/arm/dts/ucm-imx8m-plus.dts b/arch/arm/dts/ucm-imx8m-plus.dts
+index c3e2029864..cb5ca18062 100644
+--- a/arch/arm/dts/ucm-imx8m-plus.dts
++++ b/arch/arm/dts/ucm-imx8m-plus.dts
+@@ -272,6 +272,13 @@
+ 		reg = <0x50>;
+ 		pagesize = <16>;
+ 	};
++
++        pca9555:pca9555@20 {
++                compatible = "nxp,pca9555";
++                gpio-controller;
++                #gpio-cells = <2>;
++                reg = <0x20>;
++        };
+ };
+ 
+ &i2c3 {
+@@ -293,13 +300,6 @@
+ 	sda-gpios = <&gpio3 25 GPIO_ACTIVE_HIGH>;
+ 	status = "okay";
+ 
+-        pca9555:pca9555@20 {
+-                compatible = "nxp,pca9555";
+-                gpio-controller;
+-                #gpio-cells = <2>;
+-                reg = <0x20>;
+-        };
+-
+ 	eeprom@54 {
+ 		compatible = "atmel,24c08";
+ 		reg = <0x54>;
+-- 
+2.11.0
+
