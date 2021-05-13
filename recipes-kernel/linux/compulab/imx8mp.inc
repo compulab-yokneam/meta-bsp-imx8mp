@@ -10,5 +10,8 @@ SRC_URI_append = " \
 	file://0008-ucm-imx8m-plus-dts-Refactoring-with-respect-to-the-l.patch \
 	file://0009-dts-Fix-lvds-compatibility-string.patch \
 	file://0010-dts-typec-prepare-to.patch \
+	file://0011-drivers-staging-Add-em9190-modem-driver.patch \
+	file://0012-ucm-imx8m-plus-defconfig-Enable-em9190-module.patch \
+	file://0013-ucm-imx8m-plus-dts-Enable-base-board-eeprom.patch \
 	file://defconfig \
 "
