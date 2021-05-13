@@ -46,5 +46,7 @@ SRC_URI_append_ucm-imx8m-plus = " \
 	file://0045-ucm-imx8m-plus-dts-Declare-the-pca9555-20-on-i2c2.patch \
 	file://0046-ucm-imx8m-plus-dts-Fix-ili9881c_panel-reset-gpio.patch \
 	file://0047-ucm-imx8m-plus-Update-boot-environment.patch \
+	file://0048-ucm-imx8m-plus-dts-Fix-SB-eeprom-bus-number.patch \
+	file://0049-ucm-imx8m-plus-defconfig-Fix-SB-eeprom-bus-number.patch \
 	file://ucm-imx8m-plus_defconfig \
 "
