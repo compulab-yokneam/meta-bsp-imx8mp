@@ -1,0 +1,52 @@
+From 64f640a02d82d1a6b13714288f584a2d453a0dc6 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Mon, 24 May 2021 08:00:25 +0300
+Subject: [PATCH] ar1335: Update the machine defconfig
+
+Important: these configs must be configured this way:
+CONFIG_MXC_CAMERA_AR1335_MIPI_AF=y
+CONFIG_IMX8_MEDIA_DEVICE=m
+
+otherwise the kernel runs into a race condition were
+neither source nor sink are created and the media_create_pad_link()
+issues a warning and no a pipe line is created.
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/configs/ucm-imx8m-plus_defconfig | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/configs/ucm-imx8m-plus_defconfig b/arch/arm64/configs/ucm-imx8m-plus_defconfig
+index 66879ef8c004..fc863d0d32b1 100644
+--- a/arch/arm64/configs/ucm-imx8m-plus_defconfig
++++ b/arch/arm64/configs/ucm-imx8m-plus_defconfig
+@@ -494,6 +494,7 @@ CONFIG_VIDEO_MX8_CAPTURE=y
+ CONFIG_VIDEO_MXC_CSI_CAMERA=y
+ CONFIG_MXC_MIPI_CSI=y
+ CONFIG_MXC_CAMERA_OV5640_MIPI_V2=m
++CONFIG_MXC_CAMERA_AR1335_MIPI_AF=y
+ CONFIG_V4L_MEM2MEM_DRIVERS=y
+ CONFIG_SDR_PLATFORM_DRIVERS=y
+ CONFIG_VIDEO_IMX219=m
+@@ -502,8 +503,6 @@ CONFIG_IMX_DPU_CORE=y
+ CONFIG_IMX_LCDIF_CORE=y
+ CONFIG_IMX_LCDIFV3_CORE=y
+ CONFIG_DRM=y
+-CONFIG_DRM_I2C_CH7006=m
+-CONFIG_DRM_I2C_SIL164=m
+ CONFIG_DRM_I2C_NXP_TDA998X=m
+ CONFIG_DRM_MALI_DISPLAY=m
+ CONFIG_DRM_PANEL_LVDS=m
+@@ -746,6 +745,9 @@ CONFIG_XEN_GRANT_DEV_ALLOC=y
+ CONFIG_STAGING=y
+ CONFIG_STAGING_MEDIA=y
+ CONFIG_VIDEO_IMX_CAPTURE=y
++# CONFIG_GMSL_MAX9286 is not set
++CONFIG_IMX8_MEDIA_DEVICE=m
++# CONFIG_IMX8_PARALLEL_CSI is not set
+ CONFIG_ION=y
+ CONFIG_ION_SYSTEM_HEAP=y
+ CONFIG_ION_CMA_HEAP=y
+-- 
+2.11.0
+

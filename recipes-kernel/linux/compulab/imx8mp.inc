@@ -13,5 +13,9 @@ SRC_URI_append = " \
 	file://0011-drivers-staging-Add-em9190-modem-driver.patch \
 	file://0012-ucm-imx8m-plus-defconfig-Enable-em9190-module.patch \
 	file://0013-ucm-imx8m-plus-dts-Enable-base-board-eeprom.patch \
+	file://0014-ar1335-Init-iface.patch \
+	file://0015-ar1335-Add-the-sensor-driver.patch \
+	file://0016-ar1335-Update-the-machine-dts.patch \
+	file://0017-ar1335-Update-the-machine-defconfig.patch \
 	file://defconfig \
 "
