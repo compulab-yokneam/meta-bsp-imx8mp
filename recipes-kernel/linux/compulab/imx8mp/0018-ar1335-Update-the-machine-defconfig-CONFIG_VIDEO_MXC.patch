@@ -1,0 +1,26 @@
+From a6572499724445927c57a893c807b58cf662fedb Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 25 May 2021 17:14:32 +0300
+Subject: [PATCH] ar1335: Update the machine defconfig
+ CONFIG_VIDEO_MXC_CSI_CAMERA=N
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/configs/ucm-imx8m-plus_defconfig | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/arch/arm64/configs/ucm-imx8m-plus_defconfig b/arch/arm64/configs/ucm-imx8m-plus_defconfig
+index fc863d0d32b1..35470c9c84e4 100644
+--- a/arch/arm64/configs/ucm-imx8m-plus_defconfig
++++ b/arch/arm64/configs/ucm-imx8m-plus_defconfig
+@@ -491,7 +491,6 @@ CONFIG_USB_VIDEO_CLASS=m
+ CONFIG_V4L_PLATFORM_DRIVERS=y
+ CONFIG_VIDEO_MXC_CAPTURE=y
+ CONFIG_VIDEO_MX8_CAPTURE=y
+-CONFIG_VIDEO_MXC_CSI_CAMERA=y
+ CONFIG_MXC_MIPI_CSI=y
+ CONFIG_MXC_CAMERA_OV5640_MIPI_V2=m
+ CONFIG_MXC_CAMERA_AR1335_MIPI_AF=y
+-- 
+2.11.0
+

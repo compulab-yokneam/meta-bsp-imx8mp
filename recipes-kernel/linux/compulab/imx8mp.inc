@@ -17,5 +17,8 @@ SRC_URI_append = " \
 	file://0015-ar1335-Add-the-sensor-driver.patch \
 	file://0016-ar1335-Update-the-machine-dts.patch \
 	file://0017-ar1335-Update-the-machine-defconfig.patch \
+	file://0018-ar1335-Update-the-machine-defconfig-CONFIG_VIDEO_MXC.patch \
+	file://0019-ar1335-driver-Add-mode-sanity-check.patch \
+	file://0020-ucm-imx8m-plus-config-Disable-FB_EFI-support.patch \
 	file://defconfig \
 "
