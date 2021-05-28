@@ -5,6 +5,15 @@ DISTRO=${DISTRO:-fsl-imx-xwayland}
 EULA=1
 T="../sources/meta-bsp-imx8mp/templates"
 
+BD=$(cat <<< $@ | awk '$0=$NF')
+
+if [[ -d ${BD} ]];then
+
+echo "Back to the build environment ${BD}"
+. setup-environment ${BD}
+
+else
+
 . imx-setup-release.sh $@
 
 for _d in ${T}/*;do
@@ -13,3 +22,4 @@ for _d in ${T}/*;do
 		cat ${_f} >> conf/${_file}
 	done;
 done
+fi
