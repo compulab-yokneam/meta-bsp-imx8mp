@@ -49,5 +49,6 @@ SRC_URI_append_ucm-imx8m-plus = " \
 	file://0048-ucm-imx8m-plus-dts-Fix-SB-eeprom-bus-number.patch \
 	file://0049-ucm-imx8m-plus-defconfig-Fix-SB-eeprom-bus-number.patch \
 	file://0050-ucm-imx8m-plus-defconfig-Update-SYSBOOT-PART.patch \
+	file://0051-tools-env-Update-for-imx8m-plus.patch \
 	file://ucm-imx8m-plus_defconfig \
 "
