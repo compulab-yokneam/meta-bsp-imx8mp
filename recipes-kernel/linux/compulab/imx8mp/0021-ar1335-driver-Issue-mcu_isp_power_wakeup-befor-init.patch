@@ -1,0 +1,26 @@
+From e4e97900adc44e3614799c151066b16768bd6a82 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Wed, 2 Jun 2021 17:54:48 +0300
+Subject: [PATCH] ar1335: driver: Issue mcu_isp_power_wakeup befor init
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ drivers/staging/media/ar1335af_imx8/ar1335_af.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/staging/media/ar1335af_imx8/ar1335_af.c b/drivers/staging/media/ar1335af_imx8/ar1335_af.c
+index 84257bd08040..63a8586a1922 100644
+--- a/drivers/staging/media/ar1335af_imx8/ar1335_af.c
++++ b/drivers/staging/media/ar1335af_imx8/ar1335_af.c
+@@ -3373,6 +3373,8 @@ static int ar1335_probe(struct i2c_client *client,
+ 		return ret;
+ 	}
+ 
++	mcu_isp_power_wakeup(client);
++
+ 	ret = RETRY_SEQUENCE(
+ 		retries_for_i2c_commands,
+ 		mcu_isp_init(client)
+-- 
+2.11.0
+
