@@ -1,0 +1,25 @@
+From 8edeb211fafd9f923cf46b8f26349ef4e9e5d07c Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 8 Jun 2021 12:05:40 +0300
+Subject: [PATCH] ucm-imx8m-plus: config: Enable CONFIG_ARM_PSCI_CPUIDLE
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/configs/ucm-imx8m-plus_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/configs/ucm-imx8m-plus_defconfig b/arch/arm64/configs/ucm-imx8m-plus_defconfig
+index f3a486f7eb80..05b540fe4a2f 100644
+--- a/arch/arm64/configs/ucm-imx8m-plus_defconfig
++++ b/arch/arm64/configs/ucm-imx8m-plus_defconfig
+@@ -47,6 +47,7 @@ CONFIG_PM_TEST_SUSPEND=y
+ CONFIG_WQ_POWER_EFFICIENT_DEFAULT=y
+ CONFIG_ENERGY_MODEL=y
+ CONFIG_ARM_CPUIDLE=y
++CONFIG_ARM_PSCI_CPUIDLE=y
+ CONFIG_CPU_FREQ=y
+ CONFIG_CPU_FREQ_STAT=y
+ CONFIG_CPU_FREQ_DEFAULT_GOV_ONDEMAND=y
+-- 
+2.11.0
+

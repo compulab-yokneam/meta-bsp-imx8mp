@@ -21,5 +21,8 @@ SRC_URI_append = " \
 	file://0019-ar1335-driver-Add-mode-sanity-check.patch \
 	file://0020-ucm-imx8m-plus-config-Disable-FB_EFI-support.patch \
 	file://0021-ar1335-driver-Issue-mcu_isp_power_wakeup-befor-init.patch \
+	file://0022-media-i2c-imx219-Make-it-work-with-imx8mp.patch \
+	file://0023-imx219-Update-the-machine-dts.patch \
+	file://0024-ucm-imx8m-plus-config-Enable-CONFIG_ARM_PSCI_CPUIDLE.patch \
 	file://defconfig \
 "
