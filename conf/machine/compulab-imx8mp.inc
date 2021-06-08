@@ -11,6 +11,7 @@ KERNEL_DEVICETREE = " \
 	compulab/ucm-imx8m-plus.dtb \
 	compulab/ucm-imx8m-plus_mipi-csi1.dtb \
 	compulab/ucm-imx8m-plus_mipi-csi2.dtb \
+	compulab/ucm-imx8m-plus_mipi-csi1-imx219.dtb \
 "
 
 UBOOT_CONFIG ??= "sd"
