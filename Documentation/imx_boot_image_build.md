@@ -16,7 +16,7 @@ Define the following environment variables:
 |---|---|
 |NXP release name|export NXP_RELEASE=lf-5.10.y-1.0.0|
 |NXP firmware name|export NXP_FIRMWARE=firmware-imx-8.11.bin|
-|CompuLab branch name|export CPL_BRANCH=gatesgarth|
+|CompuLab branch name|export CPL_BRANCH=ucm-imx8m-plus-r1.0|
 
 
 ## Prerequisites
