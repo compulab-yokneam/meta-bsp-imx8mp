@@ -1,0 +1,71 @@
+From e25a4611222089bee38b1e5dc2c04b356f97ab51 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 3 Aug 2021 14:49:15 +0300
+Subject: [PATCH] ucm-imx8m-plus: Fix spl reset
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/plat/imx8mp/ddr/ddr.c | 8 ++++++--
+ board/compulab/plat/imx8mp/spl/spl.c | 6 +-----
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/board/compulab/plat/imx8mp/ddr/ddr.c b/board/compulab/plat/imx8mp/ddr/ddr.c
+index d431a303a5..504d6823d2 100644
+--- a/board/compulab/plat/imx8mp/ddr/ddr.c
++++ b/board/compulab/plat/imx8mp/ddr/ddr.c
+@@ -12,6 +12,7 @@
+ #include <asm/arch/sys_proto.h>
+ #include <asm/arch/clock.h>
+ #include <asm/mach-imx/gpio.h>
++#include <linux/delay.h>
+ #include "ddr.h"
+ 
+ /* Forward declarations */
+@@ -19,6 +20,9 @@ u32 cl_eeprom_get_ddrinfo(void);
+ u32 cl_eeprom_set_ddrinfo(u32 ddrinfo);
+ u32 cl_eeprom_get_subind(void);
+ u32 cl_eeprom_set_subind(u32 subind);
++void reset_misc(void);
++
++static void do_reset_spl(void) { reset_misc(); }
+ 
+ #define DEFAULT (('D' << 24) + ('E' << 16 ) + ( 'F' << 8 ) + 'A')
+ 
+@@ -89,7 +93,7 @@ static int _spl_dram_init(void)
+ 
+ 	if (ddr_init(lpddr4_array[i].timing)) {
+ 		SPL_TCM_INIT;
+-		do_reset(NULL,0,0,NULL);
++		do_reset_spl();
+ 	}
+ 
+ 	ddr_info_mrr = lpddr4_get_mr();
+@@ -173,7 +177,7 @@ void spl_dram_init(void)
+ 	if (_spl_dram_init()) {
+ 		lpddr4_data_set(SPL_TCM_DATA);
+ 		printf("%s Reset ... \n",__func__);
+-		do_reset(NULL,0,0,NULL);
++		do_reset_spl();
+ 	}
+ 
+ 	printf("%s Continue w/out reset ... \n",__func__);
+diff --git a/board/compulab/plat/imx8mp/spl/spl.c b/board/compulab/plat/imx8mp/spl/spl.c
+index 1538957a0d..28417db3e4 100644
+--- a/board/compulab/plat/imx8mp/spl/spl.c
++++ b/board/compulab/plat/imx8mp/spl/spl.c
+@@ -278,11 +278,7 @@ void board_init_f(ulong dummy)
+ 	board_init_r(NULL, 0);
+ }
+ 
+-int do_reset(struct cmd_tbl *cmdtp, int flag, int argc, char * const argv[])
+-{
++void reset_misc(void) {
+ 	puts("resetting ...\n");
+-
+ 	reset_cpu(WDOG1_BASE_ADDR);
+-
+-	return 0;
+ }
+-- 
+2.11.0
+

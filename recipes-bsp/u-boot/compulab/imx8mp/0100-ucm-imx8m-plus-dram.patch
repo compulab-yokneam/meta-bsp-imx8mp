@@ -1,0 +1,572 @@
+From f3e9c9ae4659c01a994dea1c318d9608deb52c81 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Wed, 4 Aug 2021 17:24:41 +0300
+Subject: [PATCH 100/100] ucm-imx8m-plus: dram
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/freescale/imx8mp_evk/lpddr4_timing.c | 346 +++++----------------
+ 1 file changed, 75 insertions(+), 271 deletions(-)
+
+diff --git a/board/freescale/imx8mp_evk/lpddr4_timing.c b/board/freescale/imx8mp_evk/lpddr4_timing.c
+index ea63d54eab..d48e531558 100755
+--- a/board/freescale/imx8mp_evk/lpddr4_timing.c
++++ b/board/freescale/imx8mp_evk/lpddr4_timing.c
+@@ -1,79 +1,52 @@
+-// SPDX-License-Identifier: GPL-2.0+
+ /*
+  * Copyright 2019 NXP
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ *
++ * Generated code from MX8M_DDR_tool
++ *
++ * Align with uboot version:
++ * imx_v2019.04_5.4.x and above version
++ * For imx_v2018.03_4.14.78_1.0.0_ga ~ imx_v2018.04_4.19.35_1.1.0_ga:
++ * please replace #include <asm/arch/ddr.h> with #include <asm/arch/imx8m_ddr.h>
+  */
+ 
+ #include <linux/kernel.h>
+ #include <asm/arch/ddr.h>
+ 
+-struct dram_cfg_param ddr_ddrc_cfg[] = {
++static struct dram_cfg_param ddr_ddrc_cfg[] = {
+ 	/** Initialize DDRC registers **/
+ 	{ 0x3d400304, 0x1 },
+ 	{ 0x3d400030, 0x1 },
+ 	{ 0x3d400000, 0xa3080020 },
+-#ifdef CONFIG_IMX8M_LPDDR4_FREQ0_2400MTS
+-	{ 0x3d400020, 0x223 },
+-	{ 0x3d400024, 0x124f800 },
+-	{ 0x3d400064, 0x4900a8 },
+-	{ 0x3d400070, 0x1027f90 },
+-	{ 0x3d400074, 0x790 },
+-	{ 0x3d4000d0, 0xc0030495 },
+-	{ 0x3d4000d4, 0x770000 },
+-	{ 0x3d4000dc, 0xc40024 },
+-#else
+-	{ 0x3d400020, 0x1323 },
+-	{ 0x3d400024, 0x1e84800 },
+-	{ 0x3d400064, 0x7a017c },
+-#ifdef CONFIG_IMX8M_DRAM_INLINE_ECC
+-	{ 0x3d400070, 0x1027f54 },
+-#else
+-	{ 0x3d400070, 0x1027f10 },
+-#endif
++	{ 0x3d400020, 0x1223 },
++	{ 0x3d400024, 0x16e3600 },
++	{ 0x3d400064, 0x5b00d2 },
++	{ 0x3d400070, 0x61027f10 },
+ 	{ 0x3d400074, 0x7b0 },
+-	{ 0x3d4000d0, 0xc00307a3 },
+-	{ 0x3d4000d4, 0xc50000 },
+-	{ 0x3d4000dc, 0xf4003f },
+-#endif
++	{ 0x3d4000d0, 0xc00305ba },
++	{ 0x3d4000d4, 0x940000 },
++	{ 0x3d4000dc, 0xd4002d },
+ 	{ 0x3d4000e0, 0x330000 },
+ 	{ 0x3d4000e8, 0x660048 },
+ 	{ 0x3d4000ec, 0x160048 },
+-#ifdef CONFIG_IMX8M_LPDDR4_FREQ0_2400MTS
+-	{ 0x3d400100, 0x1618141a },
+-	{ 0x3d400104, 0x504a6 },
+-	{ 0x3d40010c, 0x909000 },
+-	{ 0x3d400110, 0xb04060b },
+-	{ 0x3d400114, 0x2030909 },
+-	{ 0x3d400118, 0x1010006 },
+-	{ 0x3d40011c, 0x301 },
+-	{ 0x3d400130, 0x20500 },
+-	{ 0x3d400134, 0xb100002 },
+-	{ 0x3d400138, 0xad },
+-	{ 0x3d400144, 0x78003c },
+-	{ 0x3d400180, 0x2580012 },
+-	{ 0x3d400184, 0x1e0493e },
++	{ 0x3d400100, 0x191e1920 },
++	{ 0x3d400104, 0x60630 },
++	{ 0x3d40010c, 0xb0b000 },
++	{ 0x3d400110, 0xe04080e },
++	{ 0x3d400114, 0x2040c0c },
++	{ 0x3d400118, 0x1010007 },
++	{ 0x3d40011c, 0x401 },
++	{ 0x3d400130, 0x20600 },
++	{ 0x3d400134, 0xc100002 },
++	{ 0x3d400138, 0xd8 },
++	{ 0x3d400144, 0x96004b },
++	{ 0x3d400180, 0x2ee0017 },
++	{ 0x3d400184, 0x2605b8e },
+ 	{ 0x3d400188, 0x0 },
+-	{ 0x3d400190, 0x4938208 },
++	{ 0x3d400190, 0x497820a },
+ 	{ 0x3d400194, 0x80303 },
+-	{ 0x3d4001b4, 0x1308 },
+-#else
+-	{ 0x3d400100, 0x2028222a },
+-	{ 0x3d400104, 0x807bf },
+-	{ 0x3d40010c, 0xe0e000 },
+-	{ 0x3d400110, 0x12040a12 },
+-	{ 0x3d400114, 0x2050f0f },
+-	{ 0x3d400118, 0x1010009 },
+-	{ 0x3d40011c, 0x501 },
+-	{ 0x3d400130, 0x20800 },
+-	{ 0x3d400134, 0xe100002 },
+-	{ 0x3d400138, 0x184 },
+-	{ 0x3d400144, 0xc80064 },
+-	{ 0x3d400180, 0x3e8001e },
+-	{ 0x3d400184, 0x3207a12 },
+-	{ 0x3d400188, 0x0 },
+-	{ 0x3d400190, 0x49f820e },
+-	{ 0x3d400194, 0x80303 },
+-	{ 0x3d4001b4, 0x1f0e },
+-#endif
++	{ 0x3d4001b4, 0x170a },
+ 	{ 0x3d4001a0, 0xe0400018 },
+ 	{ 0x3d4001a4, 0xdf00e4 },
+ 	{ 0x3d4001a8, 0x80000000 },
+@@ -81,47 +54,14 @@ struct dram_cfg_param ddr_ddrc_cfg[] = {
+ 	{ 0x3d4001c0, 0x1 },
+ 	{ 0x3d4001c4, 0x1 },
+ 	{ 0x3d4000f4, 0xc99 },
+-#ifdef CONFIG_IMX8M_LPDDR4_FREQ0_2400MTS
+-	{ 0x3d400108, 0x60c1514 },
+-	{ 0x3d400200, 0x16 },
++	{ 0x3d400108, 0x70e1617 },
++	{ 0x3d400200, 0x17 },
+ 	{ 0x3d40020c, 0x0 },
+ 	{ 0x3d400210, 0x1f1f },
+ 	{ 0x3d400204, 0x80808 },
+ 	{ 0x3d400214, 0x7070707 },
+-	{ 0x3d400218, 0x68070707 },
+-	{ 0x3d40021c, 0xf08 },
+-	{ 0x3d400250, 0x1f05 },
+-	{ 0x3d400254, 0x1f },
+-	{ 0x3d400264, 0x90003ff },
+-	{ 0x3d40026c, 0x20003ff },
+-	{ 0x3d400400, 0x111 },
+-	{ 0x3d400408, 0x72ff },
+-	{ 0x3d400494, 0x1000e00 },
+-	{ 0x3d400498, 0x3ff0000 },
+-	{ 0x3d40049c, 0x1000e00 },
+-	{ 0x3d4004a0, 0x3ff0000 },
+-	{ 0x3d402020, 0x21 },
+-	{ 0x3d402024, 0x30d400 },
+-	{ 0x3d402050, 0x20d000 },
+-	{ 0x3d402064, 0xc001c },
+-#else
+-	{ 0x3d400108, 0x9121c1c },
+-#ifdef CONFIG_IMX8M_DRAM_INLINE_ECC
+-	{ 0x3d400200, 0x13 },
+-	{ 0x3d40020c, 0x13131300 },
+-	{ 0x3d400210, 0x1f1f },
+-	{ 0x3d400204, 0x50505 },
+-	{ 0x3d400214, 0x4040404 },
+-	{ 0x3d400218, 0x68040404 },
+-#else
+-	{ 0x3d400200, 0x16 },
+-	{ 0x3d40020c, 0x0 },
+-	{ 0x3d400210, 0x1f1f },
+-	{ 0x3d400204, 0x80808 },
+-	{ 0x3d400214, 0x7070707 },
+-	{ 0x3d400218, 0x68070707 },
+-#endif
+-	{ 0x3d40021c, 0xf08 },
++	{ 0x3d400218, 0x7070707 },
++	{ 0x3d40021c, 0xf0f },
+ 	{ 0x3d400250, 0x1705 },
+ 	{ 0x3d400254, 0x2c },
+ 	{ 0x3d40025c, 0x4000030 },
+@@ -137,8 +77,7 @@ struct dram_cfg_param ddr_ddrc_cfg[] = {
+ 	{ 0x3d402020, 0x1021 },
+ 	{ 0x3d402024, 0x30d400 },
+ 	{ 0x3d402050, 0x20d000 },
+-	{ 0x3d402064, 0xc0026 },
+-#endif
++	{ 0x3d402064, 0xc001c },
+ 	{ 0x3d4020dc, 0x840000 },
+ 	{ 0x3d4020e0, 0x330000 },
+ 	{ 0x3d4020e8, 0x660048 },
+@@ -153,24 +92,17 @@ struct dram_cfg_param ddr_ddrc_cfg[] = {
+ 	{ 0x3d40211c, 0x301 },
+ 	{ 0x3d402130, 0x20300 },
+ 	{ 0x3d402134, 0xa100002 },
+-	{ 0x3d402138, 0x27 },
++	{ 0x3d402138, 0x1d },
+ 	{ 0x3d402144, 0x14000a },
+ 	{ 0x3d402180, 0x640004 },
+ 	{ 0x3d402190, 0x3818200 },
+ 	{ 0x3d402194, 0x80303 },
+ 	{ 0x3d4021b4, 0x100 },
+ 	{ 0x3d4020f4, 0xc99 },
+-#ifdef CONFIG_IMX8M_LPDDR4_FREQ0_2400MTS
+-	{ 0x3d403020, 0x21 },
+-	{ 0x3d403024, 0xc3500 },
+-	{ 0x3d403050, 0x20d000 },
+-	{ 0x3d403064, 0x30007 },
+-#else
+ 	{ 0x3d403020, 0x1021 },
+ 	{ 0x3d403024, 0xc3500 },
+ 	{ 0x3d403050, 0x20d000 },
+-	{ 0x3d403064, 0x3000a },
+-#endif
++	{ 0x3d403064, 0x30007 },
+ 	{ 0x3d4030dc, 0x840000 },
+ 	{ 0x3d4030e0, 0x330000 },
+ 	{ 0x3d4030e8, 0x660048 },
+@@ -185,7 +117,7 @@ struct dram_cfg_param ddr_ddrc_cfg[] = {
+ 	{ 0x3d40311c, 0x301 },
+ 	{ 0x3d403130, 0x20300 },
+ 	{ 0x3d403134, 0xa100002 },
+-	{ 0x3d403138, 0xa },
++	{ 0x3d403138, 0x8 },
+ 	{ 0x3d403144, 0x50003 },
+ 	{ 0x3d403180, 0x190004 },
+ 	{ 0x3d403190, 0x3818200 },
+@@ -196,7 +128,7 @@ struct dram_cfg_param ddr_ddrc_cfg[] = {
+ };
+ 
+ /* PHY Initialize Configuration */
+-struct dram_cfg_param ddr_ddrphy_cfg[] = {
++static struct dram_cfg_param ddr_ddrphy_cfg[] = {
+ 	{ 0x100a0, 0x0 },
+ 	{ 0x100a1, 0x1 },
+ 	{ 0x100a2, 0x2 },
+@@ -263,11 +195,7 @@ struct dram_cfg_param ddr_ddrphy_cfg[] = {
+ 	{ 0x7055, 0x1ff },
+ 	{ 0x8055, 0x1ff },
+ 	{ 0x9055, 0x1ff },
+-#ifdef CONFIG_IMX8M_LPDDR4_FREQ0_2400MTS
+-	{ 0x200c5, 0xa },
+-#else
+-	{ 0x200c5, 0x18 },
+-#endif
++	{ 0x200c5, 0x19 },
+ 	{ 0x1200c5, 0x7 },
+ 	{ 0x2200c5, 0x7 },
+ 	{ 0x2002e, 0x2 },
+@@ -346,11 +274,7 @@ struct dram_cfg_param ddr_ddrphy_cfg[] = {
+ 	{ 0x20018, 0x3 },
+ 	{ 0x20075, 0x4 },
+ 	{ 0x20050, 0x0 },
+-#ifdef CONFIG_IMX8M_LPDDR4_FREQ0_2400MTS
+-	{ 0x20008, 0x258 },
+-#else
+-	{ 0x20008, 0x3e8 },
+-#endif
++	{ 0x20008, 0x2ee },
+ 	{ 0x120008, 0x64 },
+ 	{ 0x220008, 0x19 },
+ 	{ 0x20088, 0x9 },
+@@ -413,7 +337,7 @@ struct dram_cfg_param ddr_ddrphy_cfg[] = {
+ };
+ 
+ /* ddr phy trained csr */
+-struct dram_cfg_param ddr_ddrphy_trained_csr[] = {
++static struct dram_cfg_param ddr_ddrphy_trained_csr[] = {
+ 	{ 0x200b2, 0x0 },
+ 	{ 0x1200b2, 0x0 },
+ 	{ 0x2200b2, 0x0 },
+@@ -1134,12 +1058,10 @@ struct dram_cfg_param ddr_ddrphy_trained_csr[] = {
+ 	{ 0x13730, 0x0 },
+ 	{ 0x13830, 0x0 },
+ };
+-
+ /* P0 message block paremeter for training firmware */
+-struct dram_cfg_param ddr_fsp0_cfg[] = {
+-#ifdef CONFIG_IMX8M_LPDDR4_FREQ0_2400MTS
++static struct dram_cfg_param ddr_fsp0_cfg[] = {
+ 	{ 0xd0000, 0x0 },
+-	{ 0x54003, 0x960 },
++	{ 0x54003, 0xbb8 },
+ 	{ 0x54004, 0x2 },
+ 	{ 0x54005, 0x2228 },
+ 	{ 0x54006, 0x14 },
+@@ -1148,58 +1070,26 @@ struct dram_cfg_param ddr_fsp0_cfg[] = {
+ 	{ 0x5400b, 0x2 },
+ 	{ 0x5400f, 0x100 },
+ 	{ 0x54012, 0x310 },
+-	{ 0x54019, 0x24c4 },
++	{ 0x54019, 0x2dd4 },
+ 	{ 0x5401a, 0x33 },
+ 	{ 0x5401b, 0x4866 },
+ 	{ 0x5401c, 0x4800 },
+ 	{ 0x5401e, 0x16 },
+-	{ 0x5401f, 0x24c4 },
++	{ 0x5401f, 0x2dd4 },
+ 	{ 0x54020, 0x33 },
+ 	{ 0x54021, 0x4866 },
+ 	{ 0x54022, 0x4800 },
+ 	{ 0x54024, 0x16 },
+ 	{ 0x5402b, 0x1000 },
+ 	{ 0x5402c, 0x3 },
+-	{ 0x54032, 0xc400 },
+-	{ 0x54033, 0x3324 },
++	{ 0x54032, 0xd400 },
++	{ 0x54033, 0x332d },
+ 	{ 0x54034, 0x6600 },
+ 	{ 0x54035, 0x48 },
+ 	{ 0x54036, 0x48 },
+ 	{ 0x54037, 0x1600 },
+-	{ 0x54038, 0xc400 },
+-	{ 0x54039, 0x3324 },
+-#else
+-	{ 0xd0000, 0x0 },
+-	{ 0x54003, 0xfa0 },
+-	{ 0x54004, 0x2 },
+-	{ 0x54005, 0x2228 },
+-	{ 0x54006, 0x14 },
+-	{ 0x54008, 0x131f },
+-	{ 0x54009, 0xc8 },
+-	{ 0x5400b, 0x2 },
+-	{ 0x5400f, 0x100 },
+-	{ 0x54012, 0x310 },
+-	{ 0x54019, 0x3ff4 },
+-	{ 0x5401a, 0x33 },
+-	{ 0x5401b, 0x4866 },
+-	{ 0x5401c, 0x4800 },
+-	{ 0x5401e, 0x16 },
+-	{ 0x5401f, 0x3ff4 },
+-	{ 0x54020, 0x33 },
+-	{ 0x54021, 0x4866 },
+-	{ 0x54022, 0x4800 },
+-	{ 0x54024, 0x16 },
+-	{ 0x5402b, 0x1000 },
+-	{ 0x5402c, 0x3 },
+-	{ 0x54032, 0xf400 },
+-	{ 0x54033, 0x333f },
+-	{ 0x54034, 0x6600 },
+-	{ 0x54035, 0x48 },
+-	{ 0x54036, 0x48 },
+-	{ 0x54037, 0x1600 },
+-	{ 0x54038, 0xf400 },
+-	{ 0x54039, 0x333f },
+-#endif
++	{ 0x54038, 0xd400 },
++	{ 0x54039, 0x332d },
+ 	{ 0x5403a, 0x6600 },
+ 	{ 0x5403b, 0x48 },
+ 	{ 0x5403c, 0x48 },
+@@ -1207,8 +1097,9 @@ struct dram_cfg_param ddr_fsp0_cfg[] = {
+ 	{ 0xd0000, 0x1 },
+ };
+ 
++
+ /* P1 message block paremeter for training firmware */
+-struct dram_cfg_param ddr_fsp1_cfg[] = {
++static struct dram_cfg_param ddr_fsp1_cfg[] = {
+ 	{ 0xd0000, 0x0 },
+ 	{ 0x54002, 0x101 },
+ 	{ 0x54003, 0x190 },
+@@ -1247,8 +1138,9 @@ struct dram_cfg_param ddr_fsp1_cfg[] = {
+ 	{ 0xd0000, 0x1 },
+ };
+ 
++
+ /* P2 message block paremeter for training firmware */
+-struct dram_cfg_param ddr_fsp2_cfg[] = {
++static struct dram_cfg_param ddr_fsp2_cfg[] = {
+ 	{ 0xd0000, 0x0 },
+ 	{ 0x54002, 0x102 },
+ 	{ 0x54003, 0x64 },
+@@ -1287,43 +1179,11 @@ struct dram_cfg_param ddr_fsp2_cfg[] = {
+ 	{ 0xd0000, 0x1 },
+ };
+ 
++
+ /* P0 2D message block paremeter for training firmware */
+-struct dram_cfg_param ddr_fsp0_2d_cfg[] = {
++static struct dram_cfg_param ddr_fsp0_2d_cfg[] = {
+ 	{ 0xd0000, 0x0 },
+-#ifdef CONFIG_IMX8M_LPDDR4_FREQ0_2400MTS
+-	{ 0x54003, 0x960 },
+-	{ 0x54004, 0x2 },
+-	{ 0x54005, 0x2228 },
+-	{ 0x54006, 0x14 },
+-	{ 0x54008, 0x61 },
+-	{ 0x54009, 0xc8 },
+-	{ 0x5400b, 0x2 },
+-	{ 0x5400d, 0x100 },
+-	{ 0x5400f, 0x100 },
+-	{ 0x54010, 0x1f7f },
+-	{ 0x54012, 0x310 },
+-	{ 0x54019, 0x24c4 },
+-	{ 0x5401a, 0x33 },
+-	{ 0x5401b, 0x4866 },
+-	{ 0x5401c, 0x4800 },
+-	{ 0x5401e, 0x16 },
+-	{ 0x5401f, 0x24c4 },
+-	{ 0x54020, 0x33 },
+-	{ 0x54021, 0x4866 },
+-	{ 0x54022, 0x4800 },
+-	{ 0x54024, 0x16 },
+-	{ 0x5402b, 0x1000 },
+-	{ 0x5402c, 0x3 },
+-	{ 0x54032, 0xc400 },
+-	{ 0x54033, 0x3324 },
+-	{ 0x54034, 0x6600 },
+-	{ 0x54035, 0x48 },
+-	{ 0x54036, 0x48 },
+-	{ 0x54037, 0x1600 },
+-	{ 0x54038, 0xc400 },
+-	{ 0x54039, 0x3324 },
+-#else
+-	{ 0x54003, 0xfa0 },
++	{ 0x54003, 0xbb8 },
+ 	{ 0x54004, 0x2 },
+ 	{ 0x54005, 0x2228 },
+ 	{ 0x54006, 0x14 },
+@@ -1333,27 +1193,26 @@ struct dram_cfg_param ddr_fsp0_2d_cfg[] = {
+ 	{ 0x5400f, 0x100 },
+ 	{ 0x54010, 0x1f7f },
+ 	{ 0x54012, 0x310 },
+-	{ 0x54019, 0x3ff4 },
++	{ 0x54019, 0x2dd4 },
+ 	{ 0x5401a, 0x33 },
+ 	{ 0x5401b, 0x4866 },
+ 	{ 0x5401c, 0x4800 },
+ 	{ 0x5401e, 0x16 },
+-	{ 0x5401f, 0x3ff4 },
++	{ 0x5401f, 0x2dd4 },
+ 	{ 0x54020, 0x33 },
+ 	{ 0x54021, 0x4866 },
+ 	{ 0x54022, 0x4800 },
+ 	{ 0x54024, 0x16 },
+ 	{ 0x5402b, 0x1000 },
+ 	{ 0x5402c, 0x3 },
+-	{ 0x54032, 0xf400 },
+-	{ 0x54033, 0x333f },
++	{ 0x54032, 0xd400 },
++	{ 0x54033, 0x332d },
+ 	{ 0x54034, 0x6600 },
+ 	{ 0x54035, 0x48 },
+ 	{ 0x54036, 0x48 },
+ 	{ 0x54037, 0x1600 },
+-	{ 0x54038, 0xf400 },
+-	{ 0x54039, 0x333f },
+-#endif
++	{ 0x54038, 0xd400 },
++	{ 0x54039, 0x332d },
+ 	{ 0x5403a, 0x6600 },
+ 	{ 0x5403b, 0x48 },
+ 	{ 0x5403c, 0x48 },
+@@ -1362,7 +1221,7 @@ struct dram_cfg_param ddr_fsp0_2d_cfg[] = {
+ };
+ 
+ /* DRAM PHY init engine image */
+-struct dram_cfg_param ddr_phy_pie[] = {
++static struct dram_cfg_param ddr_phy_pie[] = {
+ 	{ 0xd0000, 0x0 },
+ 	{ 0x90000, 0x10 },
+ 	{ 0x90001, 0x400 },
+@@ -1842,16 +1701,10 @@ struct dram_cfg_param ddr_phy_pie[] = {
+ 	{ 0x400d6, 0x20a },
+ 	{ 0x400d7, 0x20b },
+ 	{ 0x2003a, 0x2 },
+-#ifdef CONFIG_IMX8M_LPDDR4_FREQ0_2400MTS
+-	{ 0x2000b, 0x4b },
+-	{ 0x2000c, 0x96 },
+-	{ 0x2000d, 0x5dc },
+-#else
+ 	{ 0x200be, 0x3 },
+-	{ 0x2000b, 0x7d },
+-	{ 0x2000c, 0xfa },
+-	{ 0x2000d, 0x9c4 },
+-#endif
++	{ 0x2000b, 0x5d },
++	{ 0x2000c, 0xbb },
++	{ 0x2000d, 0x753 },
+ 	{ 0x2000e, 0x2c },
+ 	{ 0x12000b, 0xc },
+ 	{ 0x12000c, 0x19 },
+@@ -1871,12 +1724,6 @@ struct dram_cfg_param ddr_phy_pie[] = {
+ 	{ 0x90013, 0x6152 },
+ 	{ 0x20010, 0x5a },
+ 	{ 0x20011, 0x3 },
+-#ifdef CONFIG_IMX8M_LPDDR4_FREQ0_2400MTS
+-	{ 0x120010, 0x5a },
+-	{ 0x120011, 0x3 },
+-	{ 0x220010, 0x5a },
+-	{ 0x220011, 0x3 },
+-#endif
+ 	{ 0x40080, 0xe0 },
+ 	{ 0x40081, 0x12 },
+ 	{ 0x40082, 0xe0 },
+@@ -1958,15 +1805,10 @@ struct dram_cfg_param ddr_phy_pie[] = {
+ 	{ 0xd0000, 0x1 }
+ };
+ 
+-struct dram_fsp_msg ddr_dram_fsp_msg[] = {
++static struct dram_fsp_msg ddr_dram_fsp_msg[] = {
+ 	{
+-#ifdef CONFIG_IMX8M_LPDDR4_FREQ0_2400MTS
+-		/* P0 2400mts 1D */
+-		.drate = 2400,
+-#else
+-		/* P0 4000mts 1D */
+-		.drate = 4000,
+-#endif
++		/* P0 3000mts 1D */
++		.drate = 3000,
+ 		.fw_type = FW_1D_IMAGE,
+ 		.fsp_cfg = ddr_fsp0_cfg,
+ 		.fsp_cfg_num = ARRAY_SIZE(ddr_fsp0_cfg),
+@@ -1986,13 +1828,8 @@ struct dram_fsp_msg ddr_dram_fsp_msg[] = {
+ 		.fsp_cfg_num = ARRAY_SIZE(ddr_fsp2_cfg),
+ 	},
+ 	{
+-#ifdef CONFIG_IMX8M_LPDDR4_FREQ0_2400MTS
+-                /* P0 2400mts 2D */
+-                .drate = 2400,
+-#else
+-                /* P0 4000mts 2D */
+-                .drate = 4000,
+-#endif
++		/* P0 3000mts 2D */
++		.drate = 3000,
+ 		.fw_type = FW_2D_IMAGE,
+ 		.fsp_cfg = ddr_fsp0_2d_cfg,
+ 		.fsp_cfg_num = ARRAY_SIZE(ddr_fsp0_2d_cfg),
+@@ -2011,39 +1848,6 @@ struct dram_timing_info dram_timing = {
+ 	.ddrphy_trained_csr_num = ARRAY_SIZE(ddr_ddrphy_trained_csr),
+ 	.ddrphy_pie = ddr_phy_pie,
+ 	.ddrphy_pie_num = ARRAY_SIZE(ddr_phy_pie),
+-#ifdef CONFIG_IMX8M_LPDDR4_FREQ0_2400MTS
+-	.fsp_table = { 2400, 400, 100, },
+-#else
+-        .fsp_table = { 4000, 400, 100, },
+-#endif
++	.fsp_table = { 3000, 400, 100, },
+ };
+ 
+-#ifndef CONFIG_IMX8M_LPDDR4_FREQ0_2400MTS
+-#ifdef CONFIG_IMX8M_DRAM_INLINE_ECC
+-void board_dram_ecc_scrub(void)
+-{
+-	ddrc_inline_ecc_scrub(0x0,0x3ffffff);
+-	ddrc_inline_ecc_scrub(0x20000000,0x23ffffff);
+-	ddrc_inline_ecc_scrub(0x40000000,0x43ffffff);
+-	ddrc_inline_ecc_scrub(0x4000000,0x7ffffff);
+-	ddrc_inline_ecc_scrub(0x24000000,0x27ffffff);
+-	ddrc_inline_ecc_scrub(0x44000000,0x47ffffff);
+-	ddrc_inline_ecc_scrub(0x8000000,0xbffffff);
+-	ddrc_inline_ecc_scrub(0x28000000,0x2bffffff);
+-	ddrc_inline_ecc_scrub(0x48000000,0x4bffffff);
+-	ddrc_inline_ecc_scrub(0xc000000,0xfffffff);
+-	ddrc_inline_ecc_scrub(0x2c000000,0x2fffffff);
+-	ddrc_inline_ecc_scrub(0x4c000000,0x4fffffff);
+-	ddrc_inline_ecc_scrub(0x10000000,0x13ffffff);
+-	ddrc_inline_ecc_scrub(0x30000000,0x33ffffff);
+-	ddrc_inline_ecc_scrub(0x50000000,0x53ffffff);
+-	ddrc_inline_ecc_scrub(0x14000000,0x17ffffff);
+-	ddrc_inline_ecc_scrub(0x34000000,0x37ffffff);
+-	ddrc_inline_ecc_scrub(0x54000000,0x57ffffff);
+-	ddrc_inline_ecc_scrub(0x18000000,0x1bffffff);
+-	ddrc_inline_ecc_scrub(0x38000000,0x3bffffff);
+-	ddrc_inline_ecc_scrub(0x58000000,0x5bffffff);
+-	ddrc_inline_ecc_scrub_end(0x0,0x5fffffff);
+-}
+-#endif
+-#endif
+-- 
+2.17.1
+

@@ -1,54 +1,13 @@
 SRC_URI_append_ucm-imx8m-plus = " \
-	file://0000-compulab-00-2020.04-5.4.70-update.patch \
-	file://0001-compulab-01-2020.04-5.4.70-update.patch \
-	file://0002-compulab-02-2020.04-5.4.70-update.patch \
-	file://0003-compulab-Add-ucm-imx8m-plus-support.patch \
-	file://0004-compulab-Add-ucm-imx8m-plus-support-cont-00.patch \
-	file://0005-Update-lpddr4_timing.patch \
-	file://0006-Update-ucm-imx8m-plus_defconfig.patch \
-	file://0007-compulab-imx8m-plus.h-Set-2G-memory-size.patch \
-	file://0008-ucm-imx8m-plus.dts-Set-memory-2G-size-disabled.patch \
-	file://0009-Read-lpddr4-mrX-registers.patch \
-	file://0010-ucm-imx8m-plus-Add-EQOS-support.patch \
-	file://0011-ucm-imx8m-plus-Add-i2c5-bus-pca953x.patch \
-	file://0012-ucm-imx8m-plus-env-Emmc-support.patch \
-	file://0013-ucm-imx8m-plus-env-Emmc-support-fix.patch \
-	file://0014-mmc-Make-use-the-original-FreeScale-code.patch \
-	file://0015-ucm-imx8m-plus-Set-the-board_name-UCM-iMX8M-Plus.patch \
-	file://0016-ucm-imx8m-plus-Make-use-of-the-generic-fs-commands.patch \
-	file://0017-drivers-video-Add-startek-ili9881c-panel-driver.patch \
-	file://0018-ucm-imx8m-plus-dts-Add-startek-ili9881c-panel-suppor.patch \
-	file://0019-ucm-imx8m-plus-config-Enable-startek-ili9881c.patch \
-	file://0020-ucm-imx8m-plus-dts-Disable-i2c3-bus.patch \
-	file://0021-ucm-imx8m-plus-Enable-status-LED.patch \
-	file://0022-ucm-imx8m-plus-Enable-PWM.patch \
-	file://0023-common-mmc-Add-compulab-specific-mmc-functions.patch \
-	file://0024-common-fdt-Add-compulab-specific-fdt-functions.patch \
-	file://0025-compulab-common-Add-mmc-fdt-to-build.patch \
-	file://0026-ucm-imx8m-plus-eeprom-Provide-SoM-SB-bus-dev-address.patch \
-	file://0027-ucm-imx8m-plus-dts-Enable-SoM-SB-eeprom.patch \
-	file://0028-ucm-imx8m-plus-board-Enable-fdt_set_xxx-calls.patch \
-	file://0029-imx8mp-Update-lpddr4-init-code.patch \
-	file://0030-ucm-imx8m-plus-u-boot-Read-dram-size-by-memory-id.patch \
-	file://0031-ucm-imx8m-plus-dts-Make-sd-card-work-with-no-1-8-v.patch \
-	file://0032-ucm-imx8m-plus-defconfig-Set-ENV_OFFSET-0x33d800.patch \
-	file://0034-ucm-imx8m-plus-Update-std-out-err-in.patch \
-	file://0035-spi-nor-id-Add-w25q64dw-support.patch \
-	file://0036-ucm-imx8m-plus-Change-flash0-name-to-w25q64dw.patch \
-	file://0037-ucm-imx8m-plus-defconfig-Enable-SPI_FLASH_WINBOND.patch \
-	file://0038-ucm-imx8m-plus-defconfig-Enable-USB_ETHER_SMSC95XX.patch \
-	file://0039-ucm-imx8m-plus-dram-Add-4G-and-8G-support.patch \
-	file://0040-ucm-imx8m-plus-dram-Add-dram_init_banksize.patch \
-	file://0041-ucm-imx8m-plus-Read-mac-from-eeprom.patch \
-	file://0042-eeprom-Fix-the-compiler-tag_serialnr-warning.patch \
-	file://0043-ucm-imx8m-plus-Update-boot-environment.patch \
-	file://0044-ucm-imx8m-plus-defconfig-Update-defconfig.patch \
-	file://0045-ucm-imx8m-plus-dts-Declare-the-pca9555-20-on-i2c2.patch \
-	file://0046-ucm-imx8m-plus-dts-Fix-ili9881c_panel-reset-gpio.patch \
-	file://0047-ucm-imx8m-plus-Update-boot-environment.patch \
-	file://0048-ucm-imx8m-plus-dts-Fix-SB-eeprom-bus-number.patch \
-	file://0049-ucm-imx8m-plus-defconfig-Fix-SB-eeprom-bus-number.patch \
-	file://0050-ucm-imx8m-plus-defconfig-Update-SYSBOOT-PART.patch \
-	file://0051-tools-env-Update-for-imx8m-plus.patch \
+	file://0000-ucm-imx8m-plus-Add-support-update-files.patch \
+	file://0001-ucm-imx8m-plus-Add-support-Add-files.patch \
+	file://0002-ucm-imx8m-plus-Fix-spl-reset.patch \
+	file://0003-ucm-imx8m-plus-spl-eeprom-Enable-DM-mode.patch \
+	file://0004-ucm-imx8m-plus-dts-Update-u-boot-device-tree.patch \
+	file://0005-ucm-imx8m-plus-spl-Update-the-machine-spl.patch \
 	file://ucm-imx8m-plus_defconfig \
+"
+
+SRC_URI_append_imx8mpevk = " \
+	file://0100-ucm-imx8m-plus-dram.patch \
 "

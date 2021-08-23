@@ -1,0 +1,62 @@
+From 12f56eaf492266a08a216f7e89235bd42ec7236c Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 3 Aug 2021 23:06:51 +0300
+Subject: [PATCH] ucm-imx8m-plus: spl: Update the machine spl
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/plat/imx8mp/spl/spl.c | 28 ----------------------------
+ 1 file changed, 28 deletions(-)
+
+diff --git a/board/compulab/plat/imx8mp/spl/spl.c b/board/compulab/plat/imx8mp/spl/spl.c
+index 28417db3e4..4ef1bf2ad1 100644
+--- a/board/compulab/plat/imx8mp/spl/spl.c
++++ b/board/compulab/plat/imx8mp/spl/spl.c
+@@ -66,31 +66,7 @@ int spl_board_boot_device(enum boot_device boot_dev_spl)
+ 
+ #define I2C_PAD_CTRL (PAD_CTL_DSE6 | PAD_CTL_HYS | PAD_CTL_PUE | PAD_CTL_PE)
+ #define PC MUX_PAD_CTRL(I2C_PAD_CTRL)
+-struct i2c_pads_info i2c_pad_info1 = {
+-	.scl = {
+-		.i2c_mode = MX8MP_PAD_I2C1_SCL__I2C1_SCL | PC,
+-		.gpio_mode = MX8MP_PAD_I2C1_SCL__GPIO5_IO14 | PC,
+-		.gp = IMX_GPIO_NR(5, 14),
+-	},
+-	.sda = {
+-		.i2c_mode = MX8MP_PAD_I2C1_SDA__I2C1_SDA | PC,
+-		.gpio_mode = MX8MP_PAD_I2C1_SDA__GPIO5_IO15 | PC,
+-		.gp = IMX_GPIO_NR(5, 15),
+-	},
+-};
+ 
+-struct i2c_pads_info i2c_pad_info2 = {
+-	.scl = {
+-		.i2c_mode = MX8MP_PAD_I2C2_SCL__I2C2_SCL | PC,
+-		.gpio_mode = MX8MP_PAD_I2C2_SCL__GPIO5_IO16 | PC,
+-		.gp = IMX_GPIO_NR(5, 16),
+-	},
+-	.sda = {
+-		.i2c_mode = MX8MP_PAD_I2C2_SDA__I2C2_SDA | PC,
+-		.gpio_mode = MX8MP_PAD_I2C2_SDA__GPIO5_IO17 | PC,
+-		.gp = IMX_GPIO_NR(5, 17),
+-	},
+-};
+ #define USDHC2_CD_GPIO	IMX_GPIO_NR(2, 12)
+ #define USDHC2_PWR_GPIO IMX_GPIO_NR(2, 19)
+ 
+@@ -266,12 +242,8 @@ void board_init_f(ulong dummy)
+ 	enable_tzc380();
+ 
+ 	/* Adjust pmic voltage to 1.0V for 800M */
+-	setup_i2c(0, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info1);
+-
+ 	power_init_board();
+ 
+-	/* Prepare the eeprom i2c for memory detection */
+-	setup_i2c(1, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info2);
+ 	/* DDR initialization */
+ 	spl_dram_init();
+ 
+-- 
+2.11.0
+

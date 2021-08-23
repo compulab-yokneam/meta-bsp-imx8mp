@@ -1,0 +1,72 @@
+From 884da079afdc25987e4a498363392e39a9e30214 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 3 Aug 2021 16:41:19 +0300
+Subject: [PATCH] ucm-imx8m-plus: dts: Update u-boot device tree
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm/dts/ucm-imx8m-plus-u-boot.dtsi | 34 +++++++++++++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
+
+diff --git a/arch/arm/dts/ucm-imx8m-plus-u-boot.dtsi b/arch/arm/dts/ucm-imx8m-plus-u-boot.dtsi
+index 83594391fc..afb341de4b 100644
+--- a/arch/arm/dts/ucm-imx8m-plus-u-boot.dtsi
++++ b/arch/arm/dts/ucm-imx8m-plus-u-boot.dtsi
+@@ -5,6 +5,12 @@
+  */
+ 
+ / {
++	wdt-reboot {
++		compatible = "wdt-reboot";
++		wdt = <&wdog1>;
++		u-boot,dm-spl;
++	};
++
+ 	firmware {
+ 		optee {
+ 			compatible = "linaro,optee-tz";
+@@ -118,6 +124,18 @@
+ 	u-boot,dm-spl;
+ };
+ 
++&pinctrl_i2c1_gpio {
++	u-boot,dm-spl;
++};
++
++&pinctrl_i2c2 {
++	u-boot,dm-spl;
++};
++
++&pinctrl_i2c2_gpio {
++	u-boot,dm-spl;
++};
++
+ &usdhc2 {
+ 	u-boot,dm-spl;
+ 	sd-uhs-sdr104;
+@@ -136,6 +154,22 @@
+ 	assigned-clock-parents = <&clk IMX8MP_SYS_PLL1_400M>;
+ };
+ 
++&wdog1 {
++	u-boot,dm-spl;
++};
++
++&{/soc@0/bus@30800000/i2c@30a20000/pca9450@25} {
++	u-boot,dm-spl;
++};
++
++&{/soc@0/bus@30800000/i2c@30a20000/pca9450@25/regulators} {
++	u-boot,dm-spl;
++};
++
++&pinctrl_pmic {
++	u-boot,dm-spl;
++};
++
+ &eqos {
+ 	compatible = "fsl,imx-eqos";
+ 	/delete-property/ assigned-clocks;
+-- 
+2.11.0
+

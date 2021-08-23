@@ -1,29 +1,142 @@
-From 76372af805db8dccfba54fdf0cb4b827433b78d2 Mon Sep 17 00:00:00 2001
+From 0887e6e9af855e8e2ff3cbc0fbdf7de8c0ff2edc Mon Sep 17 00:00:00 2001
 From: Valentin Raevsky <valentin@compulab.co.il>
-Date: Fri, 12 Feb 2021 16:46:52 +0200
-Subject: [PATCH] compulab: 01: 2020.04 5.4.70 update
+Date: Tue, 3 Aug 2021 14:36:47 +0300
+Subject: [PATCH] ucm-imx8m-plus: Add support: update files
 
 Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
 ---
- board/compulab/common/Makefile |   9 +-
- board/compulab/common/common.c |   3 +-
- board/compulab/common/common.h |   3 +-
- board/compulab/common/eeprom.c | 392 ++++++++++++++++++++++++++++++-----------
- board/compulab/common/eeprom.h |  33 +++-
- common/eeprom/eeprom_field.c   | 116 +++++++++---
- common/eeprom/eeprom_layout.c  |  58 ++++--
- include/eeprom_field.h         |  45 +++--
- include/eeprom_layout.h        |   2 +
- tools/env/fw_env.config        |  33 +---
- tools/env/fw_env_main.c        |  73 +++++++-
- tools/env/fw_env_private.h     |   1 +
- 12 files changed, 562 insertions(+), 206 deletions(-)
+ arch/arm/dts/Makefile                         |   4 +
+ arch/arm/include/asm/arch-imx8m/imx8mm_pins.h |   4 +-
+ arch/arm/mach-imx/imx8m/Kconfig               |  28 ++
+ arch/arm/mach-imx/imx8m/soc.c                 |   3 +-
+ arch/arm/mach-imx/mac.c                       |   2 +-
+ board/compulab/common/Makefile                |  11 +-
+ board/compulab/common/common.c                |   4 +-
+ board/compulab/common/common.h                |   3 +-
+ board/compulab/common/eeprom.c                | 392 +++++++++++++++++++-------
+ board/compulab/common/eeprom.h                |  34 ++-
+ common/eeprom/eeprom_field.c                  | 116 ++++++--
+ common/eeprom/eeprom_layout.c                 |  58 +++-
+ drivers/video/Kconfig                         |   9 +
+ drivers/video/Makefile                        |   1 +
+ include/eeprom_field.h                        |  45 +--
+ include/eeprom_layout.h                       |   2 +
+ tools/env/fw_env.config                       |  35 +--
+ tools/env/fw_env_main.c                       |  73 ++++-
+ tools/env/fw_env_private.h                    |   1 +
+ 19 files changed, 613 insertions(+), 212 deletions(-)
 
+diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
+index aa0c6a75c3..e5d929ab0c 100644
+--- a/arch/arm/dts/Makefile
++++ b/arch/arm/dts/Makefile
+@@ -876,6 +876,10 @@ dtb-$(CONFIG_ARCH_IMX8M) += \
+ 	imx8mp-evk.dtb \
+ 	imx8mp-phyboard-pollux-rdk.dtb \
+ 	imx8mq-pico-pi.dtb
++dtb-$(CONFIG_TARGET_UCM_IMX8M_MINI) += ucm-imx8m-mini.dtb
++dtb-$(CONFIG_TARGET_MCM_IMX8M_MINI) += mcm-imx8m-mini.dtb
++dtb-$(CONFIG_TARGET_IOT_GATE_IMX8) += iot-gate-imx8.dtb
++dtb-$(CONFIG_TARGET_UCM_IMX8M_PLUS) += ucm-imx8m-plus.dtb
+ 
+ dtb-$(CONFIG_ARCH_IMXRT) += imxrt1050-evk.dtb \
+ 	imxrt1020-evk.dtb
+diff --git a/arch/arm/include/asm/arch-imx8m/imx8mm_pins.h b/arch/arm/include/asm/arch-imx8m/imx8mm_pins.h
+index 210e96e1db..a1111b9241 100644
+--- a/arch/arm/include/asm/arch-imx8m/imx8mm_pins.h
++++ b/arch/arm/include/asm/arch-imx8m/imx8mm_pins.h
+@@ -612,12 +612,12 @@ enum {
+ 	IMX8MM_PAD_I2C1_SDA_ENET1_MDIO                                =  IOMUX_PAD(0x0480, 0x0218, 1, 0x04C0, 2, 0),
+ 	IMX8MM_PAD_I2C1_SDA_GPIO5_IO15                                =  IOMUX_PAD(0x0480, 0x0218, 5, 0x0000, 0, 0),
+ 
+-	IMX8MM_PAD_I2C2_SCL_I2C2_SCL                                  =  IOMUX_PAD(0x0484, 0x021C, 0, 0x0000, 0, 0),
++	IMX8MM_PAD_I2C2_SCL_I2C2_SCL                                  =  IOMUX_PAD(0x0484, 0x021C, 0 | IOMUX_CONFIG_SION, 0x0000, 0, 0),
+ 	IMX8MM_PAD_I2C2_SCL_ENET1_1588_EVENT1_IN                      =  IOMUX_PAD(0x0484, 0x021C, 1, 0x0000, 0, 0),
+ 	IMX8MM_PAD_I2C2_SCL_USDHC3_CD_B                               =  IOMUX_PAD(0x0484, 0x021C, 2, 0x0544, 1, 0),
+ 	IMX8MM_PAD_I2C2_SCL_GPIO5_IO16                                =  IOMUX_PAD(0x0484, 0x021C, 5, 0x0000, 0, 0),
+ 
+-	IMX8MM_PAD_I2C2_SDA_I2C2_SDA                                  =  IOMUX_PAD(0x0488, 0x0220, 0, 0x0000, 0, 0),
++	IMX8MM_PAD_I2C2_SDA_I2C2_SDA                                  =  IOMUX_PAD(0x0488, 0x0220, 0 | IOMUX_CONFIG_SION, 0x0000, 0, 0),
+ 	IMX8MM_PAD_I2C2_SDA_ENET1_1588_EVENT1_OUT                     =  IOMUX_PAD(0x0488, 0x0220, 1, 0x0000, 0, 0),
+ 	IMX8MM_PAD_I2C2_SDA_USDHC3_WP                                 =  IOMUX_PAD(0x0488, 0x0220, 2, 0x0548, 1, 0),
+ 	IMX8MM_PAD_I2C2_SDA_GPIO5_IO17                                =  IOMUX_PAD(0x0488, 0x0220, 5, 0x0000, 0, 0),
+diff --git a/arch/arm/mach-imx/imx8m/Kconfig b/arch/arm/mach-imx/imx8m/Kconfig
+index 9e5b6d7ffa..61a9c8938c 100644
+--- a/arch/arm/mach-imx/imx8m/Kconfig
++++ b/arch/arm/mach-imx/imx8m/Kconfig
+@@ -201,6 +201,30 @@ config TARGET_PHYCORE_IMX8MP
+ 	select IMX8MP
+         select SUPPORT_SPL
+ 	select IMX8M_LPDDR4
++
++config TARGET_UCM_IMX8M_MINI
++	bool "CompuLab ucm-imx8m-mini"
++	select IMX8MM
++	select SUPPORT_SPL
++	select IMX8M_LPDDR4
++
++config TARGET_MCM_IMX8M_MINI
++	bool "CompuLab mcm-imx8m-mini"
++	select IMX8MM
++	select SUPPORT_SPL
++	select IMX8M_LPDDR4
++
++config TARGET_IOT_GATE_IMX8
++	bool "CompuLab iot-gate-imx8"
++	select IMX8MM
++	select SUPPORT_SPL
++	select IMX8M_LPDDR4
++
++config TARGET_UCM_IMX8M_PLUS
++	bool "CompuLab ucm-imx8m-plus"
++	select IMX8MP
++	select SUPPORT_SPL
++	select IMX8M_LPDDR4
+ endchoice
+ 
+ source "board/freescale/imx8mq_evk/Kconfig"
+@@ -217,5 +241,9 @@ source "board/beacon/imx8mm/Kconfig"
+ source "board/beacon/imx8mn/Kconfig"
+ source "board/phytec/phycore_imx8mm/Kconfig"
+ source "board/phytec/phycore_imx8mp/Kconfig"
++source "board/compulab/ucm-imx8m-mini/Kconfig"
++source "board/compulab/mcm-imx8m-mini/Kconfig"
++source "board/compulab/iot-gate-imx8/Kconfig"
++source "board/compulab/ucm-imx8m-plus/Kconfig"
+ 
+ endif
+diff --git a/arch/arm/mach-imx/imx8m/soc.c b/arch/arm/mach-imx/imx8m/soc.c
+index 95c23b0df4..01c5088718 100644
+--- a/arch/arm/mach-imx/imx8m/soc.c
++++ b/arch/arm/mach-imx/imx8m/soc.c
+@@ -247,8 +247,7 @@ int dram_init(void)
+ 
+ 	return 0;
+ }
+-
+-int dram_init_banksize(void)
++__weak int dram_init_banksize(void)
+ {
+ 	int bank = 0;
+ 	int ret;
+diff --git a/arch/arm/mach-imx/mac.c b/arch/arm/mach-imx/mac.c
+index 9bb63d25b4..02de001f30 100644
+--- a/arch/arm/mach-imx/mac.c
++++ b/arch/arm/mach-imx/mac.c
+@@ -23,7 +23,7 @@ struct imx_mac_fuse {
+ #define MAC_FUSE_MX6_OFFSET	0x620
+ #define MAC_FUSE_MX7_OFFSET	0x640
+ 
+-void imx_get_mac_from_fuse(int dev_id, unsigned char *mac)
++__weak void imx_get_mac_from_fuse(int dev_id, unsigned char *mac)
+ {
+ 	struct imx_mac_fuse *fuse;
+ 	u32 offset;
 diff --git a/board/compulab/common/Makefile b/board/compulab/common/Makefile
-index 7ba92f5db0..0a26fdb426 100644
+index 7ba92f5db0..b57f589ec2 100644
 --- a/board/compulab/common/Makefile
 +++ b/board/compulab/common/Makefile
-@@ -1,10 +1,15 @@
+@@ -1,10 +1,17 @@
 -# SPDX-License-Identifier: GPL-2.0+
  #
  # (C) Copyright 2011 - 2013 CompuLab, Ltd. <www.compulab.co.il>
@@ -33,16 +146,18 @@ index 7ba92f5db0..0a26fdb426 100644
 +# SPDX-License-Identifier:	GPL-2.0+
 +#
  
++obj-y				+= fdt.o
  obj-y				+= common.o
 -obj-$(CONFIG_SYS_I2C)		+= eeprom.o
 +obj-y				+= mmc.o
++obj-y				+= ../../freescale/common/mmc.o
 +ifneq "$(or $(CONFIG_SYS_I2C),$(CONFIG_DM_I2C))" ""
 +obj-y				+= eeprom.o
 +endif # (CONFIG_SYS_I2C || CONFIG_DM_I2C2)
  obj-$(CONFIG_LCD)		+= omap3_display.o
  obj-$(CONFIG_SMC911X)		+= omap3_smc911x.o
 diff --git a/board/compulab/common/common.c b/board/compulab/common/common.c
-index 2f92c6564d..a425778fde 100644
+index 528c97df19..a425778fde 100644
 --- a/board/compulab/common/common.c
 +++ b/board/compulab/common/common.c
 @@ -1,8 +1,9 @@
@@ -56,6 +171,14 @@ index 2f92c6564d..a425778fde 100644
   */
  
  #include <common.h>
+@@ -10,7 +11,6 @@
+ #include <asm/bootm.h>
+ #include <asm/gpio.h>
+ #include <asm/setup.h>
+-#include <linux/delay.h>
+ 
+ #include "common.h"
+ #include "eeprom.h"
 diff --git a/board/compulab/common/common.h b/board/compulab/common/common.h
 index 17cfbb6f27..759ec31317 100644
 --- a/board/compulab/common/common.h
@@ -700,10 +823,10 @@ index 5206cf5c0a..c1d321361c 100644
  
  	if (data[EEPROM_LAYOUT_VER_OFFSET] >= 0x20)
 diff --git a/board/compulab/common/eeprom.h b/board/compulab/common/eeprom.h
-index a9c0203b81..6d447a6fac 100644
+index a9c0203b81..30a287e79a 100644
 --- a/board/compulab/common/eeprom.h
 +++ b/board/compulab/common/eeprom.h
-@@ -1,28 +1,47 @@
+@@ -1,28 +1,48 @@
 -/* SPDX-License-Identifier: GPL-2.0+ */
  /*
   * (C) Copyright 2011 CompuLab, Ltd. <www.compulab.co.il>
@@ -717,8 +840,8 @@ index a9c0203b81..6d447a6fac 100644
  #ifndef _EEPROM_
  #define _EEPROM_
  #include <errno.h>
- 
--#ifdef CONFIG_SYS_I2C
++#include <asm/setup.h>
++
 +#define EEPROM_LAYOUT_VER_OFFSET	44
 +#define BOARD_SERIAL_OFFSET		20
 +#define BOARD_SERIAL_OFFSET_LEGACY	8
@@ -732,7 +855,8 @@ index a9c0203b81..6d447a6fac 100644
 +#define PRODUCT_OPTION_NUM		5
 +#define MAC_ADDR_OFFSET			4
 +#define MAC_ADDR_OFFSET_LEGACY		0
-+
+ 
+-#ifdef CONFIG_SYS_I2C
 +#if (defined(CONFIG_SYS_I2C) || defined(CONFIG_DM_I2C))
  int cl_eeprom_read_mac_addr(uchar *buf, uint eeprom_bus);
 -u32 cl_eeprom_get_board_rev(uint eeprom_bus);
@@ -1140,6 +1264,38 @@ index 5a9be1da06..cc6dd39e01 100644
  	layout->update = eeprom_layout_update_field;
 +	layout->read = eeprom_layout_read_field;
  }
+diff --git a/drivers/video/Kconfig b/drivers/video/Kconfig
+index 653e6d72a7..a13d90f3d1 100644
+--- a/drivers/video/Kconfig
++++ b/drivers/video/Kconfig
+@@ -439,6 +439,15 @@ config VIDEO_LCD_RAYDIUM_RM67191
+ 	Say Y here if you want to enable support for Raydium RM68200
+ 	1080x1920 DSI video mode panel.
+ 
++config VIDEO_LCD_STARTEK_ILI9881C
++	tristate "Startek ILI9881C-based panels"
++	depends on DM_VIDEO
++	select VIDEO_MIPI_DSI
++	default n
++	help
++	  Say Y if you want to enable support for panels based on the
++	  Startek panel with an ILI9881c controller.
++
+ config VIDEO_LCD_SSD2828
+ 	bool "SSD2828 bridge chip"
+ 	default n
+diff --git a/drivers/video/Makefile b/drivers/video/Makefile
+index bd6056ccf1..c48cde4760 100644
+--- a/drivers/video/Makefile
++++ b/drivers/video/Makefile
+@@ -57,6 +57,7 @@ obj-$(CONFIG_VIDEO_LCD_HITACHI_TX18D42VM) += hitachi_tx18d42vm_lcd.o
+ obj-$(CONFIG_VIDEO_LCD_ORISETECH_OTM8009A) += orisetech_otm8009a.o
+ obj-$(CONFIG_VIDEO_LCD_RAYDIUM_RM68200) += raydium-rm68200.o
+ obj-$(CONFIG_VIDEO_LCD_RAYDIUM_RM67191) += raydium-rm67191.o
++obj-$(CONFIG_VIDEO_LCD_STARTEK_ILI9881C) += startek-ili9881c.o
+ obj-$(CONFIG_VIDEO_LCD_SSD2828) += ssd2828.o
+ obj-$(CONFIG_VIDEO_LCD_TDO_TL070WSH30) += tdo-tl070wsh30.o
+ obj-$(CONFIG_VIDEO_ADV7535) += adv7535.o
 diff --git a/include/eeprom_field.h b/include/eeprom_field.h
 index 05c0d14592..311c49401a 100644
 --- a/include/eeprom_field.h
@@ -1212,10 +1368,10 @@ index 730d963ab9..50e8ec1085 100644
  
  void eeprom_layout_setup(struct eeprom_layout *layout, unsigned char *buf,
 diff --git a/tools/env/fw_env.config b/tools/env/fw_env.config
-index 053895a2c0..988ef9f728 100644
+index 053895a2c0..ee3fb8ebc3 100644
 --- a/tools/env/fw_env.config
 +++ b/tools/env/fw_env.config
-@@ -6,33 +6,6 @@
+@@ -6,33 +6,8 @@
  # be the same as the Environment size, which is valid for NOR and SPI-dataflash
  # Device offset must be prefixed with 0x to be parsed as a hexadecimal value.
  
@@ -1249,9 +1405,11 @@ index 053895a2c0..988ef9f728 100644
 -# UBI volume by name
 -#/dev/ubi0:env		0x0		0x1f000		0x1f000
 -#/dev/ubi0:env-redund	0x0		0x1f000		0x1f000
-+# Block devices for CompuLab imx8m-mini
-+/dev/mmcblk2boot0	0x4400	0x1000
-+#/dev/mmcblk1		0x4400	0x1000
++# Block devices for CompuLab imx8m-plus
++# emmc
++/dev/mmcblk2boot0	0x33d800 0x1000
++# sd-card; if AltBoot is in use
++#/dev/mmcblk1		0x33d800 0x1000
 diff --git a/tools/env/fw_env_main.c b/tools/env/fw_env_main.c
 index 1d193bd437..8d247ae910 100644
 --- a/tools/env/fw_env_main.c
