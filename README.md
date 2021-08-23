@@ -1,3 +1,6 @@
+| NOTE | The very early debug version. Does not work at all. !!!NOT_SUPPORTED!!!|
+|---|---|
+
 # Configuring the build
 
 ## Setup Yocto environment
@@ -12,9 +15,9 @@ export MACHINE=ucm-imx8m-plus
 ```
 * Initialize repo manifests
 ```
-repo init -u https://source.codeaurora.org/external/imx/imx-manifest -b imx-linux-gatesgarth -m imx-5.10.9-1.0.0.xml
-wget --directory-prefix .repo/manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/gatesgarth/scripts/imx-5.10.9-1.0.0_compulab.xml
-repo init -m imx-5.10.9-1.0.0_compulab.xml
+repo init -u git://source.codeaurora.org/external/imx/imx-manifest.git -b imx-linux-hardknott -m imx-5.10.35-2.0.0.xml
+wget --directory-prefix .repo/manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/hardknott/scripts/imx-5.10.35-2.0.0_compulab.xml
+repo init -m imx-5.10.35-2.0.0_compulab.xml
 repo sync
 ```
 
