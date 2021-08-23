@@ -49,7 +49,7 @@ sudo bmaptool copy imx-image-full-ucm-imx8m-plus.wic.bz2 --bmap imx-image-full-u
 * When in Linux issue:<br>```cl-deploy```
 #### A non interactive mode:
 * Insert the sd-card into the P23 slot.
-* Turn on the device, stop in U-Boot and type:<br>```setenv root_opt ${root_opt} init=usr/local/bin/cl-init```
+* Turn on the device, stop in U-Boot and type:<br>```setenv root_opt ${root_opt} init=/usr/local/bin/cl-init```
 * The installer will start running automatically:
 ```
  Autoinstaller
