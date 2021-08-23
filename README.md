@@ -45,7 +45,8 @@ sudo bmaptool copy imx-image-full-ucm-imx8m-plus.wic.bz2 --bmap imx-image-full-u
 # UUU
 Prerquirements:
 * Refer to the [`mfgtools`](https://github.com/NXPmicro/mfgtools) for details about the tool and install it.
-* Connect the device to a Linux desktop using a TypeC (USB1) port. On the Linux machine open up a terminal window and type:<br>```udevadm monitor```
+* Connect the device to a Linux desktop using a TypeC (USB1) port.
+* On the Linux machine open up a terminal window and type:<br>```udevadm monitor```
 * Turn on the device, stop in U-Boot and issue:<br>```fastboot 0```
 * The Linux machine teminal must show this up:<pre>
 monitor will print the received events for:
