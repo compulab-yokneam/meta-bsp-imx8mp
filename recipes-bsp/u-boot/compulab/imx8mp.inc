@@ -5,6 +5,7 @@ SRC_URI_append_ucm-imx8m-plus = " \
 	file://0003-ucm-imx8m-plus-spl-eeprom-Enable-DM-mode.patch \
 	file://0004-ucm-imx8m-plus-dts-Update-u-boot-device-tree.patch \
 	file://0005-ucm-imx8m-plus-spl-Update-the-machine-spl.patch \
+	file://0006-ucm-imx8m-plus-config-Update-for-SR.patch \
 	file://ucm-imx8m-plus_defconfig \
 "
 
