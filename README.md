@@ -37,9 +37,144 @@ bitbake -k imx-image-full
 cd tmp/deploy/images/${MACHINE}
 ```
 
-* Deploy the image:
+* Flash the image onto the sd-card:
 ```
 sudo bmaptool copy imx-image-full-ucm-imx8m-plus.wic.bz2 --bmap imx-image-full-ucm-imx8m-plus.wic.bmap /dev/sdX
+```
+
+### Deployment the image onto the device eMMC:
+#### An interactive mode:
+* Insert the sd-card into the P23 slot.
+* Turn on the device.
+* When in Linux issue:<br>```cl-deploy```
+#### A non interactive mode:
+* Insert the sd-card into the P23 slot.
+* Turn on the device, stop in U-Boot and type:<br>```setenv root_opt ${root_opt} init=usr/local/bin/cl-init```
+* The installer will start running automatically:
+```
+ Autoinstaller
+ ------------------------------------------------------------------------------
+
+
+          +--------cl-deploy will get started in 5 seconds-----------+
+          | Configuration file /etc/cl-auto.conf parameters:         |
+          | --------------------------------------------------       |
+          | # Destination is the module inthernal media.             |
+          | # Autoinstaller how to:                                  |
+          | ## cp /usr/share/cl-deploy/cl-auto.conf.sample           |
+          | /etc/cl-auto.conf                                        |
+          | ## cl-auto -A                                            |
+          | DST=/dev/mmcblk2                                         |
+          | QUIET=Yes                                                |
+          | --------------------------------------------------       |
+          | Press any key for terminating ...                        |
+          +----------------------------------------------------------+
+          |                 <Stop Auto Installer>                    |
+          +----------------------------------------------------------+
+
+
+
+
+which: no systemctl in ((null))
+
+    Clonning Block Device
+    Started: /dev/mmcblk1 ==> /dev/mmcblk2
+
+Checking that no-one is using this disk right now ... OK
+
+Disk /dev/mmcblk2: 29.12 GiB, 31268536320 bytes, 61071360 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x94e280c2
+
+Old situation:
+
+Device         Boot  Start      End  Sectors  Size Id Type
+/dev/mmcblk2p1 *     16384   186775   170392 83.2M  c W95 FAT32 (LBA)
+/dev/mmcblk2p2      196608 12799115 12602508    6G 83 Linux
+
+>>> Script header accepted.
+>>> Script header accepted.
+>>> Script header accepted.
+>>> Script header accepted.
+>>> Script header accepted.
+>>> Created a new DOS disklabel with disk identifier 0x94e280c2.
+/dev/mmcblk2p1: Created a new partition 1 of type 'W95 FAT32 (LBA)' and of size 83.2 MiB.
+Partition #1 contains a vfat signature.
+/dev/mmcblk2p2: Created a new partition 2 of type 'Linux' and of size 6 GiB.
+Partition #2 contains a ext4 signature.
+/dev/mmcblk2p3: Done.
+
+New situation:
+Disklabel type: dos
+Disk identifier: 0x94e280c2
+
+Device         Boot  Start      End  Sectors  Size Id Type
+/dev/mmcblk2p1 *     16384   186775   170392 83.2M  c W95 FAT32 (LBA)
+/dev/mmcblk2p2      196608 12799115 12602508    6G 83 Linux
+
+The partition table has been altered.
+Calling ioctl() to re-read partition table.
+Syncing disks.
+Disk /dev/mmcblk2: 29.12 GiB, 31268536320 bytes, 61071360 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x94e280c2
+
+Old situation:
+
+Device         Boot  Start      End  Sectors  Size Id Type
+/dev/mmcblk2p1 *     16384   186775   170392 83.2M  c W95 FAT32 (LBA)
+/dev/mmcblk2p2      196608 12799115 12602508    6G 83 Linux
+
+/dev/mmcblk2p2:
+New situation:
+Disklabel type: dos
+Disk identifier: 0x94e280c2
+
+Device         Boot  Start      End  Sectors  Size Id Type
+/dev/mmcblk2p1 *     16384   186775   170392 83.2M  c W95 FAT32 (LBA)
+/dev/mmcblk2p2      196608 61071359 60874752   29G 83 Linux
+
+The partition table has been altered.
+Calling ioctl() to re-read partition table.
+Syncing disks.
+mkfs.fat 4.1 (2017-01-24)
+[ /dev/mmcblk1p1 => /dev/mmcblk2p1 ]: 30.3MiB 0:00:00 [55.5MiB/s] [<=>         ]
+mke2fs 1.45.6 (20-Mar-2020)
+/dev/mmcblk2p2 contains a ext4 file system labelled 'root'
+        last mounted on / on Thu Jan  1 00:00:03 1970
+Discarding device blocks: done
+Creating filesystem with 7609344 4k blocks and 1905008 inodes
+Filesystem UUID: 13229d46-e15f-4406-9996-120046836dec
+Superblock backups stored on blocks:
+        32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208,
+        4096000
+
+Allocating group tables: done
+Writing inode tables: done
+Creating journal (32768 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+[ /dev/mmcblk1p2 => /dev/mmcblk2p2 ]: 3.41GiB 0:01:36 [36.1MiB/s] [<=>         ]
+
+    Done: /dev/mmcblk1 ==> /dev/mmcblk2
+
+Sample /usr/share/cl-deploy/app/00_cl-deploy.app script
+         #####  #     #  #####   #####  #######  #####   #####
+        #     # #     # #     # #     # #       #     # #     #
+        #       #     # #       #       #       #       #
+         #####  #     # #       #       #####    #####   #####
+              # #     # #       #       #             #       #
+        #     # #     # #     # #     # #       #     # #     #
+         #####   #####   #####   #####  #######  #####   #####
+        Autoinstall mode has been disabled successfully.
+        Init: /tmp/tmp.Fq418wPIJ8//sbin/init: symbolic link to ../lib/systemd/systemd
+        Rebooting in 3 seconds...
 ```
 
 # UUU
