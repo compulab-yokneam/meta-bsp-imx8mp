@@ -1,0 +1,35 @@
+From 3dfdefd9df22e8903f31daad31adbff64abf8efb Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Wed, 25 Aug 2021 18:57:39 +0300
+Subject: [PATCH] ucm-imx8m-plus: conf: Enable watchdog
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ configs/ucm-imx8m-plus_defconfig | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/configs/ucm-imx8m-plus_defconfig b/configs/ucm-imx8m-plus_defconfig
+index edfe98790e..a4067e70ce 100644
+--- a/configs/ucm-imx8m-plus_defconfig
++++ b/configs/ucm-imx8m-plus_defconfig
+@@ -55,6 +55,7 @@ CONFIG_CMD_I2C=y
+ CONFIG_CMD_MMC=y
+ CONFIG_CMD_POWEROFF=y
+ CONFIG_CMD_USB=y
++CONFIG_CMD_WDT=y
+ CONFIG_CMD_CACHE=y
+ CONFIG_CMD_EFIDEBUG=y
+ # CONFIG_CMD_DATE is not set
+@@ -141,6 +142,9 @@ CONFIG_SYS_WHITE_ON_BLACK=y
+ CONFIG_VIDEO_LCD_STARTEK_ILI9881C=y
+ CONFIG_VIDEO_IMX_SEC_DSI=y
+ CONFIG_VIDEO_IMX_LCDIFV3=y
++# CONFIG_WATCHDOG is not set
++CONFIG_IMX_WATCHDOG=y
++CONFIG_WDT=y
+ # CONFIG_HEXDUMP is not set
+ CONFIG_OF_LIBFDT_OVERLAY=y
+ CONFIG_EFI_SET_TIME=y
+-- 
+2.17.1
+
