@@ -51,3 +51,8 @@ IMAGE_INSTALL_append = " \
 	kernel-modules \
 	kernel-devicetree \
 "
+
+PREFERRED_PROVIDER_virtual/kernel_mx8mp = "linux-compulab"
+PREFERRED_PROVIDER_virtual/bootloader_mx8mp = "u-boot-compulab"
+
+PREFERRED_RROVIDER_u-boot-fw-utils = "u-boot-compulab-fw-utils"
