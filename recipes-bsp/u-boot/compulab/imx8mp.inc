@@ -1,4 +1,4 @@
-SRC_URI_append_ucm-imx8m-plus = " \
+SRC_URI_append_mx8mp = " \
 	file://0000-compulab-00-2020.04-5.4.70-update.patch \
 	file://0001-compulab-01-2020.04-5.4.70-update.patch \
 	file://0002-compulab-02-2020.04-5.4.70-update.patch \
@@ -50,5 +50,16 @@ SRC_URI_append_ucm-imx8m-plus = " \
 	file://0049-ucm-imx8m-plus-defconfig-Fix-SB-eeprom-bus-number.patch \
 	file://0050-ucm-imx8m-plus-defconfig-Update-SYSBOOT-PART.patch \
 	file://0051-tools-env-Update-for-imx8m-plus.patch \
+	file://0052-plat-imx8mp-ddr-Remove-the-specific-SoM-limitation.patch \
+	file://0053-compulab-Add-som-imx8m-plus-support.patch \
+	file://0054-compulab-imx8m-plus-Kconfig-Add-Fix-SYS_I2C_EEPROM_B.patch \
+	file://0055-som-imx8m-plus-Move-setup_fec-to-the-SOM-specific-bo.patch \
+"
+
+SRC_URI_append_ucm-imx8m-plus = " \
 	file://ucm-imx8m-plus_defconfig \
+"
+
+SRC_URI_append_som-imx8m-plus = " \
+	file://som-imx8m-plus_defconfig \
 "
