@@ -7,16 +7,6 @@ IMX_DEFAULT_BSP = "nxp"
 
 MACHINE_FEATURES += " pci wifi bluetooth optee "
 
-KERNEL_DEVICETREE = " \
-	compulab/ucm-imx8m-plus.dtb \
-	compulab/ucm-imx8m-plus_mipi-csi1.dtb \
-	compulab/ucm-imx8m-plus_mipi-csi2.dtb \
-	compulab/ucm-imx8m-plus_mipi-csi1-imx219.dtb \
-"
-
-UBOOT_CONFIG ??= "sd"
-UBOOT_CONFIG[sd] = "ucm-imx8m-plus_defconfig,sdcard"
-UBOOT_CONFIG[mfgtool] = "ucm-imx8m-plus_defconfig"
 SPL_BINARY = "spl/u-boot-spl.bin"
 
 FW_VER = "${@bb.utils.contains('DISTRO_CODENAME', 'dunfell' , '201904' , '202006' , d)}"
@@ -27,9 +17,6 @@ DDR_FIRMWARE_NAME = " \
 	lpddr4_pmu_train_2d_dmem_${FW_VER}.bin \
 	lpddr4_pmu_train_2d_imem_${FW_VER}.bin \
 "
-
-# Set u-boot DTB
-UBOOT_DTB_NAME = "ucm-imx8m-plus.dtb"
 
 # Set imx-mkimage boot target
 IMXBOOT_TARGETS = "flash_evk"
