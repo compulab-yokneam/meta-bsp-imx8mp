@@ -1,0 +1,63 @@
+From ccf4ae76f63448a4463ec3a51acb39e7b245791f Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Fri, 15 Oct 2021 12:18:18 +0300
+Subject: [PATCH] compulab: imx8mp: Prepare for multi board support
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/plat/imx8mp/board/board.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/board/compulab/plat/imx8mp/board/board.c b/board/compulab/plat/imx8mp/board/board.c
+index 060d5d9aa9..37ecf534fd 100644
+--- a/board/compulab/plat/imx8mp/board/board.c
++++ b/board/compulab/plat/imx8mp/board/board.c
+@@ -172,7 +172,9 @@ static int setup_eqos(void)
+ 
+ 	return set_clk_eqos(ENET_125MHZ);
+ }
++#endif
+ 
++#if defined(CONFIG_FEC_MXC) || defined(CONFIG_DWC_ETH_QOS)
+ void imx_get_mac_from_fuse(int dev_id, unsigned char *mac)
+ {
+ 	cl_eeprom_read_mac_addr(mac, CONFIG_SYS_I2C_EEPROM_BUS);
+@@ -180,9 +182,7 @@ void imx_get_mac_from_fuse(int dev_id, unsigned char *mac)
+ 	      __func__, dev_id, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+ 	return;
+ }
+-#endif
+ 
+-#if defined(CONFIG_FEC_MXC) || defined(CONFIG_DWC_ETH_QOS)
+ int board_phy_config(struct phy_device *phydev)
+ {
+ 	if (phydev->drv->config)
+@@ -491,9 +491,16 @@ int board_typec_get_mode(int index)
+ #define DISPMIX				13
+ #define MIPI				15
+ 
++__weak void board_vendor_init(void) {
++	return;
++}
++
+ int board_init(void)
+ {
+ 	struct arm_smccc_res res;
++
++	board_vendor_init();
++
+ #ifdef CONFIG_USB_TCPC
+ 	setup_typec();
+ #endif
+@@ -529,7 +536,7 @@ int board_late_init(void)
+ 	board_late_mmc_env_init();
+ #endif
+ #ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
+-	env_set("board_name", "UCM-iMX8M-Plus");
++	env_set("board_name", CONFIG_SYS_BOARD);
+ 	env_set("board_rev", "iMX8MP");
+ #endif
+ 
+-- 
+2.17.1
+

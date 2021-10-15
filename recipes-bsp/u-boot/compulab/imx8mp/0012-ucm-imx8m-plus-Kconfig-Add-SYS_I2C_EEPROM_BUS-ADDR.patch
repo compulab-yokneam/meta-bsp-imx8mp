@@ -1,0 +1,43 @@
+From e93476df96e2094ac5631ff1f3a835e6d8b8f034 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Fri, 15 Oct 2021 12:09:16 +0300
+Subject: [PATCH] ucm-imx8m-plus: Kconfig: Add SYS_I2C_EEPROM_BUS/ADDR
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/ucm-imx8m-plus/Kconfig | 8 ++++++++
+ include/configs/compulab-imx8m-plus.h | 2 --
+ 2 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/board/compulab/ucm-imx8m-plus/Kconfig b/board/compulab/ucm-imx8m-plus/Kconfig
+index d8da110150..790d32f023 100644
+--- a/board/compulab/ucm-imx8m-plus/Kconfig
++++ b/board/compulab/ucm-imx8m-plus/Kconfig
+@@ -14,6 +14,14 @@ config DEFAULT_DTB
+ 	depends on TARGET_UCM_IMX8M_PLUS
+ 	default "sbc-ucm-imx8m-plus.dtb"
+ 
++config SYS_I2C_EEPROM_BUS
++	int "SOM eeprom bus address"
++	default 1
++
++config SYS_I2C_EEPROM_ADDR
++	hex "SOM eeprom dev address"
++	default 0x50
++
+ config SYS_I2C_EEPROM_BUS_SB
+ 	hex "SB eeprom bus address"
+ 	default 0x4
+diff --git a/include/configs/compulab-imx8m-plus.h b/include/configs/compulab-imx8m-plus.h
+index a0554ab538..e4b4bce836 100644
+--- a/include/configs/compulab-imx8m-plus.h
++++ b/include/configs/compulab-imx8m-plus.h
+@@ -267,5 +267,3 @@
+ #define CONFIG_VIDEO_BMP_LOGO
+ #endif
+ 
+-#define CONFIG_SYS_I2C_EEPROM_BUS 0x1
+-#define CONFIG_SYS_I2C_EEPROM_ADDR 0x50
+-- 
+2.17.1
+

@@ -1,0 +1,54 @@
+From af2ee9fdcadcb63e6e1b5a82a63edcf0666c22a0 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Fri, 15 Oct 2021 16:18:10 +0300
+Subject: [PATCH] watchdog: Add CONFIG_WATCHDOG_AUTOSTART option
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ drivers/watchdog/Kconfig      | 13 +++++++++++++
+ drivers/watchdog/wdt-uclass.c |  5 +++++
+ 2 files changed, 18 insertions(+)
+
+diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
+index 602ccbe41c..aa76a8f2d2 100644
+--- a/drivers/watchdog/Kconfig
++++ b/drivers/watchdog/Kconfig
+@@ -9,6 +9,19 @@ config WATCHDOG
+ 	  this option if you want to service enabled watchdog by U-Boot. Disable
+ 	  this option if you want U-Boot to start watchdog but never service it.
+ 
++config WATCHDOG_AUTOSTART
++	bool "Automatically start watchdog timer"
++	depends on WDT
++	default y
++	help
++	  Automatically start watchdog timer and start servicing it during
++	  init phase. Enabled by default. Disable this option if you want
++	  to compile U-Boot with CONFIG_WDT support but do not want to
++	  activate watchdog, like when CONFIG_WDT option is disabled. You
++	  would be able to start watchdog manually by 'wdt' command. Useful
++	  when you want to have support for 'wdt' command but do not want
++	  to have watchdog enabled by default.
++
+ config WATCHDOG_TIMEOUT_MSECS
+ 	int "Watchdog timeout in msec"
+ 	default 128000 if ARCH_MX25 || ARCH_MX31 || ARCH_MX5 || ARCH_MX6
+diff --git a/drivers/watchdog/wdt-uclass.c b/drivers/watchdog/wdt-uclass.c
+index 28f7918c46..01e5fa47e8 100644
+--- a/drivers/watchdog/wdt-uclass.c
++++ b/drivers/watchdog/wdt-uclass.c
+@@ -50,6 +50,11 @@ int initr_watchdog(void)
+ 						    4 * reset_period) / 4;
+ 	}
+ 
++	if (!CONFIG_IS_ENABLED(WATCHDOG_AUTOSTART)) {
++		printf("WDT:   Not starting\n");
++		return 0;
++	}
++
+ 	wdt_start(gd->watchdog_dev, timeout * 1000, 0);
+ 	gd->flags |= GD_FLG_WDT_READY;
+ 	printf("WDT:   Started with%s servicing (%ds timeout)\n",
+-- 
+2.17.1
+
