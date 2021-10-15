@@ -9,18 +9,7 @@ MACHINE_FEATURES_append_use-nxp-bsp = " optee "
 IMX_DEFAULT_BOOTLOADER_use-nxp-bsp = "u-boot-imx"
 IMX_DEFAULT_BOOTLOADER_use-mainline-bsp = "u-boot-fslc"
 
-KERNEL_DEVICETREE = " \
-	compulab/ucm-imx8m-plus.dtb \
-	compulab/ucm-imx8m-plus_mipi-csi1.dtb \
-	compulab/ucm-imx8m-plus_mipi-csi2.dtb \
-	compulab/ucm-imx8m-plus_mipi-csi1-imx219.dtb \
-"
-
 UBOOT_SUFFIX = "bin"
-
-UBOOT_CONFIG ??= "sd"
-UBOOT_CONFIG[sd] = "ucm-imx8m-plus_defconfig,sdcard"
-UBOOT_CONFIG[mfgtool] = "ucm-imx8m-plus_defconfig"
 
 SPL_BINARY = "spl/u-boot-spl.bin"
 
@@ -42,9 +31,6 @@ DDR_FIRMWARE_NAME = " \
 # Set imx-mkimage boot target
 IMXBOOT_TARGETS = "flash_evk"
 
-# Set u-boot DTB
-UBOOT_DTB_NAME = "ucm-imx8m-plus.dtb"
-
 IMX_BOOT_SOC_TARGET = "iMX8MP"
 
 # Set Serial console
@@ -63,3 +49,8 @@ IMAGE_INSTALL_append = " \
 	kernel-modules \
 	kernel-devicetree \
 "
+
+PREFERRED_PROVIDER_virtual/kernel_mx8mp = "linux-compulab"
+PREFERRED_PROVIDER_virtual/bootloader_mx8mp = "u-boot-compulab"
+
+PREFERRED_RROVIDER_u-boot-fw-utils = "u-boot-compulab-fw-utils"
