@@ -1,0 +1,29 @@
+From d28aa9619daf09c417d55045a25f917880793d41 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sun, 24 Oct 2021 16:38:34 +0300
+Subject: [PATCH] som-imx8m-plus: Enable FEC0 enet clock
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/som-imx8m-plus/som-imx8m-plus.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/board/compulab/som-imx8m-plus/som-imx8m-plus.c b/board/compulab/som-imx8m-plus/som-imx8m-plus.c
+index 393ddedcbb..46c481a70a 100644
+--- a/board/compulab/som-imx8m-plus/som-imx8m-plus.c
++++ b/board/compulab/som-imx8m-plus/som-imx8m-plus.c
+@@ -73,9 +73,9 @@ static int setup_fec(void)
+ 	setup_iomux_fec();
+ 
+ 	/* Enable RGMII TX clk output */
+-	setbits_le32(&gpr->gpr[1], BIT(22));
++	setbits_le32(&gpr->gpr[1], BIT(22) | BIT(13));
+ 
+-	return 0;
++	return set_clk_enet(ENET_125MHZ);
+ }
+ #endif
+ 
+-- 
+2.17.1
+

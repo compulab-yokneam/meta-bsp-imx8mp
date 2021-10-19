@@ -1,0 +1,72 @@
+From 207eee25abdf1fe875960e4025a3905067dda006 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Mon, 18 Oct 2021 18:12:43 +0300
+Subject: [PATCH] som-imx8m-plus: Update configs
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ configs/som-imx8m-plus_defconfig      |  1 -
+ include/configs/compulab-imx8m-plus.h | 12 +++++-------
+ 2 files changed, 5 insertions(+), 8 deletions(-)
+
+diff --git a/configs/som-imx8m-plus_defconfig b/configs/som-imx8m-plus_defconfig
+index 6dcfe9c773..e80ae13bfe 100644
+--- a/configs/som-imx8m-plus_defconfig
++++ b/configs/som-imx8m-plus_defconfig
+@@ -127,7 +127,6 @@ CONFIG_DM_USB=y
+ CONFIG_USB_XHCI_HCD=y
+ CONFIG_USB_XHCI_DWC3=y
+ CONFIG_USB_DWC3=y
+-# CONFIG_USB_STORAGE is not set
+ CONFIG_USB_GADGET=y
+ CONFIG_USB_GADGET_MANUFACTURER="FSL"
+ CONFIG_USB_GADGET_VENDOR_NUM=0x0525
+diff --git a/include/configs/compulab-imx8m-plus.h b/include/configs/compulab-imx8m-plus.h
+index e4b4bce836..8fd6206ba9 100644
+--- a/include/configs/compulab-imx8m-plus.h
++++ b/include/configs/compulab-imx8m-plus.h
+@@ -11,12 +11,12 @@
+ 
+ #include "imx_env.h"
+ 
++#define CONFIG_SYS_BOOTM_LEN		(32 * SZ_1M)
+ 
+ #define CONFIG_SPL_MAX_SIZE		(152 * 1024)
+ #define CONFIG_SYS_MONITOR_LEN		(512 * 1024)
+ #define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_USE_SECTOR
+ #define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR	0x300
+-#define CONFIG_SYS_MMCSD_FS_BOOT_PARTITION	1
+ #define CONFIG_SYS_UBOOT_BASE	(QSPI0_AMBA_BASE + CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR * 512)
+ 
+ #ifdef CONFIG_SPL_BUILD
+@@ -38,15 +38,14 @@
+ #define CONFIG_REMAKE_ELF
+ /* ENET Config */
+ /* ENET1 */
++
+ #if defined(CONFIG_CMD_NET)
+-#define CONFIG_ETHPRIME                 "eth0" /* Set eqos to primary since we use its MDIO */
++#define CONFIG_ETHPRIME                 "eth1" /* Set eqos to primary since we use its MDIO */
+ 
+ #define CONFIG_FEC_XCV_TYPE             RGMII
+-#define FEC_QUIRK_ENET_MAC
++#define CONFIG_FEC_MXC_PHYADDR          1
+ 
+-#ifdef CONFIG_DWC_ETH_QOS
+-#define CONFIG_SYS_NONCACHED_MEMORY     (1 * SZ_1M)     /* 1M */
+-#endif
++#define DWC_NET_PHYADDR	                0
+ 
+ #define PHY_ANEG_TIMEOUT 20000
+ 
+@@ -244,7 +243,6 @@
+ 
+ /* USB configs */
+ #ifndef CONFIG_SPL_BUILD
+-#define CONFIG_USB_STORAGE
+ 
+ #define CONFIG_CMD_USB_MASS_STORAGE
+ #define CONFIG_USB_GADGET_MASS_STORAGE
+-- 
+2.17.1
+

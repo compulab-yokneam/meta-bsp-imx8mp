@@ -1,0 +1,25 @@
+From 24ba821434253211e0184b83a6c5e7b78d14f42d Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 19 Oct 2021 12:08:28 +0300
+Subject: [PATCH] ucm-imx8m-plus: config: Disable CONFIG_WATCHDOG_AUTOSTART
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ configs/ucm-imx8m-plus_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/configs/ucm-imx8m-plus_defconfig b/configs/ucm-imx8m-plus_defconfig
+index a4067e70ce..6d3b690278 100644
+--- a/configs/ucm-imx8m-plus_defconfig
++++ b/configs/ucm-imx8m-plus_defconfig
+@@ -143,6 +143,7 @@ CONFIG_VIDEO_LCD_STARTEK_ILI9881C=y
+ CONFIG_VIDEO_IMX_SEC_DSI=y
+ CONFIG_VIDEO_IMX_LCDIFV3=y
+ # CONFIG_WATCHDOG is not set
++# CONFIG_WATCHDOG_AUTOSTART is not set
+ CONFIG_IMX_WATCHDOG=y
+ CONFIG_WDT=y
+ # CONFIG_HEXDUMP is not set
+-- 
+2.17.1
+

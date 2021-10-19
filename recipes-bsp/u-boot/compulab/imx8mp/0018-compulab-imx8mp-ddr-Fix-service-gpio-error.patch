@@ -1,0 +1,35 @@
+From 09a2df315de0f688ad67fd44de8e98a801221fbe Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Mon, 18 Oct 2021 18:11:11 +0300
+Subject: [PATCH] compulab: imx8mp: ddr: Fix service gpio error
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/plat/imx8mp/ddr/ddr.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/board/compulab/plat/imx8mp/ddr/ddr.c b/board/compulab/plat/imx8mp/ddr/ddr.c
+index 504d6823d2..0b0ab23716 100644
+--- a/board/compulab/plat/imx8mp/ddr/ddr.c
++++ b/board/compulab/plat/imx8mp/ddr/ddr.c
+@@ -144,6 +144,7 @@ static inline void lpddr4_data_set(struct lpddr4_tcm_desc *lpddr4_tcm_desc) {
+ }
+ 
+ #define MNG_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_ODE | PAD_CTL_PUE | PAD_CTL_PE)
++#define MNG_PAD IMX_GPIO_NR(5, 11)
+ static iomux_v3_cfg_t const mng_pads[] = {
+ 	MX8MP_PAD_ECSPI2_MOSI__GPIO5_IO11  | MUX_PAD_CTRL(MNG_PAD_CTRL),
+ };
+@@ -151,7 +152,8 @@ static iomux_v3_cfg_t const mng_pads[] = {
+ static int get_mng_gpio(void)
+ {
+     imx_iomux_v3_setup_multiple_pads(mng_pads, ARRAY_SIZE(mng_pads));
+-    return gpio_get_value(IMX_GPIO_NR(5, 11));
++    gpio_request(MNG_PAD, "mng_pad");
++    return gpio_get_value(MNG_PAD);
+ }
+ 
+ static void spl_dram_eclean(void)
+-- 
+2.17.1
+

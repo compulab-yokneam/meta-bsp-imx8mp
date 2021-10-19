@@ -1,0 +1,29 @@
+From b075d9d06b7a94039900afae63e0bb2f0fbd98cd Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 19 Oct 2021 00:25:49 +0300
+Subject: [PATCH] imx8m: Addresses the SDP common/board_f.c:955 hang issue.
+
+To be investigated. Addresses the SDP common/board_f.c:955 hang issue.
+This patch can be omitted if the SDP is not in use.
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm/mach-imx/imx8m/soc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/mach-imx/imx8m/soc.c b/arch/arm/mach-imx/imx8m/soc.c
+index 01c5088718..ec706b9fcf 100644
+--- a/arch/arm/mach-imx/imx8m/soc.c
++++ b/arch/arm/mach-imx/imx8m/soc.c
+@@ -1409,7 +1409,7 @@ void do_error(struct pt_regs *pt_regs, unsigned int esr)
+ #endif
+ #endif
+ 
+-#if defined(CONFIG_IMX8MN) || defined(CONFIG_IMX8MP)
++#if defined(CONFIG_IMX8MN) /*|| defined(CONFIG_IMX8MP)*/
+ enum env_location env_get_location(enum env_operation op, int prio)
+ {
+ 	enum boot_device dev = get_boot_device();
+-- 
+2.17.1
+

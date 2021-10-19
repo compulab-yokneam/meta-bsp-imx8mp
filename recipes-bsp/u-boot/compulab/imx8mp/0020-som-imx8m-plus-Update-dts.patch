@@ -1,0 +1,79 @@
+From 14a838cd479c9ff636478814036d3cccd32107bc Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Mon, 18 Oct 2021 18:13:11 +0300
+Subject: [PATCH] som-imx8m-plus: Update dts
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm/dts/som-imx8m-plus-u-boot.dtsi | 27 +++++++++++++++++++++++++
+ arch/arm/dts/som-imx8m-plus.dts         |  2 +-
+ 2 files changed, 28 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/dts/som-imx8m-plus-u-boot.dtsi b/arch/arm/dts/som-imx8m-plus-u-boot.dtsi
+index afb341de4b..0c2737338e 100644
+--- a/arch/arm/dts/som-imx8m-plus-u-boot.dtsi
++++ b/arch/arm/dts/som-imx8m-plus-u-boot.dtsi
+@@ -66,6 +66,7 @@
+ 
+ &reg_usdhc2_vmmc {
+ 	u-boot,dm-spl;
++	u-boot,off-on-delay-us = <20000>;
+ };
+ 
+ &pinctrl_uart2 {
+@@ -108,6 +109,22 @@
+ 	u-boot,dm-spl;
+ };
+ 
++&crypto {
++	u-boot,dm-spl;
++};
++
++&sec_jr0 {
++	u-boot,dm-spl;
++};
++
++&sec_jr1 {
++	u-boot,dm-spl;
++};
++
++&sec_jr2 {
++	u-boot,dm-spl;
++};
++
+ &i2c1 {
+ 	u-boot,dm-spl;
+ };
+@@ -175,6 +192,16 @@
+ 	/delete-property/ assigned-clocks;
+ 	/delete-property/ assigned-clock-parents;
+ 	/delete-property/ assigned-clock-rates;
++
++	phy-reset-gpios = <&gpio1 10 GPIO_ACTIVE_LOW>;
++	phy-reset-duration = <15>;
++	phy-reset-post-delay = <100>;
++};
++
++&fec {
++	phy-reset-gpios = <&gpio4 24 GPIO_ACTIVE_LOW>;
++	phy-reset-duration = <15>;
++	phy-reset-post-delay = <100>;
+ };
+ 
+ &flexspi {
+diff --git a/arch/arm/dts/som-imx8m-plus.dts b/arch/arm/dts/som-imx8m-plus.dts
+index 4df5b71692..f9736011a0 100644
+--- a/arch/arm/dts/som-imx8m-plus.dts
++++ b/arch/arm/dts/som-imx8m-plus.dts
+@@ -143,7 +143,7 @@
+ 	phy-mode = "rgmii-id";
+ 	phy-handle = <&ethphy1>;
+ 	fsl,magic-packet;
+-	status = "disabled";
++	status = "okay";
+ 
+ 	mdio {
+ 		compatible = "snps,dwmac-mdio";
+-- 
+2.17.1
+

@@ -1,0 +1,42 @@
+From e4b3e14667a0a94d5834930b334d448ec1aa3cd0 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Mon, 18 Oct 2021 18:15:43 +0300
+Subject: [PATCH] som-imx8m-plus: Init usdhc1 with power down pin low
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/som-imx8m-plus/som-imx8m-plus.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/board/compulab/som-imx8m-plus/som-imx8m-plus.c b/board/compulab/som-imx8m-plus/som-imx8m-plus.c
+index 093b3dc49b..393ddedcbb 100644
+--- a/board/compulab/som-imx8m-plus/som-imx8m-plus.c
++++ b/board/compulab/som-imx8m-plus/som-imx8m-plus.c
+@@ -79,9 +79,24 @@ static int setup_fec(void)
+ }
+ #endif
+ 
++#define WIFI_PD IMX_GPIO_NR(1, 0)
++static iomux_v3_cfg_t const wifi_pd_pads[] = {
++	MX8MP_PAD_GPIO1_IO00__GPIO1_IO00 | MUX_PAD_CTRL(NO_PAD_CTRL),
++};
++
++static void setup_wifi_pd(void)
++{
++	imx_iomux_v3_setup_multiple_pads(wifi_pd_pads,
++					 ARRAY_SIZE(wifi_pd_pads));
++
++	gpio_request(WIFI_PD, "wifi_pd");
++	gpio_direction_output(WIFI_PD, 0);
++}
++
+ void board_vendor_init(void) {
+ 	setup_3v3_exp();
+ 
++	setup_wifi_pd();
+ #ifdef CONFIG_FEC_MXC
+ 	setup_fec();
+ #endif
+-- 
+2.17.1
+

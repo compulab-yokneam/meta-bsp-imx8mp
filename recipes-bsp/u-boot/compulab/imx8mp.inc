@@ -16,7 +16,18 @@ SRC_URI_append_mx8mp = " \
 	file://0014-compulab-imx8mp-Prepare-for-multi-board-support.patch \
 	file://0015-compulab-Add-som-imx8m-plus-support.patch \
 	file://0016-watchdog-Add-CONFIG_WATCHDOG_AUTOSTART-option.patch \
-	file://0017-som-imx8m-plus-confog-Disable-CONFIG_WATCHDOG_AUTOST.patch \
+	file://0017-som-imx8m-plus-config-Disable-CONFIG_WATCHDOG_AUTOST.patch \
+	file://0018-compulab-imx8mp-ddr-Fix-service-gpio-error.patch \
+	file://0019-som-imx8m-plus-Update-configs.patch \
+	file://0020-som-imx8m-plus-Update-dts.patch \
+	file://0021-som-imx8m-plus-Init-usdhc1-with-power-down-pin-low.patch \
+	file://0022-imx8m-Addresses-the-SDP-common-board_f.c-955-hang-is.patch \
+	file://0023-ucm-imx8m-plus-config-Disable-CONFIG_WATCHDOG_AUTOST.patch \
+	file://0024-ucm-imx8m-plus-config-Enable-CONFIG_USB_STORAGE.patch \
+	file://0025-compulab-imx8m-plus-Move-NET-settings-to-the-machine.patch \
+	file://0026-compulab-imx8m-plus-Add-boot_opt.patch \
+	file://0027-som-imx8m-plus-Enable-FEC0-enet-clock.patch \
+	file://0028-som-imx8m-plus-dts-Add-phy-reset-for-net-ifaces.patch \
 "
 
 SRC_URI_append_ucm-imx8m-plus = " \
