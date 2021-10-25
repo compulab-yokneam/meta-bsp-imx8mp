@@ -12,4 +12,4 @@ do_compile_prepend() {
     fi
 }
 
-COMPATIBLE_MACHINE = "ucm-imx8m-plus"
+COMPATIBLE_MACHINE = "(ucm-imx8m-plus|som-imx8m-plus)"
