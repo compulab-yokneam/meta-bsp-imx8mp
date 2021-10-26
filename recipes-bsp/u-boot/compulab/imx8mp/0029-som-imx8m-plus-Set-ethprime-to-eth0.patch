@@ -1,0 +1,26 @@
+From 3198d7495fabd56b6276c0f210a6afce21640467 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 26 Oct 2021 10:51:12 +0300
+Subject: [PATCH] som-imx8m-plus: Set ethprime to eth0
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ include/configs/som-imx8m-plus.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/configs/som-imx8m-plus.h b/include/configs/som-imx8m-plus.h
+index 356174ca4f..88851e3f69 100644
+--- a/include/configs/som-imx8m-plus.h
++++ b/include/configs/som-imx8m-plus.h
+@@ -12,7 +12,7 @@
+ #define CONFIG_IMX6_PWM_PER_CLK 66000000
+ 
+ #if defined(CONFIG_CMD_NET)
+-#define CONFIG_ETHPRIME                 "eth1" /* Set eqos to primary since we use its MDIO */
++#define CONFIG_ETHPRIME                 "eth0"
+ 
+ #define CONFIG_FEC_XCV_TYPE             RGMII
+ #define CONFIG_FEC_MXC_PHYADDR          1
+-- 
+2.17.1
+

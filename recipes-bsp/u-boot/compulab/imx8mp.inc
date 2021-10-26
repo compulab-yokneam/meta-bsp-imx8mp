@@ -28,6 +28,9 @@ SRC_URI_append_mx8mp = " \
 	file://0026-compulab-imx8m-plus-Add-boot_opt.patch \
 	file://0027-som-imx8m-plus-Enable-FEC0-enet-clock.patch \
 	file://0028-som-imx8m-plus-dts-Add-phy-reset-for-net-ifaces.patch \
+	file://0029-som-imx8m-plus-Set-ethprime-to-eth0.patch \
+	file://0030-compulab-eeprom-add-support-for-obtaining-2-nd-mac.patch \
+	file://0031-imx8m-plus-Add-board-specific-imx_get_mac_from_fuse.patch \
 "
 
 SRC_URI_append_ucm-imx8m-plus = " \

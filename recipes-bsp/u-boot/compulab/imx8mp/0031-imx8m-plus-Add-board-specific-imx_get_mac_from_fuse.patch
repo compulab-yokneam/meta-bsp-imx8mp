@@ -1,0 +1,75 @@
+From 12399f392e0f2e0ee5a66e846ccdbb78b39cb67a Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 26 Oct 2021 11:33:49 +0300
+Subject: [PATCH] imx8m-plus: Add board specific imx_get_mac_from_fuse()
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/plat/imx8mp/board/board.c       |  8 --------
+ board/compulab/som-imx8m-plus/som-imx8m-plus.c | 11 +++++++++++
+ board/compulab/ucm-imx8m-plus/ucm-imx8m-plus.c | 11 +++++++++++
+ 3 files changed, 22 insertions(+), 8 deletions(-)
+
+diff --git a/board/compulab/plat/imx8mp/board/board.c b/board/compulab/plat/imx8mp/board/board.c
+index 37ecf534fd..fb3b0b5051 100644
+--- a/board/compulab/plat/imx8mp/board/board.c
++++ b/board/compulab/plat/imx8mp/board/board.c
+@@ -175,14 +175,6 @@ static int setup_eqos(void)
+ #endif
+ 
+ #if defined(CONFIG_FEC_MXC) || defined(CONFIG_DWC_ETH_QOS)
+-void imx_get_mac_from_fuse(int dev_id, unsigned char *mac)
+-{
+-	cl_eeprom_read_mac_addr(mac, CONFIG_SYS_I2C_EEPROM_BUS);
+-	debug("%s: MAC%d: %02x.%02x.%02x.%02x.%02x.%02x\n",
+-	      __func__, dev_id, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+-	return;
+-}
+-
+ int board_phy_config(struct phy_device *phydev)
+ {
+ 	if (phydev->drv->config)
+diff --git a/board/compulab/som-imx8m-plus/som-imx8m-plus.c b/board/compulab/som-imx8m-plus/som-imx8m-plus.c
+index 46c481a70a..b20a80b08a 100644
+--- a/board/compulab/som-imx8m-plus/som-imx8m-plus.c
++++ b/board/compulab/som-imx8m-plus/som-imx8m-plus.c
+@@ -79,6 +79,17 @@ static int setup_fec(void)
+ }
+ #endif
+ 
++#if defined(CONFIG_FEC_MXC) || defined(CONFIG_DWC_ETH_QOS)
++#include "../common/eeprom.h"
++void imx_get_mac_from_fuse(int dev_id, unsigned char *mac)
++{
++	cl_eeprom_read_n_mac_addr(mac, dev_id, CONFIG_SYS_I2C_EEPROM_BUS);
++	debug("%s: MAC%d: %02x.%02x.%02x.%02x.%02x.%02x\n",
++	      __func__, dev_id, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
++	return;
++}
++#endif
++
+ #define WIFI_PD IMX_GPIO_NR(1, 0)
+ static iomux_v3_cfg_t const wifi_pd_pads[] = {
+ 	MX8MP_PAD_GPIO1_IO00__GPIO1_IO00 | MUX_PAD_CTRL(NO_PAD_CTRL),
+diff --git a/board/compulab/ucm-imx8m-plus/ucm-imx8m-plus.c b/board/compulab/ucm-imx8m-plus/ucm-imx8m-plus.c
+index 440fe1d05a..793eccb666 100644
+--- a/board/compulab/ucm-imx8m-plus/ucm-imx8m-plus.c
++++ b/board/compulab/ucm-imx8m-plus/ucm-imx8m-plus.c
+@@ -28,3 +28,14 @@
+ #include <asm/mach-imx/video.h>
+ 
+ DECLARE_GLOBAL_DATA_PTR;
++
++#if defined(CONFIG_FEC_MXC) || defined(CONFIG_DWC_ETH_QOS)
++#include "../common/eeprom.h"
++void imx_get_mac_from_fuse(int dev_id, unsigned char *mac)
++{
++	cl_eeprom_read_mac_addr(mac, CONFIG_SYS_I2C_EEPROM_BUS);
++	debug("%s: MAC%d: %02x.%02x.%02x.%02x.%02x.%02x\n",
++	      __func__, dev_id, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
++	return;
++}
++#endif
+-- 
+2.17.1
+

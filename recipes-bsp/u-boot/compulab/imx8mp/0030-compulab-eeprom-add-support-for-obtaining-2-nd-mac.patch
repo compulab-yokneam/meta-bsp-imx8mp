@@ -1,0 +1,71 @@
+From bebcc6c7df226f9a1b1c31ec0909cc49f7a71025 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 26 Oct 2021 11:33:19 +0300
+Subject: [PATCH] compulab: eeprom: add support for obtaining 2-nd mac
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/common/eeprom.c | 18 ++++++++++++++++++
+ board/compulab/common/eeprom.h |  6 ++++++
+ 2 files changed, 24 insertions(+)
+
+diff --git a/board/compulab/common/eeprom.c b/board/compulab/common/eeprom.c
+index c1d321361c..88d0228704 100644
+--- a/board/compulab/common/eeprom.c
++++ b/board/compulab/common/eeprom.c
+@@ -173,6 +173,24 @@ int cl_eeprom_read_mac_addr(uchar *buf, uint eeprom_bus __attribute__((unused)))
+ 	return cl_eeprom_read(offset, buf, 6);
+ }
+ 
++/*
++ * Routine: cl_eeprom_read_n_mac_addr
++ * Description: read iface_number mac address and store it in buf.
++ */
++int cl_eeprom_read_n_mac_addr(uchar *buf, uint iface_number, uint eeprom_bus __attribute__((unused)))
++{
++	uint offset;
++	int err;
++
++	err = cl_eeprom_setup(&eeprom_som);
++	if (err)
++		return err;
++
++	offset = (iface_number == 0) ? MAC_ADDR_OFFSET : MAC1_ADDR_OFFSET;
++
++	return cl_eeprom_read(offset, buf, 6);
++}
++
+ static u32 board_rev;
+ 
+ /*
+diff --git a/board/compulab/common/eeprom.h b/board/compulab/common/eeprom.h
+index 30a287e79a..d4b70febcb 100644
+--- a/board/compulab/common/eeprom.h
++++ b/board/compulab/common/eeprom.h
+@@ -24,10 +24,12 @@
+ #define PRODUCT_OPTION_SIZE		16
+ #define PRODUCT_OPTION_NUM		5
+ #define MAC_ADDR_OFFSET			4
++#define MAC1_ADDR_OFFSET		10
+ #define MAC_ADDR_OFFSET_LEGACY		0
+ 
+ #if (defined(CONFIG_SYS_I2C) || defined(CONFIG_DM_I2C))
+ int cl_eeprom_read_mac_addr(uchar *buf, uint eeprom_bus);
++int cl_eeprom_read_n_mac_addr(uchar *buf, uint iface_number, uint eeprom_bus);
+ u32 cl_eeprom_get_som_revision(void);
+ u32 cl_eeprom_get_sb_revision(void);
+ int cl_eeprom_get_product_name(uchar *buf, uint eeprom_bus);
+@@ -43,6 +45,10 @@ static inline int cl_eeprom_read_mac_addr(uchar *buf, uint eeprom_bus)
+ {
+ 	return 1;
+ }
++static int cl_eeprom_read_n_mac_addr(uchar *buf, uint iface_number, uint eeprom_bus)
++{
++	return 1;
++}
+ static inline int cl_eeprom_get_product_name(uchar *buf, uint eeprom_bus)
+ {
+ 	return -ENOSYS;
+-- 
+2.17.1
+
