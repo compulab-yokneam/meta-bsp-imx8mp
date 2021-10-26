@@ -1,19 +1,19 @@
-| NOTE | The very early debug version. Does not work at all. !!!NOT_SUPPORTED!!!|
-|---|---|
-
 # Configuring the build
 
 ## Setup Yocto environment
 
-* WorkDir
+* WorkDir:
 ```
 mkdir compulab-bsp && cd compulab-bsp
 ```
 * Set a CompuLab machine:
-```
-export MACHINE=ucm-imx8m-plus
-```
-* Initialize repo manifests
+
+| Machine | Command Line |
+|---|---|
+|ucm-imx8m-plus|```export MACHINE=ucm-imx8m-plus```|
+|som-imx8m-plus|```export MACHINE=som-imx8m-plus```|
+
+* Initialize repo manifests:
 ```
 repo init -u git://source.codeaurora.org/external/imx/imx-manifest.git -b imx-linux-hardknott -m imx-5.10.35-2.0.0.xml
 wget --directory-prefix .repo/manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/hardknott/scripts/imx-5.10.35-2.0.0_compulab.xml
