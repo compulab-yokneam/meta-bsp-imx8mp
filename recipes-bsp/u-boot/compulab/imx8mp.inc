@@ -31,6 +31,7 @@ SRC_URI_append_mx8mp = " \
 	file://0029-som-imx8m-plus-Set-ethprime-to-eth0.patch \
 	file://0030-compulab-eeprom-add-support-for-obtaining-2-nd-mac.patch \
 	file://0031-imx8m-plus-Add-board-specific-imx_get_mac_from_fuse.patch \
+	file://0032-compulab-imx8mp-Add-CONFIG_ATF_LOAD_ADDR-CONFIG_TEE_.patch \
 "
 
 SRC_URI_append_ucm-imx8m-plus = " \

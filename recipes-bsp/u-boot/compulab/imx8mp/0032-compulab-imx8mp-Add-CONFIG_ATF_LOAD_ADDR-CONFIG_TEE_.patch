@@ -1,0 +1,71 @@
+From eb1a4f2e271f1564d86d5667cf650e599a535fab Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sun, 31 Oct 2021 08:05:41 +0200
+Subject: [PATCH] compulab: imx8mp: Add CONFIG_ATF_LOAD_ADDR
+ CONFIG_TEE_LOAD_ADDR
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ Makefile                              |  3 +++
+ board/compulab/plat/imx8mp/Kconfig    | 11 +++++++++++
+ board/compulab/som-imx8m-plus/Kconfig |  2 ++
+ board/compulab/ucm-imx8m-plus/Kconfig |  2 ++
+ 4 files changed, 18 insertions(+)
+ create mode 100644 board/compulab/plat/imx8mp/Kconfig
+
+diff --git a/Makefile b/Makefile
+index 0451f445f6..3567882dd2 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1410,6 +1410,9 @@ else
+ SPL_PAYLOAD := u-boot.bin
+ endif
+ 
++export ATF_LOAD_ADDR=$(CONFIG_ATF_LOAD_ADDR)
++export TEE_LOAD_ADDR=$(CONFIG_TEE_LOAD_ADDR)
++
+ SPL_IMAGE := $(CONFIG_SPL_IMAGE:"%"=%)
+ 
+ OBJCOPYFLAGS_u-boot-with-spl.bin = -I binary -O binary \
+diff --git a/board/compulab/plat/imx8mp/Kconfig b/board/compulab/plat/imx8mp/Kconfig
+new file mode 100644
+index 0000000000..f01e277e7d
+--- /dev/null
++++ b/board/compulab/plat/imx8mp/Kconfig
+@@ -0,0 +1,11 @@
++if TARGET_SOM_IMX8M_PLUS || TARGET_UCM_IMX8M_PLUS
++
++config ATF_LOAD_ADDR
++	hex "bl31.bin load address"
++	default 0x00970000
++
++config TEE_LOAD_ADDR
++	hex "tee.bin load address"
++	default 0x56000000
++
++endif
+diff --git a/board/compulab/som-imx8m-plus/Kconfig b/board/compulab/som-imx8m-plus/Kconfig
+index c46b0bfc42..732c447cd9 100644
+--- a/board/compulab/som-imx8m-plus/Kconfig
++++ b/board/compulab/som-imx8m-plus/Kconfig
+@@ -30,4 +30,6 @@ config SYS_I2C_EEPROM_ADDR_SB
+ 	hex "SB eeprom dev address"
+ 	default 0x54
+ 
++source "board/compulab/plat/imx8mp/Kconfig"
++
+ endif
+diff --git a/board/compulab/ucm-imx8m-plus/Kconfig b/board/compulab/ucm-imx8m-plus/Kconfig
+index 790d32f023..98aeff95ad 100644
+--- a/board/compulab/ucm-imx8m-plus/Kconfig
++++ b/board/compulab/ucm-imx8m-plus/Kconfig
+@@ -30,4 +30,6 @@ config SYS_I2C_EEPROM_ADDR_SB
+ 	hex "SB eeprom dev address"
+ 	default 0x54
+ 
++source "board/compulab/plat/imx8mp/Kconfig"
++
+ endif
+-- 
+2.17.1
+
