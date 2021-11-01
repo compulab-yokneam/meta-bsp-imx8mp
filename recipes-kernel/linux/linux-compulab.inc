@@ -3,7 +3,9 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/compulab/imx8mp:"
 include compulab/imx8mp.inc
 
 do_configure_append() {
-	oe_runmake ${MACHINE}_defconfig
+    if [ -z ${SKIP_MACHINE_DEFCONFIG} ];then
+        oe_runmake ${MACHINE}_defconfig
+    fi
 }
 
 do_compile_prepend() {
@@ -12,4 +14,4 @@ do_compile_prepend() {
     fi
 }
 
-COMPATIBLE_MACHINE = "ucm-imx8m-plus"
+COMPATIBLE_MACHINE = "(ucm-imx8m-plus|som-imx8m-plus)"
