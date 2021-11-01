@@ -1,6 +1,6 @@
 SUMMARY = "CompuLab Linux Kernel for ucm-imx8m-plus SOM"
 
-inherit kernel fsl-vivante-kernel-driver-handler
+inherit kernel-yocto kernel fsl-kernel-localversion fsl-vivante-kernel-driver-handler
 
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
@@ -42,3 +42,5 @@ SRC_URI = "git://source.codeaurora.org/external/imx/linux-imx;protocol=https;bra
 LINUX_VERSION = "5.10.35"
 
 DEFAULT_PREFERENCE = "1"
+
+KERNEL_VERSION_SANITY_SKIP="1"
