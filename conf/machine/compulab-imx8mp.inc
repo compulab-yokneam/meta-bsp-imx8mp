@@ -3,11 +3,7 @@ MACHINEOVERRIDES =. "imx-boot-container:mx8:mx8m:mx8mp:"
 require conf/machine/include/imx-base.inc
 require conf/machine/include/tune-cortexa53.inc
 
-MACHINE_FEATURES += " pci wifi bluetooth "
-MACHINE_FEATURES_append_use-nxp-bsp = " optee "
-
-IMX_DEFAULT_BOOTLOADER_use-nxp-bsp = "u-boot-imx"
-IMX_DEFAULT_BOOTLOADER_use-mainline-bsp = "u-boot-fslc"
+MACHINE_FEATURES += " pci wifi bluetooth optee "
 
 UBOOT_SUFFIX = "bin"
 
@@ -19,7 +15,7 @@ ATF_LOAD_ADDR = "0x970000"
 # Extra firmware package name, that is required to build boot container for fslc bsp
 IMX_EXTRA_FIRMWARE = "firmware-imx-8m"
 
-FW_VER = "202006"
+FW_VER ?= "202006"
 # Set DDR FIRMWARE
 DDR_FIRMWARE_NAME = " \
 	lpddr4_pmu_train_1d_dmem_${FW_VER}.bin \
