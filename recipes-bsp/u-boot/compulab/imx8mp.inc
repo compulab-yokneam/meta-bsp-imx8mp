@@ -1,4 +1,4 @@
-SRC_URI_append_mx8mp = " \
+SRC_URI_append = " \
 	file://0000-ucm-imx8m-plus-Add-support-update-files.patch \
 	file://0001-ucm-imx8m-plus-Add-support-Add-files.patch \
 	file://0002-ucm-imx8m-plus-Fix-spl-reset.patch \
