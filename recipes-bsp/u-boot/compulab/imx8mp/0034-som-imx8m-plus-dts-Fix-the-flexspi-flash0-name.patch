@@ -1,0 +1,26 @@
+From 28acbd8323dcc516964eaa569aa5d08b92fb01e0 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sun, 21 Nov 2021 17:32:07 +0200
+Subject: [PATCH] som-imx8m-plus: dts: Fix the flexspi flash0 name
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm/dts/som-imx8m-plus.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/dts/som-imx8m-plus.dts b/arch/arm/dts/som-imx8m-plus.dts
+index f925df38e1..4ae25ab756 100644
+--- a/arch/arm/dts/som-imx8m-plus.dts
++++ b/arch/arm/dts/som-imx8m-plus.dts
+@@ -169,7 +169,7 @@
+ 	pinctrl-0 = <&pinctrl_flexspi0>;
+ 	status = "okay";
+ 
+-	flash0: w25q64dw@0 {
++	flash0: w25q128dw@0 {
+ 		reg = <0>;
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+-- 
+2.17.1
+
