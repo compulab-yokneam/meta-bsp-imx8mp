@@ -16,9 +16,12 @@ Define the following environment variables:
 
 |Description|Command Line|
 |---|---|
-|NXP release name|export NXP_RELEASE=hardknott-5.10.35-2.0.0|
-|NXP firmware name|export NXP_FIRMWARE=firmware-imx-8.12.bin|
-|CompuLab branch name|export CPL_BRANCH=hardknott|
+|NXP release name|export NXP_RELEASE=hardknott-5.10.72-2.2.0|
+|NXP firmware name|export NXP_FIRMWARE=firmware-imx-8.14.bin|
+|CompuLab branch name|export CPL_BRANCH=hardknott-5.10.72-2.2.0|
+|ATF revision|export ATF=lf-5.10.72-2.2.0|
+|OPTEE revision|export OPTEE=lf-5.10.72-2.2.0|
+|U-Boot revision|export UBOOT=lf-5.10.35-2.0.0|
 
 ## Prerequisites
 It is up to developer to setup arm64 build environment:
@@ -52,11 +55,16 @@ cp -v $(find firmware* | awk '/train|hdmi_imx8|dp_imx8/' ORS=" ") ${RESULTS}
 </pre>
 
 ### Arm Trusted Firmware (ATF) setup
-* Download and patch the ATF:
+* Download the ATF:
 <pre>
 git clone https://source.codeaurora.org/external/imx/imx-atf.git
-git -C imx-atf checkout ${NXP_RELEASE} -b ${CPL_BRANCH}
+git -C imx-atf checkout ${ATF} -b ${CPL_BRANCH}
+</pre>
+* Apply patches if applicable:
+<pre>
+[[ -d ${LAYER_DIR}/recipes-bsp/imx-atf/compulab/imx8mp ]] && { \
 git -C imx-atf am ${LAYER_DIR}/recipes-bsp/imx-atf/compulab/imx8mp/*.patch
+}
 </pre>
 * Make bl31.bin
 <pre>
@@ -65,11 +73,16 @@ ln -s $(readlink -f imx-atf/build-optee/imx8mp/release/bl31.bin) ${RESULTS}/
 </pre>
 
 ### OP-TEE Setup
-* Download and patch the OP-TEE from:
+* Download the OP-TEE:
 <pre>
 git clone https://source.codeaurora.org/external/imx/imx-optee-os
-git -C imx-optee-os checkout ${NXP_RELEASE} -b ${CPL_BRANCH}
+git -C imx-optee-os checkout ${OPTEE} -b ${CPL_BRANCH}
+</pre>
+* Apply patches if applicable:
+<pre>
+[[ -d ${LAYER_DIR}/recipes-security/optee-imx/compulab/imx8mp ]] && { \
 git -C imx-atf am ${LAYER_DIR}/recipes-security/optee-imx/compulab/imx8mp/*.patch
+}
 </pre>
 * Set environment variables:
 <pre>
@@ -78,15 +91,16 @@ export CROSS_COMPILE64=${CROSS_COMPILE}
 </pre>
 * Make tee.bin
 <pre>
-make -C imx-optee-os PLATFORM=imx PLATFORM_FLAVOR=mx8mpevk CFG_WERROR=y CFG_TEE_CORE_LOG_LEVEL=0 CFG_TEE_TA_LOG_LEVEL=0 CFG_DDR_SIZE=0x200000000ULL
-ln -s $(readlink -f imx-optee-os/build.mx8mpevk/core/tee.bin) ${RESUTLS}/
+make -C imx-optee-os PLATFORM=imx PLATFORM_FLAVOR=mx8mpevk CFG_WERROR=y \
+  CFG_TEE_CORE_LOG_LEVEL=0 CFG_TEE_TA_LOG_LEVEL=0 CFG_DDR_SIZE=0x200000000ULL
+ln -s $(readlink -f imx-optee-os/out/arm-plat-imx/core/tee-raw.bin) ${RESUTLS}/tee.bin
 </pre>
 
 ### U-Boot
 * Download the U-Boot source and apply CompuLab BSP patches:
 <pre>
 git clone https://source.codeaurora.org/external/imx/uboot-imx.git
-git -C uboot-imx checkout ${NXP_RELEASE} -b ${CPL_BRANCH}
+git -C uboot-imx checkout ${UBOOT} -b ${CPL_BRANCH}
 git -C uboot-imx am ${LAYER_DIR}/recipes-bsp/u-boot/compulab/imx8mp/*.patch
 </pre>
 * Restore `ARCH` environment variables:
@@ -100,4 +114,6 @@ make -C uboot-imx O=${RESULTS} flash.bin
 </pre>
 
 ## Flashing
-`dd if=${RESULTS}/flash.bin of=/dev/<your device> bs=1K seek=32 status=progress`
+<pre>
+dd if=${RESULTS}/flash.bin of=/dev/<your device> bs=1K seek=32 status=progress
+</pre>
