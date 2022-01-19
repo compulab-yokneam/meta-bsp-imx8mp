@@ -1,0 +1,107 @@
+From f2d5e2e50b156bcfab6919b27007dae8f91ec341 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Wed, 19 Jan 2022 11:14:38 +0200
+Subject: [PATCH] compulab: imx8m-plus: Add thermal dtbs' files
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/Makefile         |  2 ++
+ .../dts/compulab/som-imx8m-plus-thermal.dts   | 31 +++++++++++++++++++
+ .../dts/compulab/ucm-imx8m-plus-thermal.dts   | 31 +++++++++++++++++++
+ 3 files changed, 64 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/compulab/som-imx8m-plus-thermal.dts
+ create mode 100644 arch/arm64/boot/dts/compulab/ucm-imx8m-plus-thermal.dts
+
+diff --git a/arch/arm64/boot/dts/compulab/Makefile b/arch/arm64/boot/dts/compulab/Makefile
+index b08c68c4b684..4f1c53dd794d 100644
+--- a/arch/arm64/boot/dts/compulab/Makefile
++++ b/arch/arm64/boot/dts/compulab/Makefile
+@@ -1,9 +1,11 @@
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus.dtb
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-thermal.dtb
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus_mipi-csi1.dtb
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus_mipi-csi2.dtb
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus_mipi-csi1-imx219.dtb
+ 
+ dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus.dtb
++dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus-thermal.dtb
+ dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus_mipi-csi1.dtb
+ dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus_mipi-csi2.dtb
+ 
+diff --git a/arch/arm64/boot/dts/compulab/som-imx8m-plus-thermal.dts b/arch/arm64/boot/dts/compulab/som-imx8m-plus-thermal.dts
+new file mode 100644
+index 000000000000..f7e80857cc54
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/som-imx8m-plus-thermal.dts
+@@ -0,0 +1,31 @@
++/*
++ * Copyright 2021 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/dts-v1/;
++
++#include "som-imx8m-plus.dts"
++
++/ {
++	model = "CompuLab SOM-iMX8M-Plus (thermal)";
++	compatible = "compulab,som-imx8m-plus", "fsl,imx8mp";
++};
++
++&cpu_alert0 {
++	temperature = <125000>;
++};
++
++&cpu_crit0 {
++	temperature = <155000>;
++};
++
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-thermal.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-thermal.dts
+new file mode 100644
+index 000000000000..3ff902806362
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-thermal.dts
+@@ -0,0 +1,31 @@
++/*
++ * Copyright 2021 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/dts-v1/;
++
++#include "ucm-imx8m-plus.dts"
++
++/ {
++	model = "CompuLab UCM-iMX8M-Plus (thermal)";
++	compatible = "compulab,ucm-imx8m-plus", "fsl,imx8mp";
++};
++
++&cpu_alert0 {
++	temperature = <125000>;
++};
++
++&cpu_crit0 {
++	temperature = <155000>;
++};
++
+-- 
+2.17.1
+
