@@ -1,0 +1,26 @@
+From 006c266955db6442badec9f26bb19d3805919c5f Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Wed, 19 Jan 2022 10:39:01 +0200
+Subject: [PATCH] compulab: imx8mp: ddr: Fix the 0xff060018 vendore name
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/plat/imx8mp/ddr/ddr.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/board/compulab/plat/imx8mp/ddr/ddr.h b/board/compulab/plat/imx8mp/ddr/ddr.h
+index 27e450bafc..678b89a529 100644
+--- a/board/compulab/plat/imx8mp/ddr/ddr.h
++++ b/board/compulab/plat/imx8mp/ddr/ddr.h
+@@ -56,7 +56,7 @@ static const struct lpddr4_desc lpddr4_array[] = {
+ 		.timing = &ucm_dram_timing_ff000010
+ #endif
+ 	},
+-	{ .name = "Kingston",	.id = 0xff060018, .subind = 0xff, .size = 8192, .count = 1,
++	{ .name = "Micron",	.id = 0xff060018, .subind = 0xff, .size = 8192, .count = 1,
+ #ifdef CONFIG_SPL_BUILD
+ 		.timing = &ucm_dram_timing_ff060018
+ #endif
+-- 
+2.17.1
+
