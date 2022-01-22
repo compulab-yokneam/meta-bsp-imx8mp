@@ -1,0 +1,198 @@
+From 5849b6804b19c83fde01023852be708cbd001dd7 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sat, 22 Jan 2022 20:44:18 +0200
+Subject: [PATCH] ucm-imx8m-plus: Update dtbs list
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/Makefile         |  4 ++
+ .../boot/dts/compulab/ucm-imx8m-plus-hdmi.dts | 37 +++++++++++++++++++
+ .../boot/dts/compulab/ucm-imx8m-plus-lvds.dts | 37 +++++++++++++++++++
+ .../boot/dts/compulab/ucm-imx8m-plus-mipi.dts | 37 +++++++++++++++++++
+ .../dts/compulab/ucm-imx8m-plus-usbdev.dts    | 27 ++++++++++++++
+ 5 files changed, 142 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/compulab/ucm-imx8m-plus-hdmi.dts
+ create mode 100644 arch/arm64/boot/dts/compulab/ucm-imx8m-plus-lvds.dts
+ create mode 100644 arch/arm64/boot/dts/compulab/ucm-imx8m-plus-mipi.dts
+ create mode 100644 arch/arm64/boot/dts/compulab/ucm-imx8m-plus-usbdev.dts
+
+diff --git a/arch/arm64/boot/dts/compulab/Makefile b/arch/arm64/boot/dts/compulab/Makefile
+index b08c68c4b684..8a8a297f8f12 100644
+--- a/arch/arm64/boot/dts/compulab/Makefile
++++ b/arch/arm64/boot/dts/compulab/Makefile
+@@ -2,6 +2,10 @@ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus.dtb
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus_mipi-csi1.dtb
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus_mipi-csi2.dtb
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus_mipi-csi1-imx219.dtb
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-mipi.dtb
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-lvds.dtb
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-hdmi.dtb
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-usbdev.dtb
+ 
+ dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus.dtb
+ dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus_mipi-csi1.dtb
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-hdmi.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-hdmi.dts
+new file mode 100644
+index 000000000000..35aa894fa5f9
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-hdmi.dts
+@@ -0,0 +1,37 @@
++/*
++ * Copyright 2021 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/dts-v1/;
++
++#include "ucm-imx8m-plus.dts"
++
++/ {
++	model = "CompuLab UCM-iMX8M-Plus (hdmi)";
++	compatible = "compulab,ucm-imx8m-plus", "fsl,imx8mp";
++};
++
++/* mipi dsi */
++&lcdif1 {
++	status = "disabled";
++};
++
++/* lvds */
++&lcdif2 {
++	status = "disabled";
++};
++
++/* hdmi */
++&lcdif3 {
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-lvds.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-lvds.dts
+new file mode 100644
+index 000000000000..e77eecef59be
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-lvds.dts
+@@ -0,0 +1,37 @@
++/*
++ * Copyright 2021 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/dts-v1/;
++
++#include "ucm-imx8m-plus.dts"
++
++/ {
++	model = "CompuLab UCM-iMX8M-Plus (lvds)";
++	compatible = "compulab,ucm-imx8m-plus", "fsl,imx8mp";
++};
++
++/* mipi dsi */
++&lcdif1 {
++	status = "disabled";
++};
++
++/* lvds */
++&lcdif2 {
++	status = "okay";
++};
++
++/* hdmi */
++&lcdif3 {
++	status = "disabled";
++};
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-mipi.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-mipi.dts
+new file mode 100644
+index 000000000000..78c0ff9e29e9
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-mipi.dts
+@@ -0,0 +1,37 @@
++/*
++ * Copyright 2021 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/dts-v1/;
++
++#include "ucm-imx8m-plus.dts"
++
++/ {
++	model = "CompuLab UCM-iMX8M-Plus (mipi)";
++	compatible = "compulab,ucm-imx8m-plus", "fsl,imx8mp";
++};
++
++/* mipi dsi */
++&lcdif1 {
++	status = "okay";
++};
++
++/* lvds */
++&lcdif2 {
++	status = "disabled";
++};
++
++/* hdmi */
++&lcdif3 {
++	status = "disabled";
++};
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-usbdev.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-usbdev.dts
+new file mode 100644
+index 000000000000..52555e2a54a6
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-usbdev.dts
+@@ -0,0 +1,27 @@
++/*
++ * Copyright 2021 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/dts-v1/;
++
++#include "ucm-imx8m-plus.dts"
++
++/ {
++	model = "CompuLab UCM-iMX8M-Plus (usbdev)";
++	compatible = "compulab,ucm-imx8m-plus", "fsl,imx8mp";
++};
++
++&usb_dwc3_0 {
++	dr_mode = "peripheral";
++	status = "okay";
++};
+-- 
+2.17.1
+

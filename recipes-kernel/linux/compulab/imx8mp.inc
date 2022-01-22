@@ -24,5 +24,6 @@ SRC_URI_append = " \
 	file://0022-media-i2c-imx219-Make-it-work-with-imx8mp.patch \
 	file://0023-imx219-Update-the-machine-dts.patch \
 	file://0024-ucm-imx8m-plus-config-Enable-CONFIG_ARM_PSCI_CPUIDLE.patch \
+	file://0025-ucm-imx8m-plus-Update-dtbs-list.patch \
 	file://defconfig \
 "
