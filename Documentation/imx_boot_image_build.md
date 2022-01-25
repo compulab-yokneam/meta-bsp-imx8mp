@@ -16,7 +16,7 @@ Define the following environment variables:
 
 |Description|Command Line|
 |---|---|
-|NXP release name|export NXP_RELEASE=hardknott-5.10.35-2.0.0|
+|NXP release name|export NXP_RELEASE=lf-5.10.35-2.0.0|
 |NXP firmware name|export NXP_FIRMWARE=firmware-imx-8.12.bin|
 |CompuLab branch name|export CPL_BRANCH=hardknott|
 
