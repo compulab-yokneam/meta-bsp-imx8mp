@@ -1,0 +1,80 @@
+From 39b9c32787bab89f37fdbdc2e1eb5028f6ea3031 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Wed, 26 Jan 2022 18:18:31 +0200
+Subject: [PATCH] imx8mp: compulab: Enable RAMDISK support
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/configs/som-imx8m-plus_defconfig | 5 +++--
+ arch/arm64/configs/ucm-imx8m-plus_defconfig | 5 +++--
+ 2 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm64/configs/som-imx8m-plus_defconfig b/arch/arm64/configs/som-imx8m-plus_defconfig
+index 9b225e091ec1..eec070eabaec 100644
+--- a/arch/arm64/configs/som-imx8m-plus_defconfig
++++ b/arch/arm64/configs/som-imx8m-plus_defconfig
+@@ -230,6 +230,8 @@ CONFIG_MTD_UBI=y
+ CONFIG_OF_OVERLAY=y
+ CONFIG_BLK_DEV_LOOP=y
+ CONFIG_BLK_DEV_NBD=m
++CONFIG_BLK_DEV_RAM=y
++CONFIG_BLK_DEV_RAM_SIZE=16384
+ CONFIG_XEN_BLKDEV_BACKEND=m
+ CONFIG_VIRTIO_BLK=y
+ CONFIG_BLK_DEV_NVME=y
+@@ -569,10 +571,10 @@ CONFIG_SND_SOC_IMX_AK4458=y
+ CONFIG_SND_SOC_IMX_AK5558=y
+ CONFIG_SND_SOC_IMX_AK4497=y
+ CONFIG_SND_SOC_IMX_MICFIL=y
+-CONFIG_SND_SOC_IMX_RPMSG=y
+ CONFIG_SND_SOC_IMX_SPDIF=y
+ CONFIG_SND_SOC_FSL_ASOC_CARD=y
+ CONFIG_SND_SOC_IMX_AUDMIX=y
++CONFIG_SND_SOC_IMX_RPMSG=y
+ CONFIG_SND_SOC_IMX_XCVR=m
+ CONFIG_SND_SOC_IMX_PDM_MIC=y
+ CONFIG_SND_SOC_IMX_PCM512X=y
+@@ -813,7 +815,6 @@ CONFIG_PWM_FSL_FTM=m
+ CONFIG_PWM_IMX27=y
+ CONFIG_PWM_SL28CPLD=m
+ CONFIG_SL28CPLD_INTC=y
+-CONFIG_RESET_BRCMSTB_RESCAL=y
+ CONFIG_RESET_IMX7=y
+ CONFIG_PHY_XGENE=y
+ CONFIG_PHY_MIXEL_LVDS=y
+diff --git a/arch/arm64/configs/ucm-imx8m-plus_defconfig b/arch/arm64/configs/ucm-imx8m-plus_defconfig
+index 05b540fe4a2f..e1991a20c08d 100644
+--- a/arch/arm64/configs/ucm-imx8m-plus_defconfig
++++ b/arch/arm64/configs/ucm-imx8m-plus_defconfig
+@@ -228,6 +228,8 @@ CONFIG_MTD_UBI=y
+ CONFIG_OF_OVERLAY=y
+ CONFIG_BLK_DEV_LOOP=y
+ CONFIG_BLK_DEV_NBD=m
++CONFIG_BLK_DEV_RAM=y
++CONFIG_BLK_DEV_RAM_SIZE=16384
+ CONFIG_XEN_BLKDEV_BACKEND=m
+ CONFIG_VIRTIO_BLK=y
+ CONFIG_BLK_DEV_NVME=y
+@@ -564,10 +566,10 @@ CONFIG_SND_SOC_IMX_AK4458=y
+ CONFIG_SND_SOC_IMX_AK5558=y
+ CONFIG_SND_SOC_IMX_AK4497=y
+ CONFIG_SND_SOC_IMX_MICFIL=y
+-CONFIG_SND_SOC_IMX_RPMSG=y
+ CONFIG_SND_SOC_IMX_SPDIF=y
+ CONFIG_SND_SOC_FSL_ASOC_CARD=y
+ CONFIG_SND_SOC_IMX_AUDMIX=y
++CONFIG_SND_SOC_IMX_RPMSG=y
+ CONFIG_SND_SOC_IMX_XCVR=y
+ CONFIG_SND_SOC_IMX_PDM_MIC=y
+ CONFIG_SND_SOC_IMX_PCM512X=y
+@@ -808,7 +810,6 @@ CONFIG_PWM_FSL_FTM=m
+ CONFIG_PWM_IMX27=y
+ CONFIG_PWM_SL28CPLD=m
+ CONFIG_SL28CPLD_INTC=y
+-CONFIG_RESET_BRCMSTB_RESCAL=y
+ CONFIG_RESET_IMX7=y
+ CONFIG_PHY_XGENE=y
+ CONFIG_PHY_MIXEL_LVDS=y
+-- 
+2.17.1
+
