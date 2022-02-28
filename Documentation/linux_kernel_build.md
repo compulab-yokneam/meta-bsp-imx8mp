@@ -41,10 +41,21 @@ export PATCHES=$(pwd)/meta-bsp-imx8mp/recipes-kernel/linux/compulab/imx8mp
 </pre>
 
 ## CompuLab Linux Kernel setup
+* Clone the source tree and apply the CompuLab patches:
 <pre>
 git clone https://source.codeaurora.org/external/imx/linux-imx.git
 git -C linux-imx checkout -b linux-compulab ${NXP_RELEASE}
 git -C linux-imx am ${PATCHES}/*.patch
+</pre>
+
+* Add the linux-rt patches (optional):
+<pre>
+export PATCHES=$(pwd)/meta-bsp-imx8mp/recipes-kernel/linux-rt/compulab/imx8mp
+git -C linux-imx am ${PATCHES}/*.patch
+cd linux-imx
+scripts/kconfig/merge_config.sh  -O arch/arm64/configs/ -m  arch/arm64/configs/${MACHINE}_defconfig arch/arm64/configs/rt.config
+mv arch/arm64/configs/.config arch/arm64/configs/${MACHINE}_defconfig
+cd -
 </pre>
 
 ## Compile the Kernel
