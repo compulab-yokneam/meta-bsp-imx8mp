@@ -93,7 +93,7 @@ export CROSS_COMPILE64=${CROSS_COMPILE}
 <pre>
 make -C imx-optee-os PLATFORM=imx PLATFORM_FLAVOR=mx8mpevk CFG_WERROR=y \
   CFG_TEE_CORE_LOG_LEVEL=0 CFG_TEE_TA_LOG_LEVEL=0 CFG_DDR_SIZE=0x200000000ULL
-ln -s $(readlink -f imx-optee-os/out/arm-plat-imx/core/tee-raw.bin) ${RESUTLS}/tee.bin
+ln -s $(readlink -f imx-optee-os/out/arm-plat-imx/core/tee-raw.bin) ${RESULTS}/tee.bin
 </pre>
 
 ### U-Boot
