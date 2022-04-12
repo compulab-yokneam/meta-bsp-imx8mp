@@ -1,0 +1,94 @@
+From 467a59f56f84dd79cee86c951c6d954110ea8181 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Mon, 11 Apr 2022 17:14:07 +0300
+Subject: [PATCH] imx8m-plus: Add Ethernet PHY RTL8211E-VB-CG support
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/plat/imx8mp/board/board.c | 64 ++++++++++++++++++++++++
+ 1 file changed, 64 insertions(+)
+
+diff --git a/board/compulab/plat/imx8mp/board/board.c b/board/compulab/plat/imx8mp/board/board.c
+index a1e5bb89a3..dc3b743cd1 100644
+--- a/board/compulab/plat/imx8mp/board/board.c
++++ b/board/compulab/plat/imx8mp/board/board.c
+@@ -155,8 +155,11 @@ static int setup_eqos(void)
+ #endif
+ 
+ #if defined(CONFIG_FEC_MXC) || defined(CONFIG_DWC_ETH_QOS)
++static int mx8_rgmii_rework(struct phy_device *phydev);
+ int board_phy_config(struct phy_device *phydev)
+ {
++	mx8_rgmii_rework(phydev);
++
+ 	if (phydev->drv->config)
+ 		phydev->drv->config(phydev);
+ 	return 0;
+@@ -555,3 +558,64 @@ unsigned long spl_mmc_get_uboot_raw_sector(struct mmc *mmc)
+ 	}
+ }
+ #endif
++
++static int mx8_rgmii_rework_realtek(struct phy_device *phydev)
++{
++#define TXDLY_MASK ((1 << 13) | (1 << 12))
++#define RXDLY_MASK ((1 << 13) | (1 << 11))
++
++	unsigned short val;
++
++	/* introduce tx clock delay */
++	phy_write(phydev, MDIO_DEVAD_NONE, 0x1f, 0x7);
++	phy_write(phydev, MDIO_DEVAD_NONE, 0x1e, 0xa4);
++
++	val = phy_read(phydev, MDIO_DEVAD_NONE, 0x1c);
++	val |= TXDLY_MASK;
++	phy_write(phydev, MDIO_DEVAD_NONE, 0x1c, val);
++
++	/* introduce rx clock delay */
++	val = phy_read(phydev, MDIO_DEVAD_NONE, 0x1c);
++	val |= RXDLY_MASK;
++	phy_write(phydev, MDIO_DEVAD_NONE, 0x1c, val);
++
++	phy_write(phydev, MDIO_DEVAD_NONE, 0x1f, 0x0);
++
++	/*LEDs:*/
++	/* set to extension page */
++	phy_write(phydev, MDIO_DEVAD_NONE, 0x1f, 0x0007);
++	/* extension Page44 */
++	phy_write(phydev, MDIO_DEVAD_NONE, 0x1e, 0x002c);
++	phy_write(phydev, MDIO_DEVAD_NONE, 0x1c, 0x0430);
++	phy_write(phydev, MDIO_DEVAD_NONE, 0x1a, 0x0010);
++	/* To disable EEE LED mode (blinking .4s/2s) */
++	/* extension Page5 */
++	phy_write(phydev, MDIO_DEVAD_NONE, 0x1f, 0x0005);
++	phy_write(phydev, MDIO_DEVAD_NONE, 0x05, 0x8b82);
++	phy_write(phydev, MDIO_DEVAD_NONE, 0x06, 0x052b);
++
++	phy_write(phydev, MDIO_DEVAD_NONE, 0x1f, 0x00);
++	return 0;
++}
++
++static int mx8_rgmii_rework(struct phy_device *phydev)
++{
++#define PHY_VENDOR_ID_MASK (( 1<<5 ) - 1 )
++#define PHY_ATEROS_ID  0x7
++#define PHY_REALTEK_ID 0x11
++	unsigned short val = phy_read(phydev, MDIO_DEVAD_NONE, 0x3);
++
++	val = (( val >> 4 ) & PHY_VENDOR_ID_MASK);
++
++	switch (val) {
++	case PHY_ATEROS_ID:
++		break;
++	case PHY_REALTEK_ID:
++		mx8_rgmii_rework_realtek(phydev);
++		break;
++	default:
++		break;
++	}
++
++	return 0;
++}
+-- 
+2.17.1
+

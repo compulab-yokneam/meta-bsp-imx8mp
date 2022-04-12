@@ -36,6 +36,10 @@ SRC_URI_append = " \
 	file://0034-som-imx8m-plus-dts-Fix-the-flexspi-flash0-name.patch \
 	file://0035-compulab-imx8m-plus-defconfig-Enable-CONFIG_NXP_FSPI.patch \
 	file://0037-compulab-imx8mp-dts-Increase-the-temperature-thresho.patch \
+	file://0038-compulab-imx8m-plus-Update-bootlist-with-usb.patch \
+	file://0039-imx8m-plus-Move-phy-reset-gpio-to-device-tree.patch \
+	file://0040-som-imx8m-plus-Remove-excessive-phy-reset.patch \
+	file://0041-imx8m-plus-Add-Ethernet-PHY-RTL8211E-VB-CG-support.patch \
 "
 
 SRC_URI_append_ucm-imx8m-plus = " \

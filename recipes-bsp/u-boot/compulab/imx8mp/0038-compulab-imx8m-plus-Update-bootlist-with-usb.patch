@@ -1,0 +1,26 @@
+From 8953bc85d5f29e1f953ccfd5e9e05ec63cdb0a24 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Mon, 11 Apr 2022 07:05:01 +0300
+Subject: [PATCH] compulab-imx8m-plus: Update bootlist with usb
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ include/configs/compulab-imx8m-plus.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/configs/compulab-imx8m-plus.h b/include/configs/compulab-imx8m-plus.h
+index 4514918bcc..573b0e3370 100644
+--- a/include/configs/compulab-imx8m-plus.h
++++ b/include/configs/compulab-imx8m-plus.h
+@@ -144,7 +144,7 @@
+ 		"ulimage=load ${iface} ${dev}:${part} ${loadaddr} ${image}\0" \
+ 		"ulfdt=if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
+ 			"load ${iface} ${dev}:${part} ${fdt_addr_r} ${fdtfile}; fi;\0" \
+-		"bootlist=sd_ul emmc_ul\0" \
++		"bootlist=sd_ul usb_ul emmc_ul\0" \
+ 	"bsp_bootcmd=echo Running BSP bootcmd ...; " \
+ 		"for src in ${bootlist}; do " \
+ 			"run ${src}; " \
+-- 
+2.17.1
+
