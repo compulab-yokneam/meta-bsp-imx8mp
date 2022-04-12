@@ -11,5 +11,7 @@ SRC_URI_append = " \
 	file://0009-ucm-imx219-Fix-reset-gpio.patch \
 	file://0010-imx477-Add-driver-for-Sony-IMX477-sensor.patch \
 	file://0011-compulab-ucm-dts-Add-IMX477-sample-device-tree.patch \
+	file://0012-ucm-imx8m-plus-Phy-reset-is-bootloader-firmware-enab.patch \
+	file://0013-som-imx8m-plus-Phy-reset-is-bootloader-firmware-enab.patch \
 	file://defconfig \
 "
