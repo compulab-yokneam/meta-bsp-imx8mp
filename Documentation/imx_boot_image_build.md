@@ -20,13 +20,8 @@ Define the following environment variables:
 
 
 ## Prerequisites
-It is up to developer to setup arm64 build environment:
-* Download the [ARM tool chain](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-a/downloads/9-2-2019-12)
-* Set environment variables:
-<pre>
-export ARCH=arm64
-export CROSS_COMPILE=/opt/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-
-</pre>
+* [Setup arm64 toolchain](https://github.com/compulab-yokneam/meta-bsp-imx8mp/blob/ucm-imx8m-plus-r1.0/Documentation/toolchain.md)
+
 * Create a folder to organize the files:
 <pre>
 mkdir imx8mp
