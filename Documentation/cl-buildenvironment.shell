@@ -1,0 +1,1 @@
+bash --rcfile $(pwd)/cl-buildenvironment.rc
