@@ -25,7 +25,7 @@ eof
 exit 2
 }
 for _p in ${python_packages};do
-pip3 list --format=legacy | grep ${_p} &>/dev/null || missed_package=${_p} python_packages_error_exit
+pip3 list | grep ${_p} &>/dev/null || missed_package=${_p} python_packages_error_exit
 done
 
 # Everything is okay let's continue
