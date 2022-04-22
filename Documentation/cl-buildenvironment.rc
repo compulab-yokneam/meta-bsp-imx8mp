@@ -135,6 +135,21 @@ build_all() {
     export SRC_UPDATE=0
 }
 
+build_uui() {
+if [ ! -f ${RESULTS}/flash.bin ];then
+cat << eof
+    Issue: get_nxp_bootloader first"
+eof
+return
+fi
+[ -d uui ] || git clone https://github.com/compulab-yokneam/uui.git
+ln -fs ${RESULTS}/flash.bin uui/mx8mp/bootloader
+cd uui
+make PLAT=mx8mp
+cd -
+cp -v uui/mx8mp/uui.img ${RESULTS}/
+}
+
 flist='get_compatible_machine
     get_compulab_metalayer
     get_nxp_firmware
@@ -142,6 +157,7 @@ flist='get_compatible_machine
     get_nxp_optee
     get_nxp_bootloader
     build_all
+    build_uui
     clean_all
     exit'
 
@@ -166,7 +182,7 @@ alias ${index}=${_f}
 ((index++))
 done
 
-export bins="bl31.bin tee.bin flash.bin"
+export bins="bl31.bin tee.bin flash.bin uui.img"
 
 status() {
 local status=""
