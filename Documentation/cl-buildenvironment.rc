@@ -29,12 +29,9 @@ pip3 list | grep ${_p} &>/dev/null || missed_package=${_p} python_packages_error
 done
 
 # Everything is okay let's continue
-export USER_APP_DIR=${HOME}/Applications
-export CROSS_COMPILE=${USER_APP_DIR}/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-
 
 get_aarch64_cross() {
     local WGET_DIR="/tmp"
-    local AARCH64_CROSS_URL="https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu.tar.xz"
     local AARCH64_CROSS_FILE=$(printf ${AARCH64_CROSS_URL} | awk -F"/"  '$0=$NF')
     local WGET="wget --continue --no-clobber --directory-prefix=${WGET_DIR} "
     [[ -e ${CROSS_COMPILE}gcc ]] && return 0
@@ -57,17 +54,6 @@ case $i in
 	esac
 done
 }
-
-
-export NXP_RELEASE=lf-5.10.72-2.2.0
-export NXP_FIRMWARE=firmware-imx-8.14.bin
-export NXP_ATF=imx-atf
-export NXP_OPTEE=imx-optee-os
-export NXP_UBOOT=uboot-imx
-export CPL_BRANCH=hardknott-5.10.72-2.2.0
-export ATF=lf-5.10.72-2.2.0
-export OPTEE=lf-5.10.72-2.2.0
-export UBOOT=lf-5.10.35-2.0.0
 
 setup_dirs() {
     mkdir -p imx8mp/{sources,results}
@@ -180,9 +166,10 @@ alias ${index}=${_f}
 ((index++))
 done
 
+export bins="bl31.bin tee.bin flash.bin"
+
 status() {
 local status=""
-local bins="bl31.bin tee.bin flash.bin"
 for _b in ${bins};do
 status+=${_b}
 [[ -f ${RESULTS}/${_b} ]] && status+="[x]; " || status+="[-]; " 

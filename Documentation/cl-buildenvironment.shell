@@ -1,1 +1,20 @@
-bash --rcfile $(pwd)/cl-buildenvironment.rc
+#!/bin/bash
+
+clenv_dir=$(dirname $(readlink -f ${0}))
+clenv_files=(cl-buildenvironment.in cl-buildenvironment.rc)
+
+shell_exit() {
+cat << eof
+[!] A reqiured file ${1} is not found.
+
+Bye ...
+eof
+exit -2
+}
+
+for clenv_file in ${clenv_files[@]};do
+[[ -f ${clenv_dir}/${clenv_file} ]] || shell_exit ${clenv_file}
+done
+
+source ${clenv_dir}/${clenv_files[0]}
+bash --rcfile ${clenv_dir}/${clenv_files[1]}
