@@ -4,9 +4,9 @@ export NXP_ATF=imx-atf
 export NXP_OPTEE=imx-optee-os
 export NXP_UBOOT=uboot-imx
 export CPL_BRANCH=hardknott-5.10.72-2.2.0
-export ATF=lf-5.10.72-2.2.0
-export OPTEE=lf-5.10.72-2.2.0
-export UBOOT=lf-5.10.35-2.0.0
+export NXP_ATF_BRANCH=lf-5.10.72-2.2.0
+export NXP_OPTEE_BRANCH=lf-5.10.72-2.2.0
+export NXP_UBOOT_BRANCH=lf-5.10.35-2.0.0
 
 export USER_APP_DIR=${HOME}/Applications
 export CROSS_COMPILE=${USER_APP_DIR}/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-
