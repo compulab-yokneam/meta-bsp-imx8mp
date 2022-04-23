@@ -1,6 +1,11 @@
 export NXP_RELEASE=lf-5.10.72-2.2.0
 export NXP_FIRMWARE=firmware-imx-8.14.bin
+export NXP_PLATFORM=imx8mp
+
+export CPL_META_LAYER=https://github.com/compulab-yokneam/meta-bsp-imx8mp.git
+export CPL_META_BRANCH=hardknott-5.10.72-2.2.0
 export CPL_BRANCH=compulab-${NXP_RELEASE}
+export CPL_MACHINES="ucm-imx8m-plus som-imx8m-plus"
 
 export NXP_ATF=imx-atf
 export NXP_ATF_BRANCH=${NXP_RELEASE}
@@ -11,8 +16,13 @@ export NXP_OPTEE_BRANCH=${NXP_RELEASE}
 export CPL_OPTEE_PATCH=recipes-security/optee-imx/compulab/imx8mp
 
 export NXP_UBOOT=uboot-imx
+if [[ -z ${UBOOT_NEXT} ]];then
 export NXP_UBOOT_BRANCH=lf-5.10.35-2.0.0
 export CPL_UBOOT_PATCH=recipes-bsp/u-boot/compulab/imx8mp
+else
+export NXP_UBOOT_BRANCH=${NXP_RELEASE}
+export CPL_UBOOT_PATCH=recipes-bsp/u-boot/compulab/${NXP_RELEASE}/imx8mp
+fi
 
 export USER_APP_DIR=${HOME}/Applications
 export CROSS_COMPILE=${USER_APP_DIR}/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-

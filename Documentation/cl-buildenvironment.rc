@@ -10,7 +10,7 @@ get_aarch64_cross() {
 }
 
 get_compatible_machine() {
-local machines="ucm-imx8m-plus som-imx8m-plus"
+local machines=${CPL_MACHINES}
 PS3="Select a machine: ? "
 select _m in ${machines}
 do
@@ -24,16 +24,16 @@ done
 }
 
 setup_dirs() {
-    mkdir -p imx8mp/{sources,results}
-    export SRC_ROOT=$(readlink -f imx8mp/sources)
-    export RESULTS=$(readlink -f imx8mp/results)
+    mkdir -p ${NXP_PLATFORM}/{sources,results}
+    export SRC_ROOT=$(readlink -f ${NXP_PLATFORM}/sources)
+    export RESULTS=$(readlink -f ${NXP_PLATFORM}/results)
     cd ${SRC_ROOT}
 }
 
 get_compulab_metalayer() {
-    export LAYER_DIR=$(pwd)/meta-bsp-imx8mp
+    export LAYER_DIR=$(pwd)/meta-bsp-${NXP_PLATFORM}
     if [[ ! -d ${LAYER_DIR} ]];then
-    	git clone -b ${CPL_BRANCH} https://github.com/compulab-yokneam/meta-bsp-imx8mp.git
+        git clone -b ${CPL_META_BRANCH} ${CPL_META_LAYER} ${LAYER_DIR}
     else
         git -C ${LAYER_DIR} remote update
         git -C ${LAYER_DIR} pull
@@ -65,16 +65,17 @@ get_nxp_atf() {
 
     NXP_SOURCE=${NXP_ATF} NXP_BRANCH=${NXP_ATF_BRANCH} CPL_PATCH=${CPL_ATF_PATCH} _get_nxp_source
 
-    make -j 16 -C ${NXP_ATF} PLAT=imx8mp BUILD_BASE=build-optee SPD=opteed bl31
-    ln -fs $(readlink -f ${NXP_ATF}/build-optee/imx8mp/release/bl31.bin) ${RESULTS}/bl31.bin
+    make -j 16 -C ${NXP_ATF} PLAT=${NXP_PLATFORM} BUILD_BASE=build-optee SPD=opteed bl31
+    ln -fs $(readlink -f ${NXP_ATF}/build-optee/${NXP_PLATFORM}/release/bl31.bin) ${RESULTS}/bl31.bin
 }
 
 get_nxp_optee() {
+    local optee_flavor=${NXP_PLATFORM:1}evk
 
     NXP_SOURCE=${NXP_OPTEE} NXP_BRANCH=${NXP_OPTEE_BRANCH} CPL_PATCH=${CPL_OPTEE_PATCH} _get_nxp_source
 
     export ARCH=arm CROSS_COMPILE64=${CROSS_COMPILE}
-    make -j 16 -C ${NXP_OPTEE} PLATFORM=imx PLATFORM_FLAVOR=mx8mpevk CFG_WERROR=y \
+    make -j 16 -C ${NXP_OPTEE} PLATFORM=imx PLATFORM_FLAVOR=${optee_flavor} CFG_WERROR=y \
       CFG_TEE_CORE_LOG_LEVEL=0 CFG_TEE_TA_LOG_LEVEL=0 CFG_DDR_SIZE=0x200000000ULL
     ln -fs $(readlink -f ${NXP_OPTEE}/out/arm-plat-imx/core/tee-raw.bin) ${RESULTS}/tee.bin
 }
@@ -106,6 +107,7 @@ build_all() {
 }
 
 build_uui() {
+local uui_plat=${NXP_PLATFORM:1}
 if [ ! -f ${RESULTS}/flash.bin ];then
 cat << eof
     Issue: get_nxp_bootloader first"
@@ -113,11 +115,11 @@ eof
 return
 fi
 [ -d uui ] || git clone https://github.com/compulab-yokneam/uui.git
-ln -fs ${RESULTS}/flash.bin uui/mx8mp/bootloader
+ln -fs ${RESULTS}/flash.bin uui/${uui_plat}/bootloader
 cd uui
-make PLAT=mx8mp
+make PLAT=${uui_plat}
 cd -
-cp -v uui/mx8mp/uui.img ${RESULTS}/
+cp -v uui/${uui_plat}/uui.img ${RESULTS}/
 }
 
 flist='get_compatible_machine
