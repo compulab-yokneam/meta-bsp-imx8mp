@@ -1,35 +1,3 @@
-# Debian
-
-debian_packages='git pv xz-utils device-tree-compiler python3-pip python3-pyelftools'
-debian_packages_error_exit() {
-cat << eof
-Make sure that all required deb packages are installed; Issue:
-sudo apt-get update
-sudo apt-get install ${debian_packages}
-
-Bye ...
-eof
-exit 1
-}
-dpkg -l ${debian_packages} >/dev/null || debian_packages_error_exit
-
-# Python
-python_packages='pycryptodomex'
-python_packages_error_exit() {
-cat << eof
-Please install the ${missed_package}; Issue:
-pip3 install ${missed_package}
-
-Bye ...
-eof
-exit 2
-}
-for _p in ${python_packages};do
-pip3 list | grep ${_p} &>/dev/null || missed_package=${_p} python_packages_error_exit
-done
-
-# Everything is okay let's continue
-
 get_aarch64_cross() {
     local WGET_DIR="/tmp"
     local AARCH64_CROSS_FILE=$(printf ${AARCH64_CROSS_URL} | awk -F"/"  '$0=$NF')
@@ -80,21 +48,22 @@ get_nxp_firmware() {
     [[ -d ${NXP_FIRMWARE_DIR} ]] || bash ${NXP_FIRMWARE} --auto-accept
 # copy files if needed
 for _f in ${firmware_files};do
-    [[ ! -f ${RESULTS}/${_f} ]] && ( cp -$(find firmware* | awk '/train|hdmi_imx8|dp_imx8/' ORS=" ") ${RESULTS} ; break )
+    [[ ! -f ${RESULTS}/${_f} ]] && ( cp $(find firmware* | awk '/train|hdmi_imx8|dp_imx8/' ORS=" ") ${RESULTS} ; break )
 done
 }
 
 _get_nxp_source() {
     [[ -d ${NXP_SOURCE} ]] || git clone https://source.codeaurora.org/external/imx/${NXP_SOURCE}
-    [[ ${SRC_UPDATE} = '1' ]] && ( git -C ${NXP_SOURCE} checkout ${NXP_BRANCH}; git -C ${NXP_SOURCE} branch -D ${CPL_BRANCH} 2>/dev/null )
+    [[ ${SRC_UPDATE} = '1' ]] && ( git -C ${NXP_SOURCE} checkout ${NXP_BRANCH} 2>/dev/null; git -C ${NXP_SOURCE} branch -D ${CPL_BRANCH} 2>/dev/null )
     git -C ${NXP_SOURCE} checkout ${CPL_BRANCH} 2>/dev/null || {
-        git -C ${NXP_SOURCE} checkout ${NXP_BRANCH} -b ${CPL_BRANCH} 2>/dev/null && git -C ${NXP_SOURCE} am ${LAYER_DIR}/${CPL_PATCH}/*.patch
+        git -C ${NXP_SOURCE} checkout ${NXP_BRANCH} -b ${CPL_BRANCH} 2>/dev/null
+        [[ -d ${LAYER_DIR}/${CPL_PATCH} ]] && git -C ${NXP_SOURCE} am ${LAYER_DIR}/${CPL_PATCH}/*.patch
     }
 }
 
 get_nxp_atf() {
 
-    NXP_SOURCE=${NXP_ATF} NXP_BRANCH=${NXP_ATF_BRANCH} CPL_PATCH="recipes-bsp/${NXP_ATF}/compulab/imx8mp" _get_nxp_source
+    NXP_SOURCE=${NXP_ATF} NXP_BRANCH=${NXP_ATF_BRANCH} CPL_PATCH=${CPL_ATF_PATCH} _get_nxp_source
 
     make -j 16 -C ${NXP_ATF} PLAT=imx8mp BUILD_BASE=build-optee SPD=opteed bl31
     ln -fs $(readlink -f ${NXP_ATF}/build-optee/imx8mp/release/bl31.bin) ${RESULTS}/bl31.bin
@@ -102,7 +71,7 @@ get_nxp_atf() {
 
 get_nxp_optee() {
 
-    NXP_SOURCE=${NXP_OPTEE} NXP_BRANCH=${NXP_OPTEE_BRANCH} CPL_PATCH='recipes-security/optee-imx/compulab/imx8mp' _get_nxp_source
+    NXP_SOURCE=${NXP_OPTEE} NXP_BRANCH=${NXP_OPTEE_BRANCH} CPL_PATCH=${CPL_OPTEE_PATCH} _get_nxp_source
 
     export ARCH=arm CROSS_COMPILE64=${CROSS_COMPILE}
     make -j 16 -C ${NXP_OPTEE} PLATFORM=imx PLATFORM_FLAVOR=mx8mpevk CFG_WERROR=y \
@@ -113,7 +82,7 @@ get_nxp_optee() {
 get_nxp_bootloader() {
     local NXP_FLASH=${1:-flash.bin}
 
-    NXP_SOURCE=${NXP_UBOOT} NXP_BRANCH=${NXP_UBOOT_BRANCH} CPL_PATCH='recipes-bsp/u-boot/compulab/imx8mp' _get_nxp_source
+    NXP_SOURCE=${NXP_UBOOT} NXP_BRANCH=${NXP_UBOOT_BRANCH} CPL_PATCH=${CPL_UBOOT_PATCH} _get_nxp_source
 
     export ARCH=arm64
     make -j 16 -C ${NXP_UBOOT} O=${RESULTS} ${MACHINE}_defconfig
