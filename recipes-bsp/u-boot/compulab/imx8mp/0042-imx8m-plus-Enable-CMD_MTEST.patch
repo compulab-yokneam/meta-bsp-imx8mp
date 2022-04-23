@@ -1,0 +1,57 @@
+From 6db06e59e7016ee269453b8eed0dd84e04f30952 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sat, 23 Apr 2022 13:41:10 +0300
+Subject: [PATCH] imx8m-plus: Enable CMD_MTEST
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ configs/som-imx8m-plus_defconfig      | 1 +
+ configs/ucm-imx8m-plus_defconfig      | 1 +
+ include/configs/compulab-imx8m-plus.h | 7 -------
+ 3 files changed, 2 insertions(+), 7 deletions(-)
+
+diff --git a/configs/som-imx8m-plus_defconfig b/configs/som-imx8m-plus_defconfig
+index 3a0ab854a8..213249b276 100644
+--- a/configs/som-imx8m-plus_defconfig
++++ b/configs/som-imx8m-plus_defconfig
+@@ -46,6 +46,7 @@ CONFIG_CMD_ERASEENV=y
+ CONFIG_CMD_NVEDIT_EFI=y
+ # CONFIG_CMD_CRC32 is not set
+ CONFIG_CMD_MEMINFO=y
++CONFIG_CMD_MEMTEST=y
+ CONFIG_CMD_CLK=y
+ CONFIG_CMD_DFU=y
+ CONFIG_CMD_FUSE=y
+diff --git a/configs/ucm-imx8m-plus_defconfig b/configs/ucm-imx8m-plus_defconfig
+index 5e8d3e8dc0..a308e31194 100644
+--- a/configs/ucm-imx8m-plus_defconfig
++++ b/configs/ucm-imx8m-plus_defconfig
+@@ -47,6 +47,7 @@ CONFIG_CMD_ERASEENV=y
+ CONFIG_CMD_NVEDIT_EFI=y
+ # CONFIG_CMD_CRC32 is not set
+ CONFIG_CMD_MEMINFO=y
++CONFIG_CMD_MEMTEST=y
+ CONFIG_CMD_CLK=y
+ CONFIG_CMD_DFU=y
+ CONFIG_CMD_FUSE=y
+diff --git a/include/configs/compulab-imx8m-plus.h b/include/configs/compulab-imx8m-plus.h
+index 573b0e3370..b42f9541b2 100644
+--- a/include/configs/compulab-imx8m-plus.h
++++ b/include/configs/compulab-imx8m-plus.h
+@@ -190,13 +190,6 @@
+ #define PHYS_SDRAM_2			0x100000000
+ #define PHYS_SDRAM_2_SIZE		0x00000000	/* 0 GB */
+ 
+-#define CONFIG_SYS_MEMTEST_START	PHYS_SDRAM
+-#define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START + \
+-					(PHYS_SDRAM_SIZE >> 1))
+-
+-#define MEMTEST_DIVIDER   2
+-#define MEMTEST_NUMERATOR 1
+-
+ #define CONFIG_MXC_UART_BASE		UART2_BASE_ADDR
+ 
+ /* Monitor Command Prompt */
+-- 
+2.17.1
+

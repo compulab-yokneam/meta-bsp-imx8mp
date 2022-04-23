@@ -40,6 +40,9 @@ SRC_URI_append = " \
 	file://0039-imx8m-plus-Move-phy-reset-gpio-to-device-tree.patch \
 	file://0040-som-imx8m-plus-Remove-excessive-phy-reset.patch \
 	file://0041-imx8m-plus-Add-Ethernet-PHY-RTL8211E-VB-CG-support.patch \
+	file://0042-imx8m-plus-Enable-CMD_MTEST.patch \
+	file://0043-som-imx8m-plus-Update-the-CONFIG_SYS_PROMPT.patch \
+	file://0044-ucm-imx8m-plus-Update-the-CONFIG_SYS_PROMPT.patch \
 "
 
 SRC_URI_append_ucm-imx8m-plus = " \

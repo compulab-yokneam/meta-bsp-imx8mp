@@ -1,0 +1,28 @@
+From a04316503c4c333780a9e645fb62a8823053f474 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sat, 23 Apr 2022 13:42:18 +0300
+Subject: [PATCH] som-imx8m-plus: Update the CONFIG_SYS_PROMPT
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ include/configs/som-imx8m-plus.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/include/configs/som-imx8m-plus.h b/include/configs/som-imx8m-plus.h
+index 88851e3f69..aea6f173ec 100644
+--- a/include/configs/som-imx8m-plus.h
++++ b/include/configs/som-imx8m-plus.h
+@@ -26,4 +26,10 @@
+ #if defined(CONFIG_ANDROID_SUPPORT)
+ #include "som-imx8m-plus_android.h"
+ #endif
++
++#ifdef CONFIG_SYS_PROMPT
++#undef CONFIG_SYS_PROMPT
++#endif
++#define CONFIG_SYS_PROMPT "som-imx8m-plus=> "
++
+ #endif
+-- 
+2.17.1
+
