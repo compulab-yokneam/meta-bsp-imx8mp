@@ -130,7 +130,7 @@ ln -fs ${RESULTS}/flash.bin uui/${uui_plat}/bootloader
 cd uui
 make PLAT=${uui_plat}
 cd -
-cp -v uui/${uui_plat}/uui.img ${RESULTS}/
+mv uui/${uui_plat}/uui.img ${RESULTS}/${MACHINE}-uui.img
 }
 
 flist='get_compatible_machine
@@ -165,10 +165,9 @@ alias ${index}=${_f}
 ((index++))
 done
 
-export bins="bl31.bin tee.bin flash.bin uui.img"
-
 status() {
 local status=""
+local bins="bl31.bin tee.bin ${MACHINE}-flash.bin ${MACHINE}-uui.img"
 for _b in ${bins};do
 status+=${_b}
 [[ -f ${RESULTS}/${_b} ]] && status+="[x]; " || status+="[-]; " 
