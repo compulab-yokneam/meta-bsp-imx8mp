@@ -9,8 +9,16 @@ get_aarch64_cross() {
     #tar -C ${USER_APP_DIR} -xf ${WGET_DIR}/${AARCH64_CROSS_FILE}
 }
 
+get_compatible_machine_signal() {
+    exit 0
+}
+
+get_compatible_machine_exit="<<"
+
 get_compatible_machine() {
-local machines=${CPL_MACHINES}
+set -o posix
+[[ -n ${1} ]] && trap get_compatible_machine_signal INT
+local machines=${CPL_MACHINES}" ${1}"
 PS3="Select a machine: ? "
 select _m in ${machines}
 do
@@ -21,6 +29,9 @@ case $i in
 	;;
 	esac
 done
+trap - INT
+[[ ${MACHINE} = ${get_compatible_machine_exit} ]] && exit 0
+set +o posix
 }
 
 setup_dirs() {
@@ -170,7 +181,7 @@ eof
 get_aarch64_cross
 setup_dirs
 get_compulab_metalayer
-get_compatible_machine
+get_compatible_machine ${get_compatible_machine_exit}
 
 export SRC_UPDATE=0
 PS1='$(usage)\n\ncl-buildenvironment [ MACHINE=${MACHINE}; CROSS_COMPILE=${CROSS_COMPILE} ]\n\n$(status) > '
