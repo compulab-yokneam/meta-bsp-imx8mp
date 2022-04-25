@@ -1,0 +1,28 @@
+From d36ea201443036e1eee396001a6b7efe7b903d69 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Mon, 25 Apr 2022 18:11:25 +0300
+Subject: [PATCH] cpu: Change minc/maxc default values
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm/mach-imx/cpu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/mach-imx/cpu.c b/arch/arm/mach-imx/cpu.c
+index 91419092c6..7211fcae72 100644
+--- a/arch/arm/mach-imx/cpu.c
++++ b/arch/arm/mach-imx/cpu.c
+@@ -473,8 +473,8 @@ u32 get_cpu_temp_grade(int *minc, int *maxc)
+ 			*minc = -20;
+ 			*maxc = 105;
+ 		} else {
+-			*minc = 0;
+-			*maxc = 95;
++			*minc = -40;
++			*maxc = 155;
+ 		}
+ 	}
+ 	return val;
+-- 
+2.17.1
+

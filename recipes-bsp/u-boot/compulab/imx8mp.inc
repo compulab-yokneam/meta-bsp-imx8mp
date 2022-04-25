@@ -44,6 +44,7 @@ SRC_URI_append = " \
 	file://0043-som-imx8m-plus-Update-the-CONFIG_SYS_PROMPT.patch \
 	file://0044-ucm-imx8m-plus-Update-the-CONFIG_SYS_PROMPT.patch \
 	file://0045-compulab-imx8mp-dts-Increase-the-soc-temperature-thr.patch \
+	file://0046-cpu-Change-minc-maxc-default-values.patch \
 "
 
 SRC_URI_append_ucm-imx8m-plus = " \
