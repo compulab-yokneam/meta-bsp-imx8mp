@@ -43,6 +43,7 @@ SRC_URI_append = " \
 	file://0042-imx8m-plus-Enable-CMD_MTEST.patch \
 	file://0043-som-imx8m-plus-Update-the-CONFIG_SYS_PROMPT.patch \
 	file://0044-ucm-imx8m-plus-Update-the-CONFIG_SYS_PROMPT.patch \
+	file://0045-compulab-imx8mp-dts-Increase-the-soc-temperature-thr.patch \
 "
 
 SRC_URI_append_ucm-imx8m-plus = " \
