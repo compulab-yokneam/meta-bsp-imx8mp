@@ -14,5 +14,6 @@ SRC_URI_append = " \
 	file://0012-ucm-imx8m-plus-Phy-reset-is-bootloader-firmware-enab.patch \
 	file://0013-som-imx8m-plus-Phy-reset-is-bootloader-firmware-enab.patch \
 	file://0014-Input-add-driver-for-the-Hycon-HY46XX-touchpanel-ser.patch \
+	file://0015-ucm-imx8m-plus-config-Enable-IWLWIFI-support.patch \
 	file://defconfig \
 "
