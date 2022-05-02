@@ -1,0 +1,51 @@
+From bafd8a2bc7f7aad5c8bf98575d5885a5aa0f4394 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Mon, 2 May 2022 12:42:55 +0300
+Subject: [PATCH] imx8mp: board: Add dp_pmic_ldo4()
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/plat/imx8mp/board/board.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+
+diff --git a/board/compulab/plat/imx8mp/board/board.c b/board/compulab/plat/imx8mp/board/board.c
+index 2641a446bc..4e9d116c05 100644
+--- a/board/compulab/plat/imx8mp/board/board.c
++++ b/board/compulab/plat/imx8mp/board/board.c
+@@ -630,6 +630,25 @@ static char ldo4_help_text[] =
+ /* Forward declaration */
+ u8 cl_eeprom_get_ldo4(void);
+ u8 cl_eeprom_set_ldo4(u8 ldo4);
++
++static void do_pmic_ldo4(u8 ldo4) {
++    const char *name = "pca9450@25";
++    static struct udevice *currdev = NULL;
++    int ret;
++    if (currdev == NULL) {
++        ret = pmic_get(name, &currdev);
++        if (ret) {
++            printf("Can't get PMIC: %s!\n", name);
++            return;
++        }
++    }
++    ret = pmic_reg_write(currdev, 0x24, ldo4);
++    if (ret) {
++        printf("Can't set PMIC: %s; register 0x%x\n", name, 0x24);
++        return;
++    }
++}
++
+ int do_ldo4(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[])
+ {
+     u8 ldo4 = 0xDA;
+@@ -642,6 +661,7 @@ int do_ldo4(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[])
+         else
+             return CMD_RET_USAGE;
+         ldo4 = cl_eeprom_set_ldo4(ldo4);
++        do_pmic_ldo4(ldo4);
+         return 0;
+     }
+ 
+-- 
+2.17.1
+

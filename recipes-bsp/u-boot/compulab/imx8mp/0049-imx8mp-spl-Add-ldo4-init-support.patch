@@ -1,0 +1,46 @@
+From ae909baf91c5278090d54e19f3459bc1649b6bea Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Mon, 2 May 2022 10:18:51 +0300
+Subject: [PATCH] imx8mp: spl: Add ldo4 init support
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/plat/imx8mp/spl/spl.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/board/compulab/plat/imx8mp/spl/spl.c b/board/compulab/plat/imx8mp/spl/spl.c
+index 4ef1bf2ad1..e50586cb4e 100644
+--- a/board/compulab/plat/imx8mp/spl/spl.c
++++ b/board/compulab/plat/imx8mp/spl/spl.c
+@@ -166,6 +166,19 @@ int board_mmc_getcd(struct mmc *mmc)
+ }
+ 
+ #if CONFIG_IS_ENABLED(DM_PMIC_PCA9450)
++/* Forward declarations */
++u8 cl_eeprom_get_ldo4(void);
++static void power_init_ldo4(struct udevice *dev) {
++	u8 ldo4;
++	ldo4 = cl_eeprom_get_ldo4();
++	if (( ldo4 >= 0x80 ) && ( ldo4 <= 0x9F )) {
++		pmic_reg_write(dev, PCA9450_LDO4CTRL, ldo4);
++		ldo4 &= ~0x80; ldo4 += 8;
++		ldo4 = (( ldo4 > 33 ) ? 33 : ldo4);
++		printf("pca9450@25 [ldo4] = %dv%d\n", (ldo4/10) , (ldo4%10));
++	}
++}
++
+ int power_init_board(void)
+ {
+ 	struct udevice *dev;
+@@ -179,6 +192,8 @@ int power_init_board(void)
+ 	if (ret != 0)
+ 		return ret;
+ 
++	power_init_ldo4(dev);
++
+ 	/* BUCKxOUT_DVS0/1 control BUCK123 output */
+ 	pmic_reg_write(dev, PCA9450_BUCK123_DVS, 0x29);
+ 
+-- 
+2.17.1
+

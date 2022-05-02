@@ -45,6 +45,12 @@ SRC_URI_append = " \
 	file://0044-ucm-imx8m-plus-Update-the-CONFIG_SYS_PROMPT.patch \
 	file://0045-compulab-imx8mp-dts-Increase-the-soc-temperature-thr.patch \
 	file://0046-cpu-Change-minc-maxc-default-values.patch \
+	file://0047-imx8mp-defconfig-Enable-CONFIG_CMD_PMIC.patch \
+	file://0048-compulab-eeprom-Add-ldo4-get-set-functions.patch \
+	file://0049-imx8mp-spl-Add-ldo4-init-support.patch \
+	file://0050-imx8mp-board-Add-ldo4-command.patch \
+	file://0051-imx8mp-board-Add-dp_pmic_ldo4.patch \
+	file://0052-imx8mp-spl-Improve-the-ldo4-set-value-logics.patch \
 "
 
 SRC_URI_append_ucm-imx8m-plus = " \

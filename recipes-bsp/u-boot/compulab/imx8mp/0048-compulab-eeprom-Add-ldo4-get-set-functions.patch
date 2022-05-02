@@ -1,0 +1,70 @@
+From d41e3fced56748c708f6db57b9a0692cf16c244b Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Mon, 2 May 2022 10:17:22 +0300
+Subject: [PATCH] compulab: eeprom: Add ldo4 get/set functions
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/common/eeprom.c | 42 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 42 insertions(+)
+
+diff --git a/board/compulab/common/eeprom.c b/board/compulab/common/eeprom.c
+index 88d0228704..5c69044d96 100644
+--- a/board/compulab/common/eeprom.c
++++ b/board/compulab/common/eeprom.c
+@@ -98,6 +98,19 @@ static int cl_eeprom_read(uint offset, uchar *buf, int len)
+ 	return res;
+ }
+ 
++static int cl_eeprom_write(uint offset, uchar *buf, int len)
++{
++	int res;
++
++	res = cpl_eeprom_init();
++	if (res < 0)
++		return res;
++
++	res  = dm_i2c_write(g_dev, offset, buf, len);
++
++	return res;
++}
++
+ static int cl_eeprom_setup(const struct eeprom_path *eeprom)
+ {
+ 	int res;
+@@ -724,3 +737,32 @@ int eeprom_layout_detect(unsigned char *data)
+ 	return LAYOUT_VERSION_UNRECOGNIZED;
+ }
+ #endif
++
++#define BOARD_LDO4_OFFSET 0x60
++#define BOARD_LDO4_SIZE 1
++static const struct eeprom_path eeprom_51 = {
++	/*CONFIG_SYS_I2C_EEPROM_BUS*/ 0x1,
++	/*CONFIG_SYS_I2C_EEPROM_ADDR_P1*/ 0x51,
++};
++
++static u8 board_ldo4 = 0xff;
++u8 cl_eeprom_get_ldo4(void)
++{
++	g_dev = NULL;
++	working_eeprom = &eeprom_51;
++	if (cl_eeprom_read(BOARD_LDO4_OFFSET, (uchar *)&board_ldo4, BOARD_LDO4_SIZE))
++		return 0xff;
++
++	return board_ldo4;
++};
++
++u8 cl_eeprom_set_ldo4(u8 ldo4)
++{
++	g_dev = NULL;
++	working_eeprom = &eeprom_51;
++	if (cl_eeprom_write(BOARD_LDO4_OFFSET, (uchar *)&ldo4, BOARD_LDO4_SIZE))
++		return 0xff;
++	board_ldo4 = ldo4;
++
++	return board_ldo4;
++};
+-- 
+2.17.1
+
