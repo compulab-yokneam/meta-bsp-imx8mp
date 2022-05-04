@@ -1,10 +1,10 @@
 INSTALL_DIR = "${@bb.utils.contains('BBFILE_COLLECTIONS', 'mender', '/opt/compulab/${PN}', '/usr/local/bin', d)}"
 
-SRC_URI_append += "\
+SRC_URI:append += "\
 	file://cl_setenv \
 "
 
-do_install_append () {
+do_install:append () {
 	rm -rf ${D}/sbin
 
 	install -d ${D}/etc/
@@ -16,4 +16,4 @@ do_install_append () {
 	install -m 0755 ${WORKDIR}/cl_setenv ${D}/${INSTALL_DIR}/cl_setenv
 }
 
-FILES_${PN} = "/etc/* ${INSTALL_DIR}/*"
+FILES:${PN} = "/etc/* ${INSTALL_DIR}/*"

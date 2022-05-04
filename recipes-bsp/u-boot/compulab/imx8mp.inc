@@ -1,4 +1,4 @@
-SRC_URI_append = " \
+SRC_URI:append = " \
 	file://0000-ucm-imx8m-plus-Add-support-update-files.patch \
 	file://0001-ucm-imx8m-plus-Add-support-Add-files.patch \
 	file://0002-ucm-imx8m-plus-Fix-spl-reset.patch \
@@ -53,10 +53,10 @@ SRC_URI_append = " \
 	file://0052-imx8mp-spl-Improve-the-ldo4-set-value-logics.patch \
 "
 
-SRC_URI_append_ucm-imx8m-plus = " \
+SRC_URI:append:ucm-imx8m-plus = " \
 	file://ucm-imx8m-plus_defconfig \
 "
 
-SRC_URI_append_som-imx8m-plus = " \
+SRC_URI:append:som-imx8m-plus = " \
 	file://som-imx8m-plus_defconfig \
 "

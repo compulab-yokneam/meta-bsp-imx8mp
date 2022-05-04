@@ -1,10 +1,10 @@
 MACHINEOVERRIDES =. "imx-boot-container:mx8:mx8m:mx8mp:"
 
 require conf/machine/include/imx-base.inc
-require conf/machine/include/tune-cortexa53.inc
+require conf/machine/include/arm/armv8a/tune-cortexa53.inc
 
 MACHINE_FEATURES += " pci wifi bluetooth "
-MACHINE_FEATURES_append_use-nxp-bsp = " optee "
+MACHINE_FEATURES:append:use-nxp-bsp = " optee "
 
 UBOOT_SUFFIX = "bin"
 
@@ -41,13 +41,13 @@ IMX_BOOT_SEEK = "32"
 OPTEE_BIN_EXT = "8mp"
 TEE_LOAD_ADDR = "0x56000000"
 
-IMAGE_INSTALL_append = " \
+IMAGE_INSTALL:append = " \
 	kernel-image \
 	kernel-modules \
 	kernel-devicetree \
 "
 
-PREFERRED_PROVIDER_virtual/kernel_mx8mp = "linux-compulab"
-PREFERRED_PROVIDER_virtual/bootloader_mx8mp = "u-boot-compulab"
+PREFERRED_PROVIDER_virtual/kernel:mx8mp = "linux-compulab"
+PREFERRED_PROVIDER_virtual/bootloader:mx8mp = "u-boot-compulab"
 
 PREFERRED_RROVIDER_u-boot-fw-utils = "u-boot-compulab-fw-utils"

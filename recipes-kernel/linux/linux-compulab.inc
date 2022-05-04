@@ -1,14 +1,14 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/compulab/imx8mp:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/compulab/imx8mp:"
 
 include compulab/imx8mp.inc
 
-do_configure_append() {
+do_configure:append() {
     if [ -z ${SKIP_MACHINE_DEFCONFIG} ];then
         oe_runmake ${MACHINE}_defconfig
     fi
 }
 
-do_compile_prepend() {
+do_compile:prepend() {
     if [ ${BUILD_REPRODUCIBLE_BINARIES} -eq 1 ];then
         export SOURCE_DATE_EPOCH=$(date +%s)
     fi

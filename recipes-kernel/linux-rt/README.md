@@ -2,5 +2,5 @@
 
 * Update the `conf/local.conf`
 ```
-DISTRO_FEATURES_append = " linux-rt "
+DISTRO_FEATURES:append = " linux-rt "
 ```
