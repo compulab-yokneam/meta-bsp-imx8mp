@@ -11,6 +11,9 @@ LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a
 
 require u-boot-compulab_${PV}.inc
 
+FILESEXTRAPATHS:prepend := "${THISDIR}/compulab/imx8mp:"
+require compulab/imx8mp.inc
+
 DEPENDS += "flex-native bison-native bc-native dtc-native"
 
 S = "${WORKDIR}/git"
@@ -21,6 +24,12 @@ inherit fsl-u-boot-localversion
 LOCALVERSION = "-compulab"
 
 BOOT_TOOLS = "imx-boot-tools"
+
+do_compile:prepend:mx8m () {
+    if [ ${BUILD_REPRODUCIBLE_BINARIES} -eq 1 ];then
+        export SOURCE_DATE_EPOCH=$(date +%s)
+    fi
+}
 
 do_deploy:append:mx8m () {
     # Deploy u-boot-nodtb.bin and fsl-imx8mq-XX.dtb, to be packaged in boot binary by imx-boot
