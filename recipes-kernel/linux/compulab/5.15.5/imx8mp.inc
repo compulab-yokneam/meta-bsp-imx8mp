@@ -7,5 +7,10 @@ SRC_URI:append = " \
 	file://0005-compulab-imx8mp-dts-Update-device-tree-files.patch \
 	file://0006-compulab-Add-econ-cameras-support.patch \
 	file://0007-ucm-imx8m-plus-defconfig-Disable-CONFIG_FW_LOADER_US.patch \
+	file://0008-compulab-mipi-csi-camera-nodes-update.patch \
+	file://0009-compulab-ecam-Add-separate-menu.patch \
+	file://0010-compulab-defconfig-Enable-ar1335_af.patch \
+	file://0011-compulab-dts-csi-Fix-econ-camera-property-and-clocks.patch \
+	file://0012-compulab-ucm-dts-Add-_ldo4_-device-tree.patch \
 	file://defconfig \
 "
