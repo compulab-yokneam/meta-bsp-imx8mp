@@ -1,0 +1,30 @@
+From 783bfde0b1e83fc7b46babc50081947fe743e5fe Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 3 May 2022 14:27:58 +0300
+Subject: [PATCH] compulab: ucm: dts: Disable usdhc1 interface
+
+Disable usdhc1 interface. This interfcae can cause a boot delay
+in case of using ldo4 bypass form u-boot.
+Must be enabled on demand with regards to the ldo4 settings.
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+index 9a7b73e868d6..1ca21d8f4a2d 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+@@ -820,7 +820,7 @@
+ 	pinctrl-2 = <&pinctrl_usdhc1_200mhz>;
+ 	bus-width = <4>;
+ 	non-removable;
+-	status = "okay";
++	status = "disabled";
+ };
+ 
+ &usdhc2 {
+-- 
+2.17.1
+
