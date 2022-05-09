@@ -11,12 +11,11 @@ mkdir compulab-bsp && cd compulab-bsp
 | Machine | Command Line |
 |---|---|
 |ucm-imx8m-plus|```export MACHINE=ucm-imx8m-plus```|
-|som-imx8m-plus|```export MACHINE=som-imx8m-plus```|
 
 * Initialize repo manifests:
 ```
 repo init -u git://source.codeaurora.org/external/imx/imx-manifest.git -b imx-linux-hardknott -m imx-5.10.72-2.2.0.xml
-wget --directory-prefix .repo/manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/hardknott-5.10.72-2.2.0/scripts/imx-5.10.72-2.2.0_compulab.xml
+wget --directory-prefix .repo/manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/ucm-imx8m-plus-r1.1/scripts/imx-5.10.72-2.2.0_compulab.xml
 repo init -m imx-5.10.72-2.2.0_compulab.xml
 repo sync
 ```
