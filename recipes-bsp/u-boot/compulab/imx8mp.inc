@@ -51,6 +51,8 @@ SRC_URI_append = " \
 	file://0050-imx8mp-board-Add-ldo4-command.patch \
 	file://0051-imx8mp-board-Add-dp_pmic_ldo4.patch \
 	file://0052-imx8mp-spl-Improve-the-ldo4-set-value-logics.patch \
+	file://0053-compulab-eeprom-Issue-net_random_ethaddr-if-eeprom-i.patch \
+	file://0054-ucm-imx8m-plus-Issue-cl_eeprom_read_n_mac_addr-for-m.patch \
 "
 
 SRC_URI_append_ucm-imx8m-plus = " \

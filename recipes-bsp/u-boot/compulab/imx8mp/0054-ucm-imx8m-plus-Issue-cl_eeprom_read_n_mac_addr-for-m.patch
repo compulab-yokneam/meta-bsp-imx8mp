@@ -1,0 +1,27 @@
+From 8643a0a9b25d20aa1b47f1f5c4090ab70727e829 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 10 May 2022 23:43:18 +0300
+Subject: [PATCH] ucm-imx8m-plus: Issue cl_eeprom_read_n_mac_addr() for mac
+ read
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/ucm-imx8m-plus/ucm-imx8m-plus.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/board/compulab/ucm-imx8m-plus/ucm-imx8m-plus.c b/board/compulab/ucm-imx8m-plus/ucm-imx8m-plus.c
+index 793eccb666..3b3ec6a912 100644
+--- a/board/compulab/ucm-imx8m-plus/ucm-imx8m-plus.c
++++ b/board/compulab/ucm-imx8m-plus/ucm-imx8m-plus.c
+@@ -33,7 +33,7 @@ DECLARE_GLOBAL_DATA_PTR;
+ #include "../common/eeprom.h"
+ void imx_get_mac_from_fuse(int dev_id, unsigned char *mac)
+ {
+-	cl_eeprom_read_mac_addr(mac, CONFIG_SYS_I2C_EEPROM_BUS);
++	cl_eeprom_read_n_mac_addr(mac, /*dev_id*/ 0, CONFIG_SYS_I2C_EEPROM_BUS);
+ 	debug("%s: MAC%d: %02x.%02x.%02x.%02x.%02x.%02x\n",
+ 	      __func__, dev_id, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+ 	return;
+-- 
+2.17.1
+
