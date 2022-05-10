@@ -1,0 +1,43 @@
+From 182706bd48058d4c07e7e820f848f07c4d1cecd9 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 10 May 2022 23:37:16 +0300
+Subject: [PATCH] compulab: eeprom: Issue net_random_ethaddr() if eeprom is
+ empty
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/common/eeprom.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/board/compulab/common/eeprom.c b/board/compulab/common/eeprom.c
+index 5c69044d96..4b7353f6c8 100644
+--- a/board/compulab/common/eeprom.c
++++ b/board/compulab/common/eeprom.c
+@@ -16,6 +16,7 @@
+ #include <eeprom_field.h>
+ #include <linux/kernel.h>
+ #include <asm/setup.h>
++#include <net.h>
+ #include "eeprom.h"
+ 
+ #ifndef CONFIG_SYS_I2C_EEPROM_ADDR
+@@ -201,7 +202,15 @@ int cl_eeprom_read_n_mac_addr(uchar *buf, uint iface_number, uint eeprom_bus __a
+ 
+ 	offset = (iface_number == 0) ? MAC_ADDR_OFFSET : MAC1_ADDR_OFFSET;
+ 
+-	return cl_eeprom_read(offset, buf, 6);
++	err = cl_eeprom_read(offset, buf, 6);
++	{ /* generate a random address if the som eeprom is empty */
++		u32 mac0, mac2;
++		mac0 = (u32) buf[0];
++		mac2 = (u32) buf[2];
++		if ( mac0 == mac2 )
++			net_random_ethaddr(buf);
++	}
++	return err;
+ }
+ 
+ static u32 board_rev;
+-- 
+2.17.1
+
