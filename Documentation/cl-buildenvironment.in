@@ -20,5 +20,5 @@ export NXP_UBOOT_BRANCH=lf-5.10.35-2.0.0
 export CPL_UBOOT_PATCH=recipes-bsp/u-boot/compulab/imx8mp
 
 export USER_APP_DIR=${HOME}/Applications
-export CROSS_COMPILE=${USER_APP_DIR}/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-
-export AARCH64_CROSS_URL="https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu.tar.xz"
+export CROSS_COMPILE=${USER_APP_DIR}/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-
+export AARCH64_CROSS_URL="https://developer.arm.com/-/media/Files/downloads/gnu-a/10.3-2021.07/binrel/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu.tar.xz"
