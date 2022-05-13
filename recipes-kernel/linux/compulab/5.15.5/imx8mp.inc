@@ -12,5 +12,6 @@ SRC_URI:append = " \
 	file://0010-compulab-defconfig-Enable-ar1335_af.patch \
 	file://0011-compulab-dts-csi-Fix-econ-camera-property-and-clocks.patch \
 	file://0012-compulab-ucm-dts-Add-_ldo4_-device-tree.patch \
+	file://0013-imx8-isi-Fix-the-5.15.5-stream-capture-color-distort.patch \
 	file://defconfig \
 "
