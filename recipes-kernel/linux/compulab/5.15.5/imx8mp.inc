@@ -14,5 +14,6 @@ SRC_URI:append = " \
 	file://0012-compulab-ucm-dts-Add-_ldo4_-device-tree.patch \
 	file://0013-imx8-isi-Fix-the-5.15.5-stream-capture-color-distort.patch \
 	file://0014-ucm-imx8m-plus-defconfig-Disable-CONFIG_FB_EFI.patch \
+	file://0015-ucm-imx8m-plus-defconfig-Update-for-docker.patch \
 	file://defconfig \
 "
