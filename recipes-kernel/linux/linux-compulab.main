@@ -50,4 +50,8 @@ do_compile:prepend() {
     fi
 }
 
+PACKAGESPLITFUNCS:remove = "split_kernel_module_packages"
+
+FILES:${KERNEL_PACKAGE_NAME}-modules = "/lib/modules/ /etc/"
+
 COMPATIBLE_MACHINE = "(ucm-imx8m-plus|som-imx8m-plus)"
