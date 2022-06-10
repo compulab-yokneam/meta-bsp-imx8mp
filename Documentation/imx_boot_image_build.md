@@ -19,7 +19,15 @@ export DEV_SHELL=$(pwd)/meta-bsp-imx8mp/Documentation
 </pre>
 
 * Run the developmet shell and follow the on screen instructions:
+
 <pre>
 cd ${DEV_SHELL}
 ./cl-buildenvironment.shell
+</pre>
+
+The `flash.bin` image of the ucm machine can be created with UART1 or UART2 debug console.<br>
+The default is UART2. In case of using a non-default port, issue this command.
+<pre>
+cd ${DEV_SHELL}
+CPL_DEBUG_UART=1 ./cl-buildenvironment.shell
 </pre>
