@@ -22,3 +22,7 @@ export CPL_UBOOT_PATCH=recipes-bsp/u-boot/compulab/imx8mp
 export USER_APP_DIR=${HOME}/Applications
 export CROSS_COMPILE=${USER_APP_DIR}/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-
 export AARCH64_CROSS_URL="https://developer.arm.com/-/media/Files/downloads/gnu-a/10.3-2021.07/binrel/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu.tar.xz"
+
+declare -A uarts=([1]="CFG_UART_BASE=UART1_BASE IMX_BOOT_UART_BASE=0x30860000" [2]="CFG_UART_BASE=UART2_BASE IMX_BOOT_UART_BASE=0x30890000")
+export CPL_DEBUG_UART=${CPL_DEBUG_UART:-2}
+export ${uarts[${CPL_DEBUG_UART}]}

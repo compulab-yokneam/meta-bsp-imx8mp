@@ -76,7 +76,9 @@ get_nxp_atf() {
 
     NXP_SOURCE=${NXP_ATF} NXP_BRANCH=${NXP_ATF_BRANCH} CPL_PATCH=${CPL_ATF_PATCH} _get_nxp_source
 
-    make -j 16 -C ${NXP_ATF} PLAT=${NXP_PLATFORM} BUILD_BASE=build-optee SPD=opteed bl31
+    ATF_MAKE_CMD="make -j 16 -C ${NXP_ATF} PLAT=${NXP_PLATFORM} BUILD_BASE=build-optee SPD=opteed IMX_BOOT_UART_BASE=${IMX_BOOT_UART_BASE} bl31"
+    echo ${ATF_MAKE_CMD} > ${RESULTS}/bl31.cmd
+    ${ATF_MAKE_CMD}
     ln -fs $(readlink -f ${NXP_ATF}/build-optee/${NXP_PLATFORM}/release/bl31.bin) ${RESULTS}/bl31.bin
 }
 
@@ -86,8 +88,11 @@ get_nxp_optee() {
     NXP_SOURCE=${NXP_OPTEE} NXP_BRANCH=${NXP_OPTEE_BRANCH} CPL_PATCH=${CPL_OPTEE_PATCH} _get_nxp_source
 
     export ARCH=arm CROSS_COMPILE64=${CROSS_COMPILE}
-    make -j 16 -C ${NXP_OPTEE} PLATFORM=imx PLATFORM_FLAVOR=${optee_flavor} CFG_WERROR=y \
-      CFG_TEE_CORE_LOG_LEVEL=0 CFG_TEE_TA_LOG_LEVEL=0 CFG_DDR_SIZE=0x200000000ULL
+    OPTEE_MAKE_CMD="make -j 16 -C ${NXP_OPTEE} PLATFORM=imx PLATFORM_FLAVOR=${optee_flavor} CFG_WERROR=y \
+      CFG_TEE_CORE_LOG_LEVEL=0 CFG_TEE_TA_LOG_LEVEL=0 CFG_DDR_SIZE=0x200000000ULL CFG_UART_BASE=${CFG_UART_BASE}"
+    echo ${OPTEE_MAKE_CMD} > ${RESULTS}/tee.cmd
+    ${OPTEE_MAKE_CMD}
+
     ln -fs $(readlink -f ${NXP_OPTEE}/out/arm-plat-imx/core/tee-raw.bin) ${RESULTS}/tee.bin
 }
 
@@ -98,6 +103,10 @@ get_nxp_bootloader() {
 
     export ARCH=arm64
     make -j 16 -C ${NXP_UBOOT} O=${RESULTS} ${MACHINE}_defconfig
+    [[ ${CPL_DEBUG_UART} == 1 ]] && {
+        sed -i '/CONFIG_COMPULAB_DEBUG_UART1/d' ${RESULTS}/.config
+        sed -i '$ a CONFIG_COMPULAB_DEBUG_UART1=y' ${RESULTS}/.config
+    } || true
     make -j 16 -C ${NXP_UBOOT} O=${RESULTS} ${NXP_FLASH}
     cp ${RESULTS}/${NXP_FLASH} ${RESULTS}/${MACHINE}-${NXP_FLASH}
 
