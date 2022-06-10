@@ -1,0 +1,136 @@
+From f8f0d2d6cf36e6375749762e77742ccb25721918 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Fri, 10 Jun 2022 11:58:04 +0300
+Subject: [PATCH] ucm-imx8m-plus: Allow usieng UART1 as debug console
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm/dts/ucm-imx8m-plus.dts         | 22 ++++++++++++++++++++++
+ board/compulab/plat/imx8mp/spl/common.c | 11 ++++++++++-
+ board/compulab/ucm-imx8m-plus/Kconfig   |  4 ++++
+ include/configs/ucm-imx8m-plus.h        |  6 ++++++
+ 4 files changed, 42 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/dts/ucm-imx8m-plus.dts b/arch/arm/dts/ucm-imx8m-plus.dts
+index a1111161c9..f5f7cb093a 100644
+--- a/arch/arm/dts/ucm-imx8m-plus.dts
++++ b/arch/arm/dts/ucm-imx8m-plus.dts
+@@ -13,8 +13,13 @@
+ 	compatible = "compulab,ucm-imx8m-plus", "fsl,imx8mp";
+ 
+ 	chosen {
++#ifdef CONFIG_COMPULAB_DEBUG_UART1
++		bootargs = "console=ttymxc1,115200 earlycon=ec_imx6q,0x30860000,115200 console=tty0";
++		stdout-path = &uart1;
++#else
+ 		bootargs = "console=ttymxc1,115200 earlycon=ec_imx6q,0x30890000,115200 console=tty0";
+ 		stdout-path = &uart2;
++#endif
+ 	};
+ 
+ 	memory@40000000 {
+@@ -334,12 +339,22 @@
+ 	status = "okay";
+ };
+ 
++
++#ifdef CONFIG_COMPULAB_DEBUG_UART1
++&uart1 {
++	/* console */
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_uart1>;
++	status = "okay";
++};
++#else
+ &uart2 {
+ 	/* console */
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_uart2>;
+ 	status = "okay";
+ };
++#endif
+ 
+ &usb3_phy0 {
+ 	status = "okay";
+@@ -520,6 +535,13 @@
+ 		>;
+ 	};
+ 
++	pinctrl_uart1: uart1grp {
++		fsl,pins = <
++			MX8MP_IOMUXC_SD1_CMD__UART1_DCE_RX	0x49
++			MX8MP_IOMUXC_SAI2_RXFS__UART1_DCE_TX	0x49
++		>;
++	};
++
+ 	pinctrl_uart2: uart2grp {
+ 		fsl,pins = <
+ 			MX8MP_IOMUXC_UART2_RXD__UART2_DCE_RX	0x49
+diff --git a/board/compulab/plat/imx8mp/spl/common.c b/board/compulab/plat/imx8mp/spl/common.c
+index 0fded45418..67ae0ccf9d 100644
+--- a/board/compulab/plat/imx8mp/spl/common.c
++++ b/board/compulab/plat/imx8mp/spl/common.c
+@@ -8,10 +8,19 @@
+ #define UART_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_FSEL1)
+ #define WDOG_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_ODE | PAD_CTL_PUE | PAD_CTL_PE)
+ 
++#ifdef CONFIG_COMPULAB_DEBUG_UART1
++static iomux_v3_cfg_t const uart_pads[] = {
++	MX8MP_PAD_SD1_CMD__UART1_DCE_RX | MUX_PAD_CTRL(UART_PAD_CTRL),
++	MX8MP_PAD_SAI2_RXFS__UART1_DCE_TX| MUX_PAD_CTRL(UART_PAD_CTRL),
++};
++#define UART_CLK_INDEX 0
++#else
+ static iomux_v3_cfg_t const uart_pads[] = {
+ 	MX8MP_PAD_UART2_RXD__UART2_DCE_RX | MUX_PAD_CTRL(UART_PAD_CTRL),
+ 	MX8MP_PAD_UART2_TXD__UART2_DCE_TX | MUX_PAD_CTRL(UART_PAD_CTRL),
+ };
++#define UART_CLK_INDEX 1
++#endif
+ 
+ static iomux_v3_cfg_t const wdog_pads[] = {
+ 	MX8MP_PAD_GPIO1_IO02__WDOG1_WDOG_B  | MUX_PAD_CTRL(WDOG_PAD_CTRL),
+@@ -27,7 +36,7 @@ int board_early_init_f(void)
+ 
+ 	imx_iomux_v3_setup_multiple_pads(uart_pads, ARRAY_SIZE(uart_pads));
+ 
+-	init_uart_clk(1);
++	init_uart_clk(UART_CLK_INDEX);
+ 
+ 	return 0;
+ }
+diff --git a/board/compulab/ucm-imx8m-plus/Kconfig b/board/compulab/ucm-imx8m-plus/Kconfig
+index 98aeff95ad..837681d704 100644
+--- a/board/compulab/ucm-imx8m-plus/Kconfig
++++ b/board/compulab/ucm-imx8m-plus/Kconfig
+@@ -30,6 +30,10 @@ config SYS_I2C_EEPROM_ADDR_SB
+ 	hex "SB eeprom dev address"
+ 	default 0x54
+ 
++config COMPULAB_DEBUG_UART1
++	bool "System Debug UART1"
++	default false
++
+ source "board/compulab/plat/imx8mp/Kconfig"
+ 
+ endif
+diff --git a/include/configs/ucm-imx8m-plus.h b/include/configs/ucm-imx8m-plus.h
+index ffc59aa221..c3581df4aa 100644
+--- a/include/configs/ucm-imx8m-plus.h
++++ b/include/configs/ucm-imx8m-plus.h
+@@ -24,6 +24,12 @@
+ #define PHY_ANEG_TIMEOUT 20000
+ 
+ #endif
++
++#ifdef CONFIG_COMPULAB_DEBUG_UART1
++#undef CONFIG_MXC_UART_BASE
++#define CONFIG_MXC_UART_BASE	UART1_BASE_ADDR
++#endif
++
+ #if defined(CONFIG_ANDROID_SUPPORT)
+ #include "ucm-imx8m-plus_android.h"
+ #endif
+-- 
+2.17.1
+
