@@ -54,6 +54,7 @@ SRC_URI:append = " \
 	file://0053-compulab-eeprom-Issue-net_random_ethaddr-if-eeprom-i.patch \
 	file://0054-ucm-imx8m-plus-Issue-cl_eeprom_read_n_mac_addr-for-m.patch \
 	file://0055-ucm-imx8m-plus-Allow-usieng-UART1-as-debug-console.patch \
+	file://0056-ucm-imx8m-plus-Allow-using-UART1-as-debug-console-1.patch \
 "
 
 SRC_URI:append:ucm-imx8m-plus = " \

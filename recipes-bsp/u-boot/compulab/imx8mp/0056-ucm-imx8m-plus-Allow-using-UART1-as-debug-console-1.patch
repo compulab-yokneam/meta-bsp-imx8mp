@@ -1,0 +1,52 @@
+From ecbd7dd77c4a9da2146e2a1dc1402d8aad9aa294 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Mon, 13 Jun 2022 19:19:06 +0300
+Subject: [PATCH] ucm-imx8m-plus: Allow using UART1 as debug console #1
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm/dts/ucm-imx8m-plus.dts       | 2 +-
+ include/configs/compulab-imx8m-plus.h | 7 ++++++-
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/dts/ucm-imx8m-plus.dts b/arch/arm/dts/ucm-imx8m-plus.dts
+index f5f7cb093a..f63b58dc47 100644
+--- a/arch/arm/dts/ucm-imx8m-plus.dts
++++ b/arch/arm/dts/ucm-imx8m-plus.dts
+@@ -14,7 +14,7 @@
+ 
+ 	chosen {
+ #ifdef CONFIG_COMPULAB_DEBUG_UART1
+-		bootargs = "console=ttymxc1,115200 earlycon=ec_imx6q,0x30860000,115200 console=tty0";
++		bootargs = "console=ttymxc0,115200 earlycon=ec_imx6q,0x30860000,115200 console=tty0";
+ 		stdout-path = &uart1;
+ #else
+ 		bootargs = "console=ttymxc1,115200 earlycon=ec_imx6q,0x30890000,115200 console=tty0";
+diff --git a/include/configs/compulab-imx8m-plus.h b/include/configs/compulab-imx8m-plus.h
+index b42f9541b2..04442ca858 100644
+--- a/include/configs/compulab-imx8m-plus.h
++++ b/include/configs/compulab-imx8m-plus.h
+@@ -48,6 +48,11 @@
+ #define BOOTENV
+ #endif
+ 
++#ifdef CONFIG_COMPULAB_DEBUG_UART1
++#define TTYMXC "ttymxc0"
++#else
++#define TTYMXC "ttymxc1"
++#endif
+ 
+ #define JAILHOUSE_ENV \
+ 	"jh_clk= \0 " \
+@@ -79,7 +84,7 @@
+ 	"bsp_script=boot.scr\0" \
+ 	"image=Image\0" \
+ 	"splashimage=0x50000000\0" \
+-	"console=ttymxc1,115200 console=tty1\0" \
++	"console="TTYMXC",115200 console=tty1\0" \
+ 	"fdt_addr_r=0x43000000\0"			\
+ 	"fdt_addr=0x43000000\0"			\
+ 	"boot_fdt=try\0" \
+-- 
+2.17.1
+
