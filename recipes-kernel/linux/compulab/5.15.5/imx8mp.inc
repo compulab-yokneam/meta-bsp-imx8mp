@@ -20,5 +20,6 @@ SRC_URI:append = " \
 	file://0018-compulab-imx8mp-dts-Add-ucm-imx8m-plus-nopcie.dts.patch \
 	file://0019-compulab-imx8mp-dts-Add-ucm-imx8m-plus-p21.dts.patch \
 	file://0020-compulab-imx8mp-dts-Update-the-device-tree-build-lis.patch \
+	file://0021-compulab-imx8mp-dts-Add-ucm-imx8m-plus-uart1.dts.patch \
 	file://defconfig \
 "
