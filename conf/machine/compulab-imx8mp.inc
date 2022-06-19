@@ -1,12 +1,16 @@
-MACHINEOVERRIDES =. "imx-boot-container:mx8:mx8m:mx8mp:"
+MACHINEOVERRIDES =. "imx-boot-container:mx8mp:"
 
 require conf/machine/include/imx-base.inc
 require conf/machine/include/arm/armv8a/tune-cortexa53.inc
 
+DEFAULTTUNE:use-mainline-bsp = "cortexa53-crypto"
+DEFAULTTUNE:use-nxp-bsp = "cortexa53-crypto"
+
 MACHINE_FEATURES += " pci wifi bluetooth "
 MACHINE_FEATURES:append:use-nxp-bsp = " optee "
 
-UBOOT_SUFFIX = "bin"
+IMX_DEFAULT_BOOTLOADER:use-mainline-bsp = "u-boot-compulab"
+IMX_DEFAULT_BOOTLOADER:use-nxp-bsp = "u-boot-compulab"
 
 SPL_BINARY = "spl/u-boot-spl.bin"
 
@@ -16,13 +20,13 @@ ATF_LOAD_ADDR = "0x970000"
 # Extra firmware package name, that is required to build boot container for fslc bsp
 IMX_EXTRA_FIRMWARE = "firmware-imx-8m"
 
-FW_VER ?= "202006"
 # Set DDR FIRMWARE
+DDR_FIRMWARE_VERSION = "202006"
 DDR_FIRMWARE_NAME = " \
-	lpddr4_pmu_train_1d_dmem_${FW_VER}.bin \
-	lpddr4_pmu_train_1d_imem_${FW_VER}.bin \
-	lpddr4_pmu_train_2d_dmem_${FW_VER}.bin \
-	lpddr4_pmu_train_2d_imem_${FW_VER}.bin \
+	lpddr4_pmu_train_1d_dmem_${DDR_FIRMWARE_VERSION}.bin \
+	lpddr4_pmu_train_1d_imem_${DDR_FIRMWARE_VERSION}.bin \
+	lpddr4_pmu_train_2d_dmem_${DDR_FIRMWARE_VERSION}.bin \
+	lpddr4_pmu_train_2d_imem_${DDR_FIRMWARE_VERSION}.bin \
 "
 
 # Set imx-mkimage boot target
@@ -47,9 +51,13 @@ IMAGE_INSTALL:append = " \
 	kernel-devicetree \
 "
 
-PREFERRED_PROVIDER_virtual/kernel:mx8mp = "linux-compulab"
-PREFERRED_PROVIDER_virtual/bootloader:mx8mp = "u-boot-compulab"
+PREFERRED_PROVIDER_virtual/kernel = "linux-compulab"
+PREFERRED_PROVIDER_virtual/bootloader = "u-boot-compulab"
 
-PREFERRED_RROVIDER_u-boot-fw-utils = "u-boot-compulab-fw-utils"
+IMXBOOT_TARGETS_BASENAME = "flash_evk"
+
+PREFERRED_RROVIDER_u-boot-fw-utils = "libubootenv-bin"
 
 MACHINE_FIRMWARE:remove = " linux-firmware-ath10k "
+
+IMX_DEFAULT_BSP = "nxp"

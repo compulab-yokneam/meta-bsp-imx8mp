@@ -1,4 +1,5 @@
-LICENSE_FLAGS_WHITELIST = "commercial"
+LICENSE_FLAGS_ACCEPTED = "commercial"
+
 CORE_IMAGE_EXTRA_INSTALL += " cl-uboot cl-deploy cl-stest cl-camera cl-audio "
 CORE_IMAGE_EXTRA_INSTALL += " libubootenv-bin u-boot-compulab-env "
 CORE_IMAGE_EXTRA_INSTALL += " memtester htop iotop tmux iperf3 "
