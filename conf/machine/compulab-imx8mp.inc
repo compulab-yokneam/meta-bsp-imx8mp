@@ -50,6 +50,6 @@ IMAGE_INSTALL:append = " \
 PREFERRED_PROVIDER_virtual/kernel:mx8mp = "linux-compulab"
 PREFERRED_PROVIDER_virtual/bootloader:mx8mp = "u-boot-compulab"
 
-PREFERRED_RROVIDER_u-boot-fw-utils = "u-boot-compulab-fw-utils"
+PREFERRED_RROVIDER_u-boot-fw-utils = "libubootenv-bin"
 
 MACHINE_FIRMWARE:remove = " linux-firmware-ath10k "
