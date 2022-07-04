@@ -40,7 +40,11 @@ require compulab/${PV}/imx8mp.inc
 
 do_configure:append() {
     if [ -z ${SKIP_MACHINE_DEFCONFIG} ];then
-        oe_runmake ${MACHINE}_defconfig
+        if [ -z ${KERNEL_CONFIG} ];then
+            oe_runmake ${MACHINE}_defconfig
+        else
+            oe_runmake ${KERNEL_CONFIG}
+        fi
     fi
 }
 
@@ -54,4 +58,4 @@ PACKAGESPLITFUNCS:remove = "split_kernel_module_packages"
 
 FILES:${KERNEL_PACKAGE_NAME}-modules = "/lib/modules/ /etc/"
 
-COMPATIBLE_MACHINE = "(ucm-imx8m-plus|som-imx8m-plus)"
+COMPATIBLE_MACHINE = "(ucm-imx8m-plus|som-imx8m-plus|iot-gate-imx8plus)"
