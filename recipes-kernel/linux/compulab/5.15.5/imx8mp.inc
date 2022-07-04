@@ -21,5 +21,10 @@ SRC_URI:append = " \
 	file://0019-compulab-imx8mp-dts-Add-ucm-imx8m-plus-p21.dts.patch \
 	file://0020-compulab-imx8mp-dts-Update-the-device-tree-build-lis.patch \
 	file://0021-compulab-imx8mp-dts-Add-ucm-imx8m-plus-uart1.dts.patch \
+	file://0022-compulab-imx8mp-dts-Disable-uart1-if-not-used-as-a-c.patch \
+	file://0023-compulab-imx8mp-dts-Add-uart2-clocks-to-the-node.patch \
+	file://0024-compulab-imx8mp-dts-Modify-uart3-definition.patch \
+	file://0025-compulab-imx8mp-dts-Enable-uart1-if-used-as-a-consol.patch \
+	file://0026-compulab-imx8m-plus-Add-iot-gate-imx8plus-board-supp.patch \
 	file://defconfig \
 "
