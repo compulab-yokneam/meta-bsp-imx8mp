@@ -54,6 +54,7 @@ SRC_URI:append = " \
 	file://0053-compulab-eeprom-Issue-net_random_ethaddr-if-eeprom-i.patch \
 	file://0054-ucm-imx8m-plus-Issue-cl_eeprom_read_n_mac_addr-for-m.patch \
 	file://0055-ucm-imx8m-plus-Allow-usieng-UART1-as-debug-console.patch \
+	file://0056-compulab-Add-iot-gate-imx8plus-support.patch \
 "
 
 SRC_URI:append:ucm-imx8m-plus = " \
@@ -62,4 +63,8 @@ SRC_URI:append:ucm-imx8m-plus = " \
 
 SRC_URI:append:som-imx8m-plus = " \
 	file://som-imx8m-plus_defconfig \
+"
+
+SRC_URI:append:iot-gate-imx8plus = " \
+	file://iot-gate-imx8plus_defconfig \
 "
