@@ -11,7 +11,7 @@ mkdir compulab-bsp && cd compulab-bsp
 | Machine | Command Line |
 |---|---|
 |ucm-imx8m-plus|```export MACHINE=ucm-imx8m-plus```|
-|~~som-imx8m-plus~~|~~```export MACHINE=som-imx8m-plus```~~|
+|iot-gate-imx8plus|```export MACHINE=iot-gate-imx8plus```|
 
 * Initialize repo manifests:
 ```
