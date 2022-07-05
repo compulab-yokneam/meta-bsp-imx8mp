@@ -1,4 +1,4 @@
-MACHINEOVERRIDES =. "imx-boot-container:mx8mp:"
+MACHINEOVERRIDES =. "imx-boot-container:mx8:mx8m:mx8mp:compulab-mx8mp:"
 
 require conf/machine/include/imx-base.inc
 require conf/machine/include/arm/armv8a/tune-cortexa53.inc
@@ -51,8 +51,8 @@ IMAGE_INSTALL:append = " \
 	kernel-devicetree \
 "
 
-PREFERRED_PROVIDER_virtual/kernel = "linux-compulab"
-PREFERRED_PROVIDER_virtual/bootloader = "u-boot-compulab"
+PREFERRED_PROVIDER_virtual/kernel:compulab-mx8mp = "linux-compulab"
+PREFERRED_PROVIDER_virtual/bootloader:compulab-mx8mp = "u-boot-compulab"
 
 IMXBOOT_TARGETS_BASENAME = "flash_evk"
 
