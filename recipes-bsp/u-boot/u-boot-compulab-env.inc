@@ -1,6 +1,6 @@
 INSTALL_DIR = "/usr/local/bin"
 
-SRC_URI:append += "\
+SRC_URI:append = "\
 	file://cl_setenv \
 "
 
