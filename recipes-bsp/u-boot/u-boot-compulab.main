@@ -56,4 +56,4 @@ do_deploy:append () {
 require u-boot-compulab-env.inc
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-UBOOT_NAME_mx8 = "u-boot-${MACHINE}.bin-${UBOOT_CONFIG}"
+UBOOT_NAME = "u-boot-${MACHINE}.bin-${UBOOT_CONFIG}"
