@@ -25,7 +25,7 @@ mkdir compulab-nxp-bsp && cd compulab-nxp-bsp
 * Initialize repo manifests:
 ```
 repo init -u https://source.codeaurora.org/external/imx/imx-manifest  -b imx-linux-honister -m imx-5.15.5-1.0.0.xml
-wget --directory-prefix .repo/manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/honister/scripts/imx-5.15.5-1.0.0_compulab.xml
+wget --directory-prefix .repo/manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/kirkstone/scripts/imx-5.15.5-1.0.0_compulab.xml
 repo init -m imx-5.15.5-1.0.0_compulab.xml
 repo sync
 ```
