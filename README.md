@@ -1,12 +1,3 @@
-# Kirkstone
-
-* The layer compatibility:
-
-| BSP | Branch |
-|---|---|
-| NXP| Honister |
-| FSLC| Kirkstone |
-
 # Configuring the build
 
 ## Setup Yocto environment
@@ -20,15 +11,27 @@ mkdir compulab-nxp-bsp && cd compulab-nxp-bsp
 | Machine | Command Line |
 |---|---|
 |ucm-imx8m-plus|```export MACHINE=ucm-imx8m-plus```|
+|som-imx8m-plus|```export MACHINE=som-imx8m-plus```|
 |iot-gate-imx8plus|```export MACHINE=iot-gate-imx8plus```|
 
-* Initialize repo manifests:
+## Initialize repo manifests
+
+* NXP
 ```
-repo init -u https://source.codeaurora.org/external/imx/imx-manifest  -b imx-linux-honister -m imx-5.15.5-1.0.0.xml
-wget --directory-prefix .repo/manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/kirkstone/scripts/imx-5.15.5-1.0.0_compulab.xml
-repo init -m imx-5.15.5-1.0.0_compulab.xml
+repo init -u https://source.codeaurora.org/external/imx/imx-manifest -b imx-linux-kirkstone -m imx-5.15.32-2.0.0.xml
+```
+
+* CompuLab
+```
+mkdir -p .repo/local_manifests
+wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/kirkstone/scripts/meta-bsp-imx8mp.xml
+```
+
+* Sync Them all
+```
 repo sync
 ```
+
 
 ## Setup build environment
 
