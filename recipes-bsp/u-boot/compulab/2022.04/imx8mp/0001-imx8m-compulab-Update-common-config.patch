@@ -1,0 +1,126 @@
+From 1b5e210a1679ddcbb6ce39a9503923e4bbe62245 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sun, 10 Jul 2022 12:10:53 +0300
+Subject: [PATCH] imx8m: compulab: Update common config
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/plat/imx8mp/Kconfig            |  3 ++
+ .../compulab/plat/imx8mp/imximage-8mp-sd.cfg  | 14 ++++++++
+ include/configs/compulab-imx8m-plus.h         | 35 -------------------
+ 3 files changed, 17 insertions(+), 35 deletions(-)
+ create mode 100644 board/compulab/plat/imx8mp/imximage-8mp-sd.cfg
+
+diff --git a/board/compulab/plat/imx8mp/Kconfig b/board/compulab/plat/imx8mp/Kconfig
+index 8a254f0d83..43857413cd 100644
+--- a/board/compulab/plat/imx8mp/Kconfig
++++ b/board/compulab/plat/imx8mp/Kconfig
+@@ -8,4 +8,7 @@ config TEE_LOAD_ADDR
+ 	hex "tee.bin load address"
+ 	default 0x56000000
+ 
++config IMX_CONFIG
++	default "board/compulab/plat/imx8mp/imximage-8mp-sd.cfg"
++
+ endif
+diff --git a/board/compulab/plat/imx8mp/imximage-8mp-sd.cfg b/board/compulab/plat/imx8mp/imximage-8mp-sd.cfg
+new file mode 100644
+index 0000000000..1326ac6634
+--- /dev/null
++++ b/board/compulab/plat/imx8mp/imximage-8mp-sd.cfg
+@@ -0,0 +1,14 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * Copyright 2021 NXP
++ */
++
++
++FIT
++ROM_VERSION	v2
++BOOT_FROM	sd
++LOADER		u-boot-spl-ddr.bin	0x920000
++
++/*
++* SECOND_LOADER	u-boot.itb		0x40200000 0x60000
++*/
+diff --git a/include/configs/compulab-imx8m-plus.h b/include/configs/compulab-imx8m-plus.h
+index 573b0e3370..85c31a5547 100644
+--- a/include/configs/compulab-imx8m-plus.h
++++ b/include/configs/compulab-imx8m-plus.h
+@@ -166,10 +166,6 @@
+ #endif
+ 
+ /* Link Definitions */
+-#define CONFIG_LOADADDR			0x40480000
+-
+-#define CONFIG_SYS_LOAD_ADDR		CONFIG_LOADADDR
+-
+ #define CONFIG_SYS_INIT_RAM_ADDR	0x40000000
+ #define CONFIG_SYS_INIT_RAM_SIZE	0x80000
+ #define CONFIG_SYS_INIT_SP_OFFSET \
+@@ -180,9 +176,6 @@
+ #define CONFIG_ENV_OVERWRITE
+ #define CONFIG_MMCROOT			"/dev/mmcblk1p2"  /* USDHC2 */
+ 
+-/* Size of malloc() pool */
+-#define CONFIG_SYS_MALLOC_LEN		SZ_32M
+-
+ /* Totally 6GB DDR */
+ #define CONFIG_SYS_SDRAM_BASE		0x40000000
+ #define PHYS_SDRAM			0x40000000
+@@ -190,10 +183,6 @@
+ #define PHYS_SDRAM_2			0x100000000
+ #define PHYS_SDRAM_2_SIZE		0x00000000	/* 0 GB */
+ 
+-#define CONFIG_SYS_MEMTEST_START	PHYS_SDRAM
+-#define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START + \
+-					(PHYS_SDRAM_SIZE >> 1))
+-
+ #define MEMTEST_DIVIDER   2
+ #define MEMTEST_NUMERATOR 1
+ 
+@@ -208,13 +197,10 @@
+ 					sizeof(CONFIG_SYS_PROMPT) + 16)
+ 
+ #define CONFIG_IMX_BOOTAUX
+-#define CONFIG_FSL_USDHC
+ 
+ #define CONFIG_SYS_FSL_USDHC_NUM	2
+ #define CONFIG_SYS_FSL_ESDHC_ADDR	0
+ 
+-#define CONFIG_SYS_MMC_IMG_LOAD_PART	1
+-
+ #ifdef CONFIG_NAND_MXS
+ #define CONFIG_CMD_NAND_TRIMFFS
+ 
+@@ -228,27 +214,6 @@
+ 
+ #define CONFIG_SYS_I2C_SPEED		100000
+ 
+-/* USB configs */
+-#ifndef CONFIG_SPL_BUILD
+-
+-#define CONFIG_CMD_USB_MASS_STORAGE
+-#define CONFIG_USB_GADGET_MASS_STORAGE
+-#define CONFIG_USB_FUNCTION_MASS_STORAGE
+-#endif
+-
+ #define CONFIG_USB_MAX_CONTROLLER_COUNT         2
+ #define CONFIG_USBD_HS
+ #define CONFIG_USB_GADGET_VBUS_DRAW 2
+-
+-#ifdef CONFIG_DM_VIDEO
+-#define CONFIG_VIDEO_LOGO
+-#define CONFIG_SPLASH_SCREEN
+-#define CONFIG_SPLASH_SCREEN_ALIGN
+-#define CONFIG_CMD_BMP
+-#define CONFIG_BMP_16BPP
+-#define CONFIG_BMP_24BPP
+-#define CONFIG_BMP_32BPP
+-#define CONFIG_VIDEO_BMP_RLE8
+-#define CONFIG_VIDEO_BMP_LOGO
+-#endif
+-
+-- 
+2.17.1
+
