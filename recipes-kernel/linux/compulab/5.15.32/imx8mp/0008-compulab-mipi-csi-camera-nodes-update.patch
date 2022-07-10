@@ -1,0 +1,100 @@
+From 68062503d774de6ec0bd0d5136e9745e2587d1e6 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sat, 7 May 2022 01:19:05 +0300
+Subject: [PATCH] compulab: mipi csi camera nodes update
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ .../boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi | 13 +++++++++++--
+ .../boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi | 13 +++++++++++--
+ 2 files changed, 22 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi
+index 8e52390d0a8e..5a7e3dd305af 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi
+@@ -13,7 +13,7 @@
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_csi_mclk>;
+ 		clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
+-		clock-names = "xclk";
++		clock-names = "csi_mclk";
+ 		assigned-clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
+ 		assigned-clock-parents = <&clk IMX8MP_CLK_24M>;
+ 		assigned-clock-rates = <24000000>;
+@@ -23,6 +23,7 @@
+ 		mclk = <24000000>;
+ 		mclk_source = <0>;
+ 		mipi_csi;
++		cam-format-yuyv;
+ 		camera_mipi_lanes = <4>;
+ 		status = "okay";
+ 
+@@ -41,7 +42,7 @@
+ 	port@0 {
+ 		reg = <0>;
+ 		mipi1_sensor_ep: endpoint@1 {
+-			csis-hs-settle = <13>;
++			csis-hs-settle = <23>;
+ 			csis-clk-settle = <2>;
+ 			csis-wclk;
+ 			data-lanes = <4>;
+@@ -56,4 +57,12 @@
+ 
+ &isi_0 {
+ 	status = "okay";
++
++	cap_device {
++		status = "okay";
++	};
++
++	m2m_device {
++		status = "okay";
++	};
+ };
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi
+index 04ca03cc4952..77f3a90eb72e 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi
+@@ -13,7 +13,7 @@
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_csi_mclk>;
+ 		clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
+-		clock-names = "xclk";
++		clock-names = "csi_mclk";
+ 		assigned-clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
+ 		assigned-clock-parents = <&clk IMX8MP_CLK_24M>;
+ 		assigned-clock-rates = <24000000>;
+@@ -23,6 +23,7 @@
+ 		mclk = <24000000>;
+ 		mclk_source = <0>;
+ 		mipi_csi;
++		cam-format-yuyv;
+ 		camera_mipi_lanes = <4>;
+ 		status = "okay";
+ 
+@@ -41,7 +42,7 @@
+ 	port@1 {
+ 		reg = <1>;
+ 		mipi2_sensor_ep: endpoint {
+-			csis-hs-settle = <13>;
++			csis-hs-settle = <23>;
+ 			csis-clk-settle = <2>;
+ 			csis-wclk;
+ 			data-lanes = <4>;
+@@ -56,4 +57,12 @@
+ 
+ &isi_1 {
+ 	status = "okay";
++
++	cap_device {
++		status = "okay";
++	};
++
++	m2m_device {
++		status = "okay";
++	};
+ };
+-- 
+2.17.1
+

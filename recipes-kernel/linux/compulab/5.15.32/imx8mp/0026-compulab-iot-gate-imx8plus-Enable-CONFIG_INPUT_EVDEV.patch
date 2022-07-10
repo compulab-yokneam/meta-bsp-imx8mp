@@ -1,0 +1,25 @@
+From 48e50420daaa8681b191300320c57781c8c9aeb4 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 5 Jul 2022 16:44:07 +0300
+Subject: [PATCH] compulab: iot-gate-imx8plus: Enable CONFIG_INPUT_EVDEV
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/configs/iot-gate-imx8plus_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/configs/iot-gate-imx8plus_defconfig b/arch/arm64/configs/iot-gate-imx8plus_defconfig
+index 81fb2b4806a9..5dce99ec7bcc 100644
+--- a/arch/arm64/configs/iot-gate-imx8plus_defconfig
++++ b/arch/arm64/configs/iot-gate-imx8plus_defconfig
+@@ -635,6 +635,7 @@ CONFIG_WLCORE_SDIO=m
+ CONFIG_XEN_NETDEV_BACKEND=m
+ CONFIG_IVSHMEM_NET=y
+ CONFIG_INPUT_MOUSEDEV=m
++CONFIG_INPUT_EVDEV=m
+ CONFIG_INPUT_EVBUG=m
+ CONFIG_KEYBOARD_ADC=m
+ CONFIG_KEYBOARD_GPIO=y
+-- 
+2.17.1
+

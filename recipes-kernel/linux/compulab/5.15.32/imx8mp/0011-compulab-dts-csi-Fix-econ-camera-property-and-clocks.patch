@@ -1,0 +1,56 @@
+From 82ec49f4a297b5686517a184e93d19b55b4f327f Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sat, 7 May 2022 22:11:05 +0300
+Subject: [PATCH] compulab: dts: csi: Fix econ camera property and clocks
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi | 3 +--
+ arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi | 3 +--
+ 2 files changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi
+index 5a7e3dd305af..1beaab5ba6de 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi
+@@ -13,7 +13,7 @@
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_csi_mclk>;
+ 		clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
+-		clock-names = "csi_mclk";
++		clock-names = "xclk";
+ 		assigned-clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
+ 		assigned-clock-parents = <&clk IMX8MP_CLK_24M>;
+ 		assigned-clock-rates = <24000000>;
+@@ -23,7 +23,6 @@
+ 		mclk = <24000000>;
+ 		mclk_source = <0>;
+ 		mipi_csi;
+-		cam-format-yuyv;
+ 		camera_mipi_lanes = <4>;
+ 		status = "okay";
+ 
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi
+index 77f3a90eb72e..a7e5f908c637 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi
+@@ -13,7 +13,7 @@
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_csi_mclk>;
+ 		clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
+-		clock-names = "csi_mclk";
++		clock-names = "xclk";
+ 		assigned-clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
+ 		assigned-clock-parents = <&clk IMX8MP_CLK_24M>;
+ 		assigned-clock-rates = <24000000>;
+@@ -23,7 +23,6 @@
+ 		mclk = <24000000>;
+ 		mclk_source = <0>;
+ 		mipi_csi;
+-		cam-format-yuyv;
+ 		camera_mipi_lanes = <4>;
+ 		status = "okay";
+ 
+-- 
+2.17.1
+

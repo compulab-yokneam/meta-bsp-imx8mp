@@ -1,0 +1,44 @@
+From d40e36d0d21e108ac857cf6120e3de2ddbd71c63 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sat, 7 May 2022 22:09:24 +0300
+Subject: [PATCH] compulab: defconfig: Enable ar1335_af
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/configs/ucm-imx8m-plus_defconfig | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm64/configs/ucm-imx8m-plus_defconfig b/arch/arm64/configs/ucm-imx8m-plus_defconfig
+index 20471ddc33f9..f00946ca30dd 100644
+--- a/arch/arm64/configs/ucm-imx8m-plus_defconfig
++++ b/arch/arm64/configs/ucm-imx8m-plus_defconfig
+@@ -538,14 +538,15 @@ CONFIG_USB_VIDEO_CLASS=m
+ CONFIG_V4L_PLATFORM_DRIVERS=y
+ CONFIG_VIDEO_MXC_CAPTURE=y
+ CONFIG_VIDEO_MX8_CAPTURE=y
+-CONFIG_VIDEO_MXC_CSI_CAMERA=y
+ CONFIG_MXC_MIPI_CSI=y
+ CONFIG_MXC_CAMERA_OV5640_MIPI_V2=y
+-# CONFIG_MXC_CAMERA_AR0521 is not set
+-# CONFIG_MXC_CAMERA_AR0234 is not set
++# CONFIG_IMX8_MIPI_CSI2_YAV is not set
+ CONFIG_VIDEO_ECAM=y
++CONFIG_MXC_CAMERA_AR1335=y
++CONFIG_MXC_CAMERA_AR1335_AF=y
+ CONFIG_V4L_MEM2MEM_DRIVERS=y
+ CONFIG_VIDEO_IMX8_JPEG=m
++# CONFIG_VIDEO_IR_I2C is not set
+ CONFIG_VIDEO_IMX219=m
+ CONFIG_VIDEO_OV5640=y
+ CONFIG_VIDEO_OV5645=m
+@@ -843,6 +844,7 @@ CONFIG_STAGING_MEDIA=y
+ CONFIG_VIDEO_HANTRO=m
+ CONFIG_VIDEO_IMX_CAPTURE=y
+ CONFIG_IMX8_MEDIA_DEVICE=m
++# CONFIG_IMX8_PARALLEL_CSI is not set
+ CONFIG_FSL_DPAA2=y
+ CONFIG_FSL_PPFE=y
+ CONFIG_FSL_PPFE_UTIL_DISABLED=y
+-- 
+2.17.1
+

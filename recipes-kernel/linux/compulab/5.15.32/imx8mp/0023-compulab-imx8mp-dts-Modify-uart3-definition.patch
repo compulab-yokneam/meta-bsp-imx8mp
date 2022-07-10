@@ -1,0 +1,40 @@
+From ed36401e6955923fdd354d75e4fe94161ad21ee1 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 14 Jun 2022 14:49:57 +0300
+Subject: [PATCH] compulab: imx8mp: dts: Modify uart3 definition
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+index e4547e95914c..7b41314a1619 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+@@ -822,8 +822,7 @@
+ 	pinctrl-0 = <&pinctrl_uart3>;
+ 	assigned-clocks = <&clk IMX8MP_CLK_UART3>;
+ 	assigned-clock-parents = <&clk IMX8MP_SYS_PLL1_80M>;
+-	fsl,uart-has-rtscts;
+-	status = "okay";
++	status = "disabled";
+ };
+ 
+ &usb3_phy0 {
+@@ -1151,10 +1150,8 @@
+ 
+ 	pinctrl_uart3: uart3grp {
+ 		fsl,pins = <
+-			MX8MP_IOMUXC_ECSPI1_SCLK__UART3_DCE_RX		0x140
+-			MX8MP_IOMUXC_ECSPI1_MOSI__UART3_DCE_TX		0x140
+-			MX8MP_IOMUXC_ECSPI1_SS0__UART3_DCE_RTS		0x140
+-			MX8MP_IOMUXC_ECSPI1_MISO__UART3_DCE_CTS		0x140
++			MX8MP_IOMUXC_UART3_RXD__UART3_DCE_RX	0x49
++			MX8MP_IOMUXC_UART3_TXD__UART3_DCE_TX	0x49
+ 		>;
+ 	};
+ 
+-- 
+2.17.1
+

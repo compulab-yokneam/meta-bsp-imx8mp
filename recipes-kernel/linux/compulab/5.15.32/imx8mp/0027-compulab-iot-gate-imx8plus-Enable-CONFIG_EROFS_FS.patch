@@ -1,0 +1,25 @@
+From 93df048adb2d91262d3c1644d87cb120f220b92f Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Thu, 7 Jul 2022 22:59:36 +0300
+Subject: [PATCH] compulab: iot-gate-imx8plus: Enable CONFIG_EROFS_FS
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/configs/iot-gate-imx8plus_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/configs/iot-gate-imx8plus_defconfig b/arch/arm64/configs/iot-gate-imx8plus_defconfig
+index 5dce99ec7bcc..d72dc869651c 100644
+--- a/arch/arm64/configs/iot-gate-imx8plus_defconfig
++++ b/arch/arm64/configs/iot-gate-imx8plus_defconfig
+@@ -1289,6 +1289,7 @@ CONFIG_JFFS2_FS=y
+ CONFIG_UBIFS_FS=y
+ CONFIG_SQUASHFS=y
+ CONFIG_SQUASHFS_XZ=y
++CONFIG_EROFS_FS=y
+ CONFIG_NFS_FS=y
+ CONFIG_NFS_V4=y
+ CONFIG_NFS_V4_1=y
+-- 
+2.17.1
+

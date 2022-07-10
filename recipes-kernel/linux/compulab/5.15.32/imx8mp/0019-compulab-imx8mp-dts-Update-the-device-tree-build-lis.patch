@@ -1,0 +1,27 @@
+From 71b66cc4622a58b8fd9d90141c7e402b64e68e9d Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sun, 5 Jun 2022 15:35:08 +0300
+Subject: [PATCH] compulab: imx8mp: dts: Update the device tree build list
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/Makefile | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/compulab/Makefile b/arch/arm64/boot/dts/compulab/Makefile
+index 5016da6a9c35..f703cb90fa67 100644
+--- a/arch/arm64/boot/dts/compulab/Makefile
++++ b/arch/arm64/boot/dts/compulab/Makefile
+@@ -9,6 +9,9 @@ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-lvds.dtb
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-usbdev.dtb
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-rpmsg.dtb
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-ldo4.dtb
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-nopcie.dtb
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-wm8731.dtb
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-p21.dtb
+ 
+ dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus.dtb
+ dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus_mipi-csi1.dtb
+-- 
+2.17.1
+

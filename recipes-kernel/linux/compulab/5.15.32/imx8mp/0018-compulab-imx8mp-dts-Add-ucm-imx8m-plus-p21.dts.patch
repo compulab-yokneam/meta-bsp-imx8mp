@@ -1,0 +1,58 @@
+From 3d3b10fc48e808f76c5c0651e49948cb403a80c3 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sun, 5 Jun 2022 15:33:59 +0300
+Subject: [PATCH] compulab: imx8mp: dts: Add ucm-imx8m-plus-p21.dts
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ .../boot/dts/compulab/ucm-imx8m-plus-p21.dts  | 38 +++++++++++++++++++
+ 1 file changed, 38 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/compulab/ucm-imx8m-plus-p21.dts
+
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-p21.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-p21.dts
+new file mode 100644
+index 000000000000..aa24556247be
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-p21.dts
+@@ -0,0 +1,38 @@
++/*
++ * Copyright 2022 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/dts-v1/;
++
++#include "ucm-imx8m-plus.dts"
++
++/ {
++	model = "CompuLab UCM-iMX8M-Plus (p21)";
++	compatible = "compulab,ucm-imx8m-plus", "fsl,imx8mp";
++};
++
++&iomuxc {
++	pinctrl-0 = <&pinctrl_hog>, <&pinctrl_p21>;
++
++	pinctrl_p21: p21grp {
++		fsl,pins = <
++			MX8MP_IOMUXC_SAI3_TXD__GPIO5_IO01	0x19 /* P21-11; GPIO=(32*(5-1)+1)=129 */
++			MX8MP_IOMUXC_SAI3_TXC__GPIO5_IO00	0x19 /* P21-13; GPIO=(32*(5-1)+0)=128 */
++			MX8MP_IOMUXC_SAI3_MCLK__GPIO5_IO02	0x19 /* P21-15; GPIO=(32*(5-1)+2)=130 */
++			MX8MP_IOMUXC_SAI3_RXD__GPIO4_IO30	0x19 /* P21-17; GPIO=(32*(4-1)+30)=126 */
++			MX8MP_IOMUXC_SAI3_RXC__GPIO4_IO29	0x19 /* P21-19; GPIO=(32*(4-1)+29)=125 */
++			MX8MP_IOMUXC_SAI3_TXFS__GPIO4_IO31	0x19 /* P21-21; GPIO=(32*(4-1)+31)=127 */
++			MX8MP_IOMUXC_SAI3_RXFS__GPIO4_IO28	0x19 /* P21-23; GPIO=(32*(4-1)+28)=124 */
++		>;
++	};
++};
+-- 
+2.17.1
+

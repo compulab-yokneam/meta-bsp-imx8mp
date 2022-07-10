@@ -1,0 +1,32 @@
+SRC_URI:append = " \
+	file://0000-compulab-em9190-Add-modem-driver.patch \
+	file://0001-compulab-ili9881c-Add-panel-driver.patch \
+	file://0002-compulab-winbond-Add-w25q128dw-support.patch \
+	file://0003-compulab-dts-Add-device-trees.patch \
+	file://0004-compulab-configs-Add-compulab-soms-configs.patch \
+	file://0005-compulab-imx8mp-dts-Update-device-tree-files.patch \
+	file://0006-compulab-Add-econ-cameras-support.patch \
+	file://0007-ucm-imx8m-plus-defconfig-Disable-CONFIG_FW_LOADER_US.patch \
+	file://0008-compulab-mipi-csi-camera-nodes-update.patch \
+	file://0009-compulab-ecam-Add-separate-menu.patch \
+	file://0010-compulab-defconfig-Enable-ar1335_af.patch \
+	file://0011-compulab-dts-csi-Fix-econ-camera-property-and-clocks.patch \
+	file://0012-compulab-ucm-dts-Add-_ldo4_-device-tree.patch \
+	file://0013-ucm-imx8m-plus-defconfig-Disable-CONFIG_FB_EFI.patch \
+	file://0014-ucm-imx8m-plus-defconfig-Update-for-docker.patch \
+	file://0015-compulab-imx8mp-dts-Make-wm8731-default-status-as-di.patch \
+	file://0016-compulab-imx8mp-dts-Add-ucm-imx8m-plus-wm8731.dts.patch \
+	file://0017-compulab-imx8mp-dts-Add-ucm-imx8m-plus-nopcie.dts.patch \
+	file://0018-compulab-imx8mp-dts-Add-ucm-imx8m-plus-p21.dts.patch \
+	file://0019-compulab-imx8mp-dts-Update-the-device-tree-build-lis.patch \
+	file://0020-compulab-imx8mp-dts-Add-ucm-imx8m-plus-uart1.dts.patch \
+	file://0021-compulab-imx8mp-dts-Disable-uart1-if-not-used-as-a-c.patch \
+	file://0022-compulab-imx8mp-dts-Add-uart2-clocks-to-the-node.patch \
+	file://0023-compulab-imx8mp-dts-Modify-uart3-definition.patch \
+	file://0024-compulab-imx8mp-dts-Enable-uart1-if-used-as-a-consol.patch \
+	file://0025-compulab-imx8m-plus-Add-iot-gate-imx8plus-board-supp.patch \
+	file://0026-compulab-iot-gate-imx8plus-Enable-CONFIG_INPUT_EVDEV.patch \
+	file://0027-compulab-iot-gate-imx8plus-Enable-CONFIG_EROFS_FS.patch \
+	file://0028-imx8-isi-Fix-the-5.15.5-stream-capture-color-distort.patch \
+	file://defconfig \
+"

@@ -1,0 +1,1483 @@
+From 9396014cf43ce83f710e9219569573641fe4979d Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Thu, 5 May 2022 21:33:34 +0300
+Subject: [PATCH] compulab: imx8mp: dts: Update device tree files
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/Makefile         |   6 +
+ .../compulab/compulab-imx8m-plus-rpmsg.dtsi   |  79 +++++++++++
+ .../compulab/compulab-imx8m-plus-thermal.dtsi |  29 ++++
+ .../boot/dts/compulab/som-imx8m-plus-hdmi.dts |  37 +++++
+ .../boot/dts/compulab/som-imx8m-plus-lvds.dts |  37 +++++
+ .../boot/dts/compulab/som-imx8m-plus-mipi.dts |  37 +++++
+ .../dts/compulab/som-imx8m-plus-rpmsg.dts     |  23 +++
+ .../dts/compulab/som-imx8m-plus-thermal.dts   |  23 +++
+ .../dts/compulab/som-imx8m-plus-usbdev.dts    |  27 ++++
+ .../boot/dts/compulab/som-imx8m-plus.dts      | 134 ++++++------------
+ .../dts/compulab/som-imx8m-plus_mipi-csi1.dts |  13 +-
+ .../compulab/som-imx8m-plus_mipi-csi1.dtsi    |  59 ++++++++
+ .../dts/compulab/som-imx8m-plus_mipi-csi2.dts |  13 +-
+ .../compulab/som-imx8m-plus_mipi-csi2.dtsi    |  59 ++++++++
+ .../boot/dts/compulab/ucm-imx8m-plus-hdmi.dts |  37 +++++
+ .../boot/dts/compulab/ucm-imx8m-plus-lvds.dts |  37 +++++
+ .../boot/dts/compulab/ucm-imx8m-plus-mipi.dts |  37 +++++
+ .../dts/compulab/ucm-imx8m-plus-rpmsg.dts     |  23 +++
+ .../dts/compulab/ucm-imx8m-plus-thermal.dts   |  23 +++
+ .../dts/compulab/ucm-imx8m-plus-usbdev.dts    |  27 ++++
+ .../boot/dts/compulab/ucm-imx8m-plus.dts      |  80 +----------
+ .../ucm-imx8m-plus_mipi-csi1-imx219.dts       |  24 ++--
+ .../ucm-imx8m-plus_mipi-csi1-imx477.dts       |  65 +++++++++
+ .../dts/compulab/ucm-imx8m-plus_mipi-csi1.dts |  13 +-
+ .../compulab/ucm-imx8m-plus_mipi-csi1.dtsi    |  59 ++++++++
+ .../dts/compulab/ucm-imx8m-plus_mipi-csi2.dts |  13 +-
+ .../compulab/ucm-imx8m-plus_mipi-csi2.dtsi    |  59 ++++++++
+ 27 files changed, 848 insertions(+), 225 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/compulab/compulab-imx8m-plus-rpmsg.dtsi
+ create mode 100644 arch/arm64/boot/dts/compulab/compulab-imx8m-plus-thermal.dtsi
+ create mode 100644 arch/arm64/boot/dts/compulab/som-imx8m-plus-hdmi.dts
+ create mode 100644 arch/arm64/boot/dts/compulab/som-imx8m-plus-lvds.dts
+ create mode 100644 arch/arm64/boot/dts/compulab/som-imx8m-plus-mipi.dts
+ create mode 100644 arch/arm64/boot/dts/compulab/som-imx8m-plus-rpmsg.dts
+ create mode 100644 arch/arm64/boot/dts/compulab/som-imx8m-plus-thermal.dts
+ create mode 100644 arch/arm64/boot/dts/compulab/som-imx8m-plus-usbdev.dts
+ create mode 100644 arch/arm64/boot/dts/compulab/som-imx8m-plus_mipi-csi1.dtsi
+ create mode 100644 arch/arm64/boot/dts/compulab/som-imx8m-plus_mipi-csi2.dtsi
+ create mode 100644 arch/arm64/boot/dts/compulab/ucm-imx8m-plus-hdmi.dts
+ create mode 100644 arch/arm64/boot/dts/compulab/ucm-imx8m-plus-lvds.dts
+ create mode 100644 arch/arm64/boot/dts/compulab/ucm-imx8m-plus-mipi.dts
+ create mode 100644 arch/arm64/boot/dts/compulab/ucm-imx8m-plus-rpmsg.dts
+ create mode 100644 arch/arm64/boot/dts/compulab/ucm-imx8m-plus-thermal.dts
+ create mode 100644 arch/arm64/boot/dts/compulab/ucm-imx8m-plus-usbdev.dts
+ create mode 100644 arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1-imx477.dts
+ create mode 100644 arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi
+ create mode 100644 arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi
+
+diff --git a/arch/arm64/boot/dts/compulab/Makefile b/arch/arm64/boot/dts/compulab/Makefile
+index b08c68c4b684..121f6b78dcc6 100644
+--- a/arch/arm64/boot/dts/compulab/Makefile
++++ b/arch/arm64/boot/dts/compulab/Makefile
+@@ -2,6 +2,12 @@ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus.dtb
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus_mipi-csi1.dtb
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus_mipi-csi2.dtb
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus_mipi-csi1-imx219.dtb
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus_mipi-csi1-imx477.dtb
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-mipi.dtb
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-hdmi.dtb
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-lvds.dtb
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-usbdev.dtb
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-rpmsg.dtb
+ 
+ dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus.dtb
+ dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus_mipi-csi1.dtb
+diff --git a/arch/arm64/boot/dts/compulab/compulab-imx8m-plus-rpmsg.dtsi b/arch/arm64/boot/dts/compulab/compulab-imx8m-plus-rpmsg.dtsi
+new file mode 100644
+index 000000000000..96cf81445492
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/compulab-imx8m-plus-rpmsg.dtsi
+@@ -0,0 +1,79 @@
++/*
++ * Copyright 2022 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/ {
++	reserved-memory {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		m4_reserved: m4@0x80000000 {
++			no-map;
++			reg = <0 0x80000000 0 0x1000000>;
++		};
++
++		vdev0vring0: vdev0vring0@55000000 {
++			reg = <0 0x55000000 0 0x8000>;
++			no-map;
++		};
++
++		vdev0vring1: vdev0vring1@55008000 {
++			reg = <0 0x55008000 0 0x8000>;
++			no-map;
++		};
++
++		vdevbuffer: vdevbuffer@55400000 {
++			compatible = "shared-dma-pool";
++			reg = <0 0x55400000 0 0x100000>;
++			no-map;
++		};
++
++		rsc_table: rsc_table@550ff000 {
++			reg = <0 0x550ff000 0 0x1000>;
++			no-map;
++		};
++	};
++
++	imx8mp-cm7 {
++		compatible = "fsl,imx8mn-cm7";
++		rsc-da = <0x55000000>;
++		clocks = <&clk IMX8MP_CLK_M7_DIV>;
++		mbox-names = "tx", "rx", "rxdb";
++		mboxes = <&mu 0 1
++			  &mu 1 1
++			  &mu 3 1>;
++		memory-region = <&vdevbuffer>, <&vdev0vring0>, <&vdev0vring1>, <&rsc_table>;
++		status = "okay";
++	};
++};
++
++&pwm4{
++	status = "disabled";
++};
++
++&sai3 {
++	status = "disabled";
++};
++
++&micfil {
++	status = "disabled";
++};
++
++&sdma3{
++	status = "disabled";
++};
++
++&uart4 {
++	status = "disabled";
++};
+diff --git a/arch/arm64/boot/dts/compulab/compulab-imx8m-plus-thermal.dtsi b/arch/arm64/boot/dts/compulab/compulab-imx8m-plus-thermal.dtsi
+new file mode 100644
+index 000000000000..e6b2a1a24aa4
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/compulab-imx8m-plus-thermal.dtsi
+@@ -0,0 +1,29 @@
++/*
++ * Copyright 2022 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++&cpu_alert0 {
++	temperature = <125000>;
++};
++
++&cpu_crit0 {
++	temperature = <155000>;
++};
++
++&soc_alert0 {
++	temperature = <125000>;
++};
++
++&soc_crit0 {
++	temperature = <155000>;
++};
+diff --git a/arch/arm64/boot/dts/compulab/som-imx8m-plus-hdmi.dts b/arch/arm64/boot/dts/compulab/som-imx8m-plus-hdmi.dts
+new file mode 100644
+index 000000000000..47f564d5d3e1
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/som-imx8m-plus-hdmi.dts
+@@ -0,0 +1,37 @@
++/*
++ * Copyright 2021 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/dts-v1/;
++
++#include "som-imx8m-plus.dts"
++
++/ {
++	model = "CompuLab SOM-iMX8M-Plus (hdmi)";
++	compatible = "compulab,som-imx8m-plus", "fsl,imx8mp";
++};
++
++/* mipi dsi */
++&lcdif1 {
++	status = "disabled";
++};
++
++/* lvds */
++&lcdif2 {
++	status = "disabled";
++};
++
++/* hdmi */
++&lcdif3 {
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/compulab/som-imx8m-plus-lvds.dts b/arch/arm64/boot/dts/compulab/som-imx8m-plus-lvds.dts
+new file mode 100644
+index 000000000000..20a66622ce15
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/som-imx8m-plus-lvds.dts
+@@ -0,0 +1,37 @@
++/*
++ * Copyright 2021 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/dts-v1/;
++
++#include "som-imx8m-plus.dts"
++
++/ {
++	model = "CompuLab SOM-iMX8M-Plus (lvds)";
++	compatible = "compulab,som-imx8m-plus", "fsl,imx8mp";
++};
++
++/* mipi dsi */
++&lcdif1 {
++	status = "disabled";
++};
++
++/* lvds */
++&lcdif2 {
++	status = "okay";
++};
++
++/* hdmi */
++&lcdif3 {
++	status = "disabled";
++};
+diff --git a/arch/arm64/boot/dts/compulab/som-imx8m-plus-mipi.dts b/arch/arm64/boot/dts/compulab/som-imx8m-plus-mipi.dts
+new file mode 100644
+index 000000000000..f1e0242c797c
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/som-imx8m-plus-mipi.dts
+@@ -0,0 +1,37 @@
++/*
++ * Copyright 2021 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/dts-v1/;
++
++#include "som-imx8m-plus.dts"
++
++/ {
++	model = "CompuLab SOM-iMX8M-Plus (mipi)";
++	compatible = "compulab,som-imx8m-plus", "fsl,imx8mp";
++};
++
++/* mipi dsi */
++&lcdif1 {
++	status = "okay";
++};
++
++/* lvds */
++&lcdif2 {
++	status = "disabled";
++};
++
++/* hdmi */
++&lcdif3 {
++	status = "disabled";
++};
+diff --git a/arch/arm64/boot/dts/compulab/som-imx8m-plus-rpmsg.dts b/arch/arm64/boot/dts/compulab/som-imx8m-plus-rpmsg.dts
+new file mode 100644
+index 000000000000..4b16758d514f
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/som-imx8m-plus-rpmsg.dts
+@@ -0,0 +1,23 @@
++/*
++ * Copyright 2022 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/dts-v1/;
++
++#include "som-imx8m-plus.dts"
++#include "compulab-imx8m-plus-rpmsg.dtsi"
++
++/ {
++	model = "CompuLab SOM-iMX8M-Plus (rpmsg)";
++	compatible = "compulab,som-imx8m-plus", "fsl,imx8mp";
++};
+diff --git a/arch/arm64/boot/dts/compulab/som-imx8m-plus-thermal.dts b/arch/arm64/boot/dts/compulab/som-imx8m-plus-thermal.dts
+new file mode 100644
+index 000000000000..7b1b385924a2
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/som-imx8m-plus-thermal.dts
+@@ -0,0 +1,23 @@
++/*
++ * Copyright 2021 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/dts-v1/;
++
++#include "som-imx8m-plus.dts"
++#include "compulab-imx8m-plus-thermal.dtsi"
++
++/ {
++	model = "CompuLab SOM-iMX8M-Plus (thermal)";
++	compatible = "compulab,som-imx8m-plus", "fsl,imx8mp";
++};
+diff --git a/arch/arm64/boot/dts/compulab/som-imx8m-plus-usbdev.dts b/arch/arm64/boot/dts/compulab/som-imx8m-plus-usbdev.dts
+new file mode 100644
+index 000000000000..83c38c3812aa
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/som-imx8m-plus-usbdev.dts
+@@ -0,0 +1,27 @@
++/*
++ * Copyright 2021 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/dts-v1/;
++
++#include "som-imx8m-plus.dts"
++
++/ {
++	model = "CompuLab SOM-iMX8M-Plus (usbdev)";
++	compatible = "compulab,som-imx8m-plus", "fsl,imx8mp";
++};
++
++&usb_dwc3_0 {
++	dr_mode = "peripheral";
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/compulab/som-imx8m-plus.dts b/arch/arm64/boot/dts/compulab/som-imx8m-plus.dts
+index 23f06119ce65..20e7be3d7a88 100644
+--- a/arch/arm64/boot/dts/compulab/som-imx8m-plus.dts
++++ b/arch/arm64/boot/dts/compulab/som-imx8m-plus.dts
+@@ -107,6 +107,32 @@
+ 		regulator-always-on;
+ 	};
+ 
++	reg_enet0_reset: regulator-enet0-reset {
++                compatible = "regulator-fixed";
++                regulator-name = "enet1_rst";
++                pinctrl-names = "default";
++                pinctrl-0 = <&pinctrl_enet0_rst>;
++                regulator-min-microvolt = <3300000>;
++                regulator-max-microvolt = <3300000>;
++                gpio = <&gpio1 10 GPIO_ACTIVE_HIGH>;
++                regulator-boot-on;
++                enable-active-high;
++                regulator-always-on;
++        };
++
++	reg_enet1_reset: regulator-enet1-reset {
++                compatible = "regulator-fixed";
++                regulator-name = "enet1_rst";
++                pinctrl-names = "default";
++                pinctrl-0 = <&pinctrl_enet1_rst>;
++                regulator-min-microvolt = <3300000>;
++                regulator-max-microvolt = <3300000>;
++                gpio = <&gpio4 24 GPIO_ACTIVE_HIGH>;
++                regulator-boot-on;
++                enable-active-high;
++                regulator-always-on;
++        };
++
+ 	sound-hdmi {
+ 		compatible = "fsl,imx-audio-cdnhdmi";
+ 		model = "audio-hdmi";
+@@ -279,9 +305,6 @@
+ 	pinctrl-0 = <&pinctrl_eqos>;
+ 	phy-mode = "rgmii-id";
+ 	phy-handle = <&ethphy0>;
+-	phy-reset-gpios = <&gpio5 10 GPIO_ACTIVE_LOW>;
+-	phy-reset-duration = <10>;
+-	phy-reset-post-delay = <150>;
+ 	status = "okay";
+ 
+ 	mdio {
+@@ -303,9 +326,6 @@
+ 	phy-mode = "rgmii-id";
+ 	phy-handle = <&ethphy1>;
+ 	fsl,magic-packet;
+-	phy-reset-gpios = <&gpio4 24 GPIO_ACTIVE_LOW>;
+-	phy-reset-duration = <10>;
+-	phy-reset-post-delay = <150>;
+ 	status = "okay";
+ 
+ 	mdio {
+@@ -496,33 +516,6 @@
+                 reg = <0x20>;
+         };
+ 
+-	ar1335_af_mipi1: ar1335_af_mipi1@42 {
+-		compatible = "econ,ar1335_af", "ar1335_af";
+-		reg = <0x42>;
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&pinctrl_csi_mclk>;
+-		clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
+-		clock-names = "csi_mclk";
+-		assigned-clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
+-		assigned-clock-parents = <&clk IMX8MP_CLK_24M>;
+-		assigned-clock-rates = <24000000>;
+-		csi_id = <0>;
+-		pwn-gpios = <&pca9555 8 GPIO_ACTIVE_HIGH>;
+-		rst-gpios = <&pca9555 9 GPIO_ACTIVE_LOW>;
+-		mclk = <24000000>;
+-		mclk_source = <0>;
+-		mipi_csi;
+-		status = "disabled";
+-
+-		port {
+-			ar1335_af_mipi1_ep: endpoint {
+-				data-lanes = <1 2 3 4>;
+-				clock-lanes = <0>;
+-				remote-endpoint = <&mipi1_sensor_ep>;
+-			};
+-		};
+-	};
+-
+ 	eeprom@54 {
+ 		compatible = "atmel,24c08";
+ 		reg = <0x54>;
+@@ -549,34 +542,7 @@
+ 	clock-frequency = <400000>;
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_i2c4>;
+-	status = "okay";
+-
+-	ar1335_af_mipi2: ar1335_af_mipi1@42 {
+-		compatible = "econ,ar1335_af", "ar1335_af";
+-		reg = <0x42>;
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&pinctrl_csi_mclk>;
+-		clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
+-		clock-names = "csi_mclk";
+-		assigned-clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
+-		assigned-clock-parents = <&clk IMX8MP_CLK_24M>;
+-		assigned-clock-rates = <24000000>;
+-		csi_id = <0x01>;
+-		pwn-gpios = <&pca9555 12 GPIO_ACTIVE_HIGH>;
+-		rst-gpios = <&pca9555 13 GPIO_ACTIVE_LOW>;
+-		mclk = <24000000>;
+-		mclk_source = <0>;
+-		mipi_csi;
+-		status = "disabled";
+-
+-		port {
+-			ar1335_af_mipi2_ep: endpoint {
+-				data-lanes = <1 2 3 4>;
+-				clock-lanes = <0>;
+-				remote-endpoint = <&mipi2_sensor_ep>;
+-			};
+-		};
+-	};
++	status = "disabled";
+ };
+ 
+ &flexcan1 {
+@@ -613,14 +579,17 @@
+ 	status = "okay";
+ };
+ 
++/* mipi dsi */
+ &lcdif1 {
+ 	status = "okay";
+ };
+ 
++/* lvds */
+ &lcdif2 {
+ 	status = "okay";
+ };
+ 
++/* hdmi */
+ &lcdif3 {
+ 	status = "okay";
+ 
+@@ -838,12 +807,6 @@
+ 		>;
+ 	};
+ 
+-        pinctrl_enet_rst: enet1rst {
+-                fsl,pins = <
+-			MX8MP_IOMUXC_GPIO1_IO10__GPIO1_IO10     0x19
+-                >;
+-        };
+-
+ 	pinctrl_pwm1: pwm1grp {
+ 		fsl,pins = <
+ 			MX8MP_IOMUXC_SPDIF_EXT_CLK__PWM1_OUT	0x116
+@@ -890,6 +853,12 @@
+ 		>;
+ 	};
+ 
++        pinctrl_enet0_rst: enet0rst {
++                fsl,pins = <
++			MX8MP_IOMUXC_GPIO1_IO10__GPIO1_IO10     0x19
++                >;
++        };
++
+ 	pinctrl_fec: fecgrp {
+ 		fsl,pins = <
+ 			MX8MP_IOMUXC_SAI1_RXD2__ENET1_MDC		0x3
+@@ -906,10 +875,15 @@
+ 			MX8MP_IOMUXC_SAI1_TXD3__ENET1_RGMII_TD3		0x1f
+ 			MX8MP_IOMUXC_SAI1_TXD4__ENET1_RGMII_TX_CTL	0x1f
+ 			MX8MP_IOMUXC_SAI1_TXD5__ENET1_RGMII_TXC		0x1f
+-			MX8MP_IOMUXC_SAI2_TXFS__GPIO4_IO24		0x19
+ 		>;
+ 	};
+ 
++        pinctrl_enet1_rst: enet1rst {
++                fsl,pins = <
++			MX8MP_IOMUXC_SAI2_TXFS__GPIO4_IO24		0x19
++                >;
++        };
++
+ 	pinctrl_flexcan1: flexcan1grp {
+ 		fsl,pins = <
+ 			MX8MP_IOMUXC_SAI2_RXC__CAN1_TX          0x154
+@@ -1299,39 +1273,17 @@
+ 	#address-cells = <1>;
+ 	#size-cells = <0>;
+ 	status = "disabled";
+-
+-	port@0 {
+-		reg = <0>;
+-		mipi1_sensor_ep: endpoint@1 {
+-			remote-endpoint = <&ar1335_af_mipi1_ep>;
+-			data-lanes = <4>;
+-			csis-hs-settle = <23>;
+-			csis-clk-settle = <2>;
+-			csis-wclk;
+-		};
+-	};
+ };
+ 
+ &mipi_csi_1 {
+ 	#address-cells = <1>;
+ 	#size-cells = <0>;
+ 	status = "disabled";
+-
+-	port@1 {
+-		reg = <1>;
+-		mipi2_sensor_ep: endpoint {
+-			remote-endpoint = <&ar1335_af_mipi2_ep>;
+-			data-lanes = <4>;
+-			csis-hs-settle = <23>;
+-			csis-clk-settle = <2>;
+-			csis-wclk;
+-		};
+-	};
+ };
+ 
+ 
+ &cameradev {
+-	status = "okay";
++	status = "disabled";
+ };
+ 
+ &isi_0 {
+diff --git a/arch/arm64/boot/dts/compulab/som-imx8m-plus_mipi-csi1.dts b/arch/arm64/boot/dts/compulab/som-imx8m-plus_mipi-csi1.dts
+index 8cd3979f10d8..7a2ded25bd8f 100644
+--- a/arch/arm64/boot/dts/compulab/som-imx8m-plus_mipi-csi1.dts
++++ b/arch/arm64/boot/dts/compulab/som-imx8m-plus_mipi-csi1.dts
+@@ -6,20 +6,9 @@
+ /dts-v1/;
+ 
+ #include "som-imx8m-plus.dts"
++#include "som-imx8m-plus_mipi-csi1.dtsi"
+ 
+ / {
+ 	model = "CompuLab SOM-iMX8M-Plus with mipi csi1 enabled";
+ 	compatible = "compulab,som-imx8m-plus", "fsl,imx8mp";
+ };
+-
+-&ar1335_af_mipi1 {
+-	status = "okay";
+-};
+-
+-&mipi_csi_0 {
+-	status = "okay";
+-};
+-
+-&isi_0 {
+-	status = "okay";
+-};
+diff --git a/arch/arm64/boot/dts/compulab/som-imx8m-plus_mipi-csi1.dtsi b/arch/arm64/boot/dts/compulab/som-imx8m-plus_mipi-csi1.dtsi
+new file mode 100644
+index 000000000000..a098b52001d7
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/som-imx8m-plus_mipi-csi1.dtsi
+@@ -0,0 +1,59 @@
++/*
++ * Copyright 2022 CompuLab
++ */
++
++&i2c3 {
++	#address-cells = <1>;
++	#size-cells = <0>;
++	status = "okay";
++
++	ar1335_af_mipi1: ar1335_af_mipi1@42 {
++		compatible = "econ,ar1335_af", "ar1335_af";
++		reg = <0x42>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_csi_mclk>;
++		clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
++		clock-names = "xclk";
++		assigned-clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
++		assigned-clock-parents = <&clk IMX8MP_CLK_24M>;
++		assigned-clock-rates = <24000000>;
++		csi_id = <0>;
++		pwn-gpios = <&pca9555 8 GPIO_ACTIVE_HIGH>;
++		rst-gpios = <&pca9555 9 GPIO_ACTIVE_LOW>;
++		mclk = <24000000>;
++		mclk_source = <0>;
++		mipi_csi;
++		camera_mipi_lanes = <4>;
++		status = "okay";
++
++		port {
++			ar1335_af_mipi1_ep: endpoint {
++				data-lanes = <1 2 3 4>;
++				clock-lanes = <0>;
++				remote-endpoint = <&mipi1_sensor_ep>;
++			};
++		};
++	};
++};
++
++&mipi_csi_0 {
++	status = "okay";
++	port@0 {
++		reg = <0>;
++		mipi1_sensor_ep: endpoint@1 {
++			csis-hs-settle = <13>;
++			csis-clk-settle = <2>;
++			csis-wclk;
++			data-lanes = <4>;
++			remote-endpoint = <&ar1335_af_mipi1_ep>;
++		};
++	};
++};
++
++&cameradev {
++	status = "okay";
++};
++
++&isi_0 {
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/compulab/som-imx8m-plus_mipi-csi2.dts b/arch/arm64/boot/dts/compulab/som-imx8m-plus_mipi-csi2.dts
+index 63bff70a2cf2..f472ea4583de 100644
+--- a/arch/arm64/boot/dts/compulab/som-imx8m-plus_mipi-csi2.dts
++++ b/arch/arm64/boot/dts/compulab/som-imx8m-plus_mipi-csi2.dts
+@@ -6,20 +6,9 @@
+ /dts-v1/;
+ 
+ #include "som-imx8m-plus.dts"
++#include "som-imx8m-plus_mipi-csi2.dtsi"
+ 
+ / {
+ 	model = "CompuLab SOM-iMX8M-Plus with mipi csi2 enabled";
+ 	compatible = "compulab,som-imx8m-plus", "fsl,imx8mp";
+ };
+-
+-&ar1335_af_mipi2 {
+-	status = "okay";
+-};
+-
+-&mipi_csi_1 {
+-	status = "okay";
+-};
+-
+-&isi_1 {
+-	status = "okay";
+-};
+diff --git a/arch/arm64/boot/dts/compulab/som-imx8m-plus_mipi-csi2.dtsi b/arch/arm64/boot/dts/compulab/som-imx8m-plus_mipi-csi2.dtsi
+new file mode 100644
+index 000000000000..f7877650a26b
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/som-imx8m-plus_mipi-csi2.dtsi
+@@ -0,0 +1,59 @@
++/*
++ * Copyright 2022 CompuLab
++ */
++
++&i2c4 {
++	#address-cells = <1>;
++	#size-cells = <0>;
++	status = "okay";
++
++	ar1335_af_mipi2: ar1335_af_mipi1@42 {
++		compatible = "econ,ar1335_af", "ar1335_af";
++		reg = <0x42>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_csi_mclk>;
++		clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
++		clock-names = "xclk";
++		assigned-clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
++		assigned-clock-parents = <&clk IMX8MP_CLK_24M>;
++		assigned-clock-rates = <24000000>;
++		csi_id = <0x01>;
++		pwn-gpios = <&pca9555 12 GPIO_ACTIVE_HIGH>;
++		rst-gpios = <&pca9555 13 GPIO_ACTIVE_LOW>;
++		mclk = <24000000>;
++		mclk_source = <0>;
++		mipi_csi;
++		camera_mipi_lanes = <4>;
++		status = "okay";
++
++		port {
++			ar1335_af_mipi2_ep: endpoint {
++				data-lanes = <1 2 3 4>;
++				clock-lanes = <0>;
++				remote-endpoint = <&mipi2_sensor_ep>;
++			};
++		};
++	};
++};
++
++&mipi_csi_1 {
++	status = "okay";
++	port@1 {
++		reg = <1>;
++		mipi2_sensor_ep: endpoint {
++			csis-hs-settle = <13>;
++			csis-clk-settle = <2>;
++			csis-wclk;
++			data-lanes = <4>;
++			remote-endpoint = <&ar1335_af_mipi2_ep>;
++		};
++	};
++};
++
++&cameradev {
++	status = "okay";
++};
++
++&isi_1 {
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-hdmi.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-hdmi.dts
+new file mode 100644
+index 000000000000..35aa894fa5f9
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-hdmi.dts
+@@ -0,0 +1,37 @@
++/*
++ * Copyright 2021 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/dts-v1/;
++
++#include "ucm-imx8m-plus.dts"
++
++/ {
++	model = "CompuLab UCM-iMX8M-Plus (hdmi)";
++	compatible = "compulab,ucm-imx8m-plus", "fsl,imx8mp";
++};
++
++/* mipi dsi */
++&lcdif1 {
++	status = "disabled";
++};
++
++/* lvds */
++&lcdif2 {
++	status = "disabled";
++};
++
++/* hdmi */
++&lcdif3 {
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-lvds.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-lvds.dts
+new file mode 100644
+index 000000000000..e77eecef59be
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-lvds.dts
+@@ -0,0 +1,37 @@
++/*
++ * Copyright 2021 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/dts-v1/;
++
++#include "ucm-imx8m-plus.dts"
++
++/ {
++	model = "CompuLab UCM-iMX8M-Plus (lvds)";
++	compatible = "compulab,ucm-imx8m-plus", "fsl,imx8mp";
++};
++
++/* mipi dsi */
++&lcdif1 {
++	status = "disabled";
++};
++
++/* lvds */
++&lcdif2 {
++	status = "okay";
++};
++
++/* hdmi */
++&lcdif3 {
++	status = "disabled";
++};
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-mipi.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-mipi.dts
+new file mode 100644
+index 000000000000..78c0ff9e29e9
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-mipi.dts
+@@ -0,0 +1,37 @@
++/*
++ * Copyright 2021 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/dts-v1/;
++
++#include "ucm-imx8m-plus.dts"
++
++/ {
++	model = "CompuLab UCM-iMX8M-Plus (mipi)";
++	compatible = "compulab,ucm-imx8m-plus", "fsl,imx8mp";
++};
++
++/* mipi dsi */
++&lcdif1 {
++	status = "okay";
++};
++
++/* lvds */
++&lcdif2 {
++	status = "disabled";
++};
++
++/* hdmi */
++&lcdif3 {
++	status = "disabled";
++};
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-rpmsg.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-rpmsg.dts
+new file mode 100644
+index 000000000000..34f8f058b54f
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-rpmsg.dts
+@@ -0,0 +1,23 @@
++/*
++ * Copyright 2022 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/dts-v1/;
++
++#include "ucm-imx8m-plus.dts"
++#include "compulab-imx8m-plus-rpmsg.dtsi"
++
++/ {
++	model = "CompuLab UCM-iMX8M-Plus (rpmsg)";
++	compatible = "compulab,ucm-imx8m-plus", "fsl,imx8mp";
++};
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-thermal.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-thermal.dts
+new file mode 100644
+index 000000000000..97a230766e51
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-thermal.dts
+@@ -0,0 +1,23 @@
++/*
++ * Copyright 2021 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/dts-v1/;
++
++#include "ucm-imx8m-plus.dts"
++#include "compulab-imx8m-plus-thermal.dtsi"
++
++/ {
++	model = "CompuLab UCM-iMX8M-Plus (thermal)";
++	compatible = "compulab,ucm-imx8m-plus", "fsl,imx8mp";
++};
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-usbdev.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-usbdev.dts
+new file mode 100644
+index 000000000000..52555e2a54a6
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-usbdev.dts
+@@ -0,0 +1,27 @@
++/*
++ * Copyright 2021 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/dts-v1/;
++
++#include "ucm-imx8m-plus.dts"
++
++/ {
++	model = "CompuLab UCM-iMX8M-Plus (usbdev)";
++	compatible = "compulab,ucm-imx8m-plus", "fsl,imx8mp";
++};
++
++&usb_dwc3_0 {
++	dr_mode = "peripheral";
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+index 82ee69b7b1a1..84b17e1a5a0d 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+@@ -624,33 +624,6 @@
+ 	pinctrl-0 = <&pinctrl_i2c5>;
+ 	status = "okay";
+ 
+-	ar1335_af_mipi1: ar1335_af_mipi1@42 {
+-		compatible = "econ,ar1335_af", "ar1335_af";
+-		reg = <0x42>;
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&pinctrl_csi_mclk>;
+-		clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
+-		clock-names = "csi_mclk";
+-		assigned-clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
+-		assigned-clock-parents = <&clk IMX8MP_CLK_24M>;
+-		assigned-clock-rates = <24000000>;
+-		csi_id = <0>;
+-		pwn-gpios = <&pca9555 8 GPIO_ACTIVE_HIGH>;
+-		rst-gpios = <&pca9555 9 GPIO_ACTIVE_LOW>;
+-		mclk = <24000000>;
+-		mclk_source = <0>;
+-		mipi_csi;
+-		status = "disabled";
+-
+-		port {
+-			ar1335_af_mipi1_ep: endpoint {
+-				data-lanes = <1 2 3 4>;
+-				clock-lanes = <0>;
+-				remote-endpoint = <&mipi1_sensor_ep>;
+-			};
+-		};
+-	};
+-
+ 	goodix_ts@5d {
+ 		compatible = "goodix,gt911";
+ 		reg = <0x5d>;
+@@ -673,33 +646,6 @@
+ 	pinctrl-0 = <&pinctrl_i2c6>;
+ 	status = "okay";
+ 
+-	ar1335_af_mipi2: ar1335_af_mipi1@42 {
+-		compatible = "econ,ar1335_af", "ar1335_af";
+-		reg = <0x42>;
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&pinctrl_csi_mclk>;
+-		clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
+-		clock-names = "csi_mclk";
+-		assigned-clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
+-		assigned-clock-parents = <&clk IMX8MP_CLK_24M>;
+-		assigned-clock-rates = <24000000>;
+-		csi_id = <0x01>;
+-		pwn-gpios = <&pca9555 12 GPIO_ACTIVE_HIGH>;
+-		rst-gpios = <&pca9555 13 GPIO_ACTIVE_LOW>;
+-		mclk = <24000000>;
+-		mclk_source = <0>;
+-		mipi_csi;
+-		status = "disabled";
+-
+-		port {
+-			ar1335_af_mipi2_ep: endpoint {
+-				data-lanes = <1 2 3 4>;
+-				clock-lanes = <0>;
+-				remote-endpoint = <&mipi2_sensor_ep>;
+-			};
+-		};
+-	};
+-
+ 	goodix_ts@5d {
+ 		compatible = "goodix,gt911";
+ 		reg = <0x5d>;
+@@ -942,7 +888,7 @@
+ 	pinctrl-2 = <&pinctrl_usdhc1_200mhz>;
+ 	bus-width = <4>;
+ 	non-removable;
+-	status = "okay";
++	status = "disable";
+ };
+ 
+ &usdhc2 {
+@@ -1410,39 +1356,17 @@
+ 	#address-cells = <1>;
+ 	#size-cells = <0>;
+ 	status = "disabled";
+-
+-	port@0 {
+-		reg = <0>;
+-		mipi1_sensor_ep: endpoint@1 {
+-			remote-endpoint = <&ar1335_af_mipi1_ep>;
+-			data-lanes = <4>;
+-			csis-hs-settle = <23>;
+-			csis-clk-settle = <2>;
+-			csis-wclk;
+-		};
+-	};
+ };
+ 
+ &mipi_csi_1 {
+ 	#address-cells = <1>;
+ 	#size-cells = <0>;
+ 	status = "disabled";
+-
+-	port@1 {
+-		reg = <1>;
+-		mipi2_sensor_ep: endpoint {
+-			remote-endpoint = <&ar1335_af_mipi2_ep>;
+-			data-lanes = <4>;
+-			csis-hs-settle = <23>;
+-			csis-clk-settle = <2>;
+-			csis-wclk;
+-		};
+-	};
+ };
+ 
+ 
+ &cameradev {
+-	status = "okay";
++	status = "disabled";
+ };
+ 
+ &isi_0 {
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1-imx219.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1-imx219.dts
+index dfba04b0a885..efdd754b8b0b 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1-imx219.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1-imx219.dts
+@@ -12,8 +12,6 @@
+ 	compatible = "compulab,ucm-imx8m-plus", "fsl,imx8mp";
+ };
+ 
+-/delete-node/ &ar1335_af_mipi1;
+-
+ &i2c5 {
+ 	imx219_mipi1: imx219_mipi1@10 {
+ 		compatible = "sony,imx219";
+@@ -22,7 +20,7 @@
+ 		pinctrl-0 = <&pinctrl_csi_mclk>;
+ 		clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
+ 		csi_id = <0>;
+-		reset-gpios = <&pca9555 12 GPIO_ACTIVE_HIGH>;
++		reset-gpios = <&pca9555 8 GPIO_ACTIVE_HIGH>;
+ 		mclk = <24000000>;
+ 		mclk_source = <0>;
+ 		mipi_csi;
+@@ -30,6 +28,7 @@
+ 
+ 		port {
+ 			imx219_mipi1_ep: endpoint {
++				clock-lanes = <0>;
+ 				data-lanes = <1 2>;
+ 				clock-noncontinuous;
+ 				link-frequencies = /bits/ 64 <456000000>;
+@@ -39,17 +38,26 @@
+ 	};
+ };
+ 
+-&mipi1_sensor_ep {
+-	data-lanes = <2>;
+-	remote-endpoint = <&imx219_mipi1_ep>;
+-};
+-
+ &imx219_mipi1 {
+ 	status = "okay";
+ };
+ 
+ &mipi_csi_0 {
+ 	status = "okay";
++	port@0 {
++		reg = <0>;
++		mipi1_sensor_ep: endpoint@1 {
++			remote-endpoint = <&imx219_mipi1_ep>;
++			data-lanes = <2>;
++			csis-hs-settle = <23>;
++			csis-clk-settle = <2>;
++			csis-wclk;
++		};
++	};
++};
++
++&cameradev {
++	status = "okay";
+ };
+ 
+ &isi_0 {
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1-imx477.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1-imx477.dts
+new file mode 100644
+index 000000000000..231043442823
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1-imx477.dts
+@@ -0,0 +1,65 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright 2021 CompuLab
++ */
++
++/dts-v1/;
++
++#include "ucm-imx8m-plus.dts"
++
++/ {
++	model = "CompuLab UCM-iMX8M-Plus with mipi csi1 (p49) enabled";
++	compatible = "compulab,ucm-imx8m-plus", "fsl,imx8mp";
++};
++
++&i2c5 {
++	imx477_mipi1: imx477_mipi1@1a {
++		compatible = "sony,imx477";
++		reg = <0x1a>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_csi_mclk>;
++		clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
++		csi_id = <0>;
++		reset-gpios = <&pca9555 8 GPIO_ACTIVE_HIGH>;
++		mclk = <24000000>;
++		mclk_source = <0>;
++		mipi_csi;
++		status = "disabled";
++
++		port {
++			imx477_mipi1_ep: endpoint {
++				clock-lanes = <0>;
++				data-lanes = <1 2 3 4>;
++				clock-noncontinuous;
++				link-frequencies = /bits/ 64 <450000000>;
++				remote-endpoint = <&mipi1_sensor_ep>;
++			};
++		};
++	};
++};
++
++&imx477_mipi1 {
++	status = "okay";
++};
++
++&mipi_csi_0 {
++	status = "okay";
++	port@0 {
++		reg = <0>;
++		mipi1_sensor_ep: endpoint@1 {
++			remote-endpoint = <&imx477_mipi1_ep>;
++			data-lanes = <4>;
++			csis-hs-settle = <16>;
++			/*csis-clk-settle = <2>;*/
++			csis-wclk;
++		};
++	};
++};
++
++&cameradev {
++	status = "okay";
++};
++
++&isi_0 {
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dts
+index f600a0b7c494..5803b8715d74 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dts
+@@ -6,20 +6,9 @@
+ /dts-v1/;
+ 
+ #include "ucm-imx8m-plus.dts"
++#include "ucm-imx8m-plus_mipi-csi1.dtsi"
+ 
+ / {
+ 	model = "CompuLab UCM-iMX8M-Plus with mipi csi1 enabled";
+ 	compatible = "compulab,ucm-imx8m-plus", "fsl,imx8mp";
+ };
+-
+-&ar1335_af_mipi1 {
+-	status = "okay";
+-};
+-
+-&mipi_csi_0 {
+-	status = "okay";
+-};
+-
+-&isi_0 {
+-	status = "okay";
+-};
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi
+new file mode 100644
+index 000000000000..8e52390d0a8e
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi
+@@ -0,0 +1,59 @@
++/*
++ * Copyright 2022 CompuLab
++ */
++
++&i2c5 {
++	#address-cells = <1>;
++	#size-cells = <0>;
++	status = "okay";
++
++	ar1335_af_mipi1: ar1335_af_mipi1@42 {
++		compatible = "econ,ar1335_af", "ar1335_af";
++		reg = <0x42>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_csi_mclk>;
++		clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
++		clock-names = "xclk";
++		assigned-clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
++		assigned-clock-parents = <&clk IMX8MP_CLK_24M>;
++		assigned-clock-rates = <24000000>;
++		csi_id = <0>;
++		pwn-gpios = <&pca9555 8 GPIO_ACTIVE_HIGH>;
++		rst-gpios = <&pca9555 9 GPIO_ACTIVE_LOW>;
++		mclk = <24000000>;
++		mclk_source = <0>;
++		mipi_csi;
++		camera_mipi_lanes = <4>;
++		status = "okay";
++
++		port {
++			ar1335_af_mipi1_ep: endpoint {
++				data-lanes = <1 2 3 4>;
++				clock-lanes = <0>;
++				remote-endpoint = <&mipi1_sensor_ep>;
++			};
++		};
++	};
++};
++
++&mipi_csi_0 {
++	status = "okay";
++	port@0 {
++		reg = <0>;
++		mipi1_sensor_ep: endpoint@1 {
++			csis-hs-settle = <13>;
++			csis-clk-settle = <2>;
++			csis-wclk;
++			data-lanes = <4>;
++			remote-endpoint = <&ar1335_af_mipi1_ep>;
++		};
++	};
++};
++
++&cameradev {
++	status = "okay";
++};
++
++&isi_0 {
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dts
+index 5ae73e2f185e..e593c9eb9cc2 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dts
+@@ -6,20 +6,9 @@
+ /dts-v1/;
+ 
+ #include "ucm-imx8m-plus.dts"
++#include "ucm-imx8m-plus_mipi-csi2.dtsi"
+ 
+ / {
+ 	model = "CompuLab UCM-iMX8M-Plus with mipi csi2 enabled";
+ 	compatible = "compulab,ucm-imx8m-plus", "fsl,imx8mp";
+ };
+-
+-&ar1335_af_mipi2 {
+-	status = "okay";
+-};
+-
+-&mipi_csi_1 {
+-	status = "okay";
+-};
+-
+-&isi_1 {
+-	status = "okay";
+-};
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi
+new file mode 100644
+index 000000000000..04ca03cc4952
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi
+@@ -0,0 +1,59 @@
++/*
++ * Copyright 2022 CompuLab
++ */
++
++&i2c6 {
++	#address-cells = <1>;
++	#size-cells = <0>;
++	status = "okay";
++
++	ar1335_af_mipi2: ar1335_af_mipi1@42 {
++		compatible = "econ,ar1335_af", "ar1335_af";
++		reg = <0x42>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_csi_mclk>;
++		clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
++		clock-names = "xclk";
++		assigned-clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
++		assigned-clock-parents = <&clk IMX8MP_CLK_24M>;
++		assigned-clock-rates = <24000000>;
++		csi_id = <0x01>;
++		pwn-gpios = <&pca9555 12 GPIO_ACTIVE_HIGH>;
++		rst-gpios = <&pca9555 13 GPIO_ACTIVE_LOW>;
++		mclk = <24000000>;
++		mclk_source = <0>;
++		mipi_csi;
++		camera_mipi_lanes = <4>;
++		status = "okay";
++
++		port {
++			ar1335_af_mipi2_ep: endpoint {
++				data-lanes = <1 2 3 4>;
++				clock-lanes = <0>;
++				remote-endpoint = <&mipi2_sensor_ep>;
++			};
++		};
++	};
++};
++
++&mipi_csi_1 {
++	status = "okay";
++	port@1 {
++		reg = <1>;
++		mipi2_sensor_ep: endpoint {
++			csis-hs-settle = <13>;
++			csis-clk-settle = <2>;
++			csis-wclk;
++			data-lanes = <4>;
++			remote-endpoint = <&ar1335_af_mipi2_ep>;
++		};
++	};
++};
++
++&cameradev {
++	status = "okay";
++};
++
++&isi_1 {
++	status = "okay";
++};
+-- 
+2.17.1
+

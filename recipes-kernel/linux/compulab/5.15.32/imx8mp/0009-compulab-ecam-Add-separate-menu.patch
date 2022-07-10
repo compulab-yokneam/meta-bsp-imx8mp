@@ -1,0 +1,119 @@
+From 82ee62ab348201c35fbcddef5a5016b64ea84cac Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sat, 7 May 2022 21:33:37 +0300
+Subject: [PATCH] compulab: ecam: Add separate menu
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ drivers/media/platform/Kconfig           |  6 +++++
+ drivers/media/platform/imx8/Kconfig      | 28 -------------------
+ drivers/media/platform/imx8/ecam/Kconfig | 34 ++++++++++++++++++++++++
+ 3 files changed, 40 insertions(+), 28 deletions(-)
+ create mode 100644 drivers/media/platform/imx8/ecam/Kconfig
+
+diff --git a/drivers/media/platform/Kconfig b/drivers/media/platform/Kconfig
+index 39f9613482ad..437c1fff7a52 100644
+--- a/drivers/media/platform/Kconfig
++++ b/drivers/media/platform/Kconfig
+@@ -222,6 +222,8 @@ config VIDEO_TI_CAL_MC
+ 
+ endif # VIDEO_TI_CAL
+ 
++if VIDEO_MX8_CAPTURE
++
+ config VIDEO_ECAM
+         tristate "e-con camera sensor support"
+         depends on I2C && VIDEO_V4L2 && VIDEO_V4L2_SUBDEV_API
+@@ -232,6 +234,10 @@ config VIDEO_ECAM
+           To compile this driver as a module, choose M here: the module
+           will be called based on sensor name.
+ 
++source "drivers/media/platform/imx8/ecam/Kconfig"
++
++endif # VIDEO_MX8_CAPTURE
++
+ endif # V4L_PLATFORM_DRIVERS
+ 
+ menuconfig V4L_MEM2MEM_DRIVERS
+diff --git a/drivers/media/platform/imx8/Kconfig b/drivers/media/platform/imx8/Kconfig
+index 3cb144361fad..eb42572ef27f 100644
+--- a/drivers/media/platform/imx8/Kconfig
++++ b/drivers/media/platform/imx8/Kconfig
+@@ -5,34 +5,6 @@ config IMX8_MIPI_CSI2_YAV
+ 	tristate "IMX8 MIPI CSI2 Controller Yet Another Version"
+ 	default y
+ 
+-config MXC_CAMERA_AR0521
+-        tristate "AR0521 Camera driver support"
+-        depends on I2C && VIDEO_ECAM
+-        default y
+-        help
+-          Enable support for video4linux camera sensor driver for eCAM50_CUIMX8
+-
+-config MXC_CAMERA_AR1335
+-        tristate "AR1335 Camera driver support"
+-        depends on I2C && VIDEO_ECAM
+-        default y
+-        help
+-          Enable support for video4linux camera sensor driver for eCAM131_CUIMX8
+-
+-config MXC_CAMERA_AR1335_AF
+-        tristate "AR1335 Auto focus Camera driver support"
+-        depends on I2C && VIDEO_ECAM
+-        default y
+-        help
+-          Enable support for video4linux camera sensor driver for eCAM136_IMX8
+-
+-config MXC_CAMERA_AR0234
+-        tristate "AR0234 Camera driver support"
+-        depends on I2C && VIDEO_ECAM
+-        default y
+-        help
+-          Enable support for video4linux camera sensor driver for eCAM21_CUIMX8
+-
+ endmenu
+ endif #VIDEO_MX8_CAPTURE
+ 
+diff --git a/drivers/media/platform/imx8/ecam/Kconfig b/drivers/media/platform/imx8/ecam/Kconfig
+new file mode 100644
+index 000000000000..77ffbaa81b5d
+--- /dev/null
++++ b/drivers/media/platform/imx8/ecam/Kconfig
+@@ -0,0 +1,34 @@
++if VIDEO_ECAM
++menu "IMX8 eCon Camera ISI/MIPI Features support"
++
++config MXC_CAMERA_AR0521
++        tristate "AR0521 Camera driver support"
++        depends on I2C && VIDEO_ECAM
++        default n
++        help
++          Enable support for video4linux camera sensor driver for eCAM50_CUIMX8
++
++config MXC_CAMERA_AR1335
++        tristate "AR1335 Camera driver support"
++        depends on I2C && VIDEO_ECAM
++        default n
++        help
++          Enable support for video4linux camera sensor driver for eCAM131_CUIMX8
++
++config MXC_CAMERA_AR1335_AF
++        tristate "AR1335 Auto focus Camera driver support"
++        depends on I2C && VIDEO_ECAM
++        default n
++        help
++          Enable support for video4linux camera sensor driver for eCAM136_IMX8
++
++config MXC_CAMERA_AR0234
++        tristate "AR0234 Camera driver support"
++        depends on I2C && VIDEO_ECAM
++        default n 
++        help
++          Enable support for video4linux camera sensor driver for eCAM21_CUIMX8
++
++endmenu
++endif #VIDEO_ECAM
++
+-- 
+2.17.1
+

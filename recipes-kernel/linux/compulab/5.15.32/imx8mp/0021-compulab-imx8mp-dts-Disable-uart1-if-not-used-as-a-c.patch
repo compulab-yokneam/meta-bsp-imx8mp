@@ -1,0 +1,26 @@
+From f16a6d3eae42defb9dadd11e26608e371a5bc716 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 14 Jun 2022 14:47:45 +0300
+Subject: [PATCH] compulab: imx8mp: dts: Disable uart1 if not used as a console
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+index a87946b9dc53..df48865e2073 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+@@ -805,7 +805,7 @@
+ 	pinctrl-0 = <&pinctrl_uart1>;
+ 	assigned-clocks = <&clk IMX8MP_CLK_UART1>;
+ 	assigned-clock-parents = <&clk IMX8MP_SYS_PLL1_80M>;
+-	status = "okay";
++	status = "disabled";
+ };
+ 
+ &uart2 {
+-- 
+2.17.1
+

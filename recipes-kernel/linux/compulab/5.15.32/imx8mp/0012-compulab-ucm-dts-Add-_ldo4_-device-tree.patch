@@ -1,0 +1,60 @@
+From 59f0dc8e03096e194c9e7a504af4d9dc5aef6444 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sun, 8 May 2022 23:02:55 +0300
+Subject: [PATCH] compulab: ucm: dts: Add _ldo4_ device tree
+
+Bypass ldo4 settings from u-boot.
+The kernel ldo4 kernel regulator must be disabled.
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/Makefile         |  1 +
+ .../boot/dts/compulab/ucm-imx8m-plus-ldo4.dts | 24 +++++++++++++++++++
+ 2 files changed, 25 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/compulab/ucm-imx8m-plus-ldo4.dts
+
+diff --git a/arch/arm64/boot/dts/compulab/Makefile b/arch/arm64/boot/dts/compulab/Makefile
+index 121f6b78dcc6..5016da6a9c35 100644
+--- a/arch/arm64/boot/dts/compulab/Makefile
++++ b/arch/arm64/boot/dts/compulab/Makefile
+@@ -8,6 +8,7 @@ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-hdmi.dtb
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-lvds.dtb
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-usbdev.dtb
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-rpmsg.dtb
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-ldo4.dtb
+ 
+ dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus.dtb
+ dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus_mipi-csi1.dtb
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-ldo4.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-ldo4.dts
+new file mode 100644
+index 000000000000..a3b041239769
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-ldo4.dts
+@@ -0,0 +1,24 @@
++/*
++ * Copyright 2022 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/dts-v1/;
++
++#include "ucm-imx8m-plus.dts"
++
++/ {
++	model = "CompuLab UCM-iMX8M-Plus (ldo4)";
++	compatible = "compulab,ucm-imx8m-plus", "fsl,imx8mp";
++};
++
++/delete-node/ &ldo4;
+-- 
+2.17.1
+
