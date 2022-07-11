@@ -27,5 +27,6 @@ SRC_URI:append = " \
 	file://0025-compulab-imx8mp-dts-Enable-uart1-if-used-as-a-consol.patch \
 	file://0026-compulab-imx8m-plus-Add-iot-gate-imx8plus-board-supp.patch \
 	file://0027-compulab-iot-gate-imx8plus-Enable-CONFIG_INPUT_EVDEV.patch \
+	file://0028-compulab-iot-gate-imx8plus-update-defconfig.patch \
 	file://defconfig \
 "
