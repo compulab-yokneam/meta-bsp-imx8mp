@@ -56,6 +56,7 @@ SRC_URI:append = " \
 	file://0055-ucm-imx8m-plus-Allow-usieng-UART1-as-debug-console.patch \
 	file://0056-compulab-Add-iot-gate-imx8plus-support.patch \
 	file://0057-iot-gate-imx8plus-restore-default-network-interfaces.patch \
+	file://0058-iot-gate-imx8plus-fix-temperature-limits.patch \
 "
 
 SRC_URI:append:ucm-imx8m-plus = " \
