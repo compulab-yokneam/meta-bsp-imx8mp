@@ -1,0 +1,41 @@
+From 7576097f965ef7b9c727156e9ff5c6c38adad197 Mon Sep 17 00:00:00 2001
+From: Ilya Ledvich <ilya@compulab.co.il>
+Date: Tue, 12 Jul 2022 16:48:57 +0300
+Subject: [PATCH] compulab: iot-gate-imx8plus: fix temperature limits
+
+Signed-off-by: Ilya Ledvich <ilya@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/sb-iotgimx8plus.dtsi | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/compulab/sb-iotgimx8plus.dtsi b/arch/arm64/boot/dts/compulab/sb-iotgimx8plus.dtsi
+index c422ff7d0572..d9c7afca2b99 100644
+--- a/arch/arm64/boot/dts/compulab/sb-iotgimx8plus.dtsi
++++ b/arch/arm64/boot/dts/compulab/sb-iotgimx8plus.dtsi
+@@ -61,19 +61,19 @@
+ };
+ 
+ &cpu_alert0 {
+-	temperature = <125000>;
++	temperature = <100000>;
+ };
+ 
+ &cpu_crit0 {
+-	temperature = <155000>;
++	temperature = <105000>;
+ };
+ 
+ &soc_alert0 {
+-	temperature = <125000>;
++	temperature = <100000>;
+ };
+ 
+ &soc_crit0 {
+-	temperature = <155000>;
++	temperature = <105000>;
+ };
+ 
+ &gpio1 {
+-- 
+2.17.1
+
