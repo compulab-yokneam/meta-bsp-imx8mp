@@ -19,7 +19,7 @@ Define the following environment variables:
 |Description|Command Line|
 |---|---|
 |NXP release name|export NXP_RELEASE=lf-5.15.5-1.0.0|
-|CompuLab branch name|export CPL_BRANCH=kirkstone|
+|CompuLab branch name|export CPL_BRANCH=kirkstone CPL_KERNEL=5.15.5|
 
 ## Prerequisites
 It is up to developer to setup arm64 build environment:
@@ -39,7 +39,7 @@ export SRC_ROOT=$(pwd)
 * Download CompuLab BSP
 <pre>
 git clone -b ${CPL_BRANCH} https://github.com/compulab-yokneam/meta-bsp-imx8mp.git
-export PATCHES=$(pwd)/meta-bsp-imx8mp/recipes-kernel/linux/compulab/imx8mp
+export PATCHES=$(pwd)/meta-bsp-imx8mp/recipes-kernel/linux/compulab/${CPL_KERNEL}/imx8mp
 </pre>
 
 ## CompuLab Linux Kernel setup
@@ -52,7 +52,7 @@ git -C linux-imx am ${PATCHES}/*.patch
 
 * Add the linux-rt patches (optional):
 <pre>
-export PATCHES=$(pwd)/meta-bsp-imx8mp/recipes-kernel/linux-rt/compulab/imx8mp
+export PATCHES=$(pwd)/meta-bsp-imx8mp/recipes-kernel/linux-rt/compulab/${CPL_KERNEL}/imx8mp
 git -C linux-imx am ${PATCHES}/*.patch
 cd linux-imx
 scripts/kconfig/merge_config.sh  -O arch/arm64/configs/ -m  arch/arm64/configs/${MACHINE}_defconfig arch/arm64/configs/rt.config
