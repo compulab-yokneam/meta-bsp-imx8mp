@@ -1,6 +1,6 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/compulab/imx8mp:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/compulab/${PV}/imx8mp:"
 
-require compulab/imx8mp.inc
+require compulab/${PV}/imx8mp.inc
 
 do_configure:prepend() {
     # Merge common defconfig with specific fraggment to get specific defconfig
