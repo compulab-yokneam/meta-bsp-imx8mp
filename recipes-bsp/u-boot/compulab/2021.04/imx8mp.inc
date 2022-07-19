@@ -58,6 +58,7 @@ SRC_URI:append = " \
 	file://0057-iot-gate-imx8plus-restore-default-network-interfaces.patch \
 	file://0058-iot-gate-imx8plus-fix-temperature-limits.patch \
 	file://0059-imx8mp-spl-Remove-the-management-gpio-usage.patch \
+	file://0060-iot-gate-imx8plus-eeprom-Read-mac-from-the-dev_id-of.patch \
 "
 
 SRC_URI:append:ucm-imx8m-plus = " \
