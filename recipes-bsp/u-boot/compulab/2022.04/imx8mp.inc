@@ -5,6 +5,7 @@ SRC_URI:append = " \
 	file://0003-som-imx8m-plus-Updated-defconfig.patch \
 	file://0004-iot-gate-imx8plus-Updated-defconfig.patch \
 	file://0005-imx8mp-compulab-Add-binman-layout.patch \
+	file://0007-imx8mp-spl-Remove-the-management-gpio-usage.patch \
 "
 
 SRC_URI:append:binman = " \
