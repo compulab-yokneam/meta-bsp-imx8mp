@@ -1,0 +1,68 @@
+From d7b3c776afd1c50d17d404b7f23f395101c07fbb Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 19 Jul 2022 11:08:48 +0300
+Subject: [PATCH] imx8mp: spl: Remove the management gpio usage
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/plat/imx8mp/ddr/ddr.c | 42 ++++------------------------
+ 1 file changed, 6 insertions(+), 36 deletions(-)
+
+diff --git a/board/compulab/plat/imx8mp/ddr/ddr.c b/board/compulab/plat/imx8mp/ddr/ddr.c
+index 0b0ab23716..08fc1f6175 100644
+--- a/board/compulab/plat/imx8mp/ddr/ddr.c
++++ b/board/compulab/plat/imx8mp/ddr/ddr.c
+@@ -143,44 +143,14 @@ static inline void lpddr4_data_set(struct lpddr4_tcm_desc *lpddr4_tcm_desc) {
+ 	cl_eeprom_buffer_write(0, (uchar *)lpddr4_tcm_desc, sizeof(struct lpddr4_tcm_desc));
+ }
+ 
+-#define MNG_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_ODE | PAD_CTL_PUE | PAD_CTL_PE)
+-#define MNG_PAD IMX_GPIO_NR(5, 11)
+-static iomux_v3_cfg_t const mng_pads[] = {
+-	MX8MP_PAD_ECSPI2_MOSI__GPIO5_IO11  | MUX_PAD_CTRL(MNG_PAD_CTRL),
+-};
+-
+-static int get_mng_gpio(void)
+-{
+-    imx_iomux_v3_setup_multiple_pads(mng_pads, ARRAY_SIZE(mng_pads));
+-    gpio_request(MNG_PAD, "mng_pad");
+-    return gpio_get_value(MNG_PAD);
+-}
+-
+-static void spl_dram_eclean(void)
+-{
+-    unsigned int ddr_info = 0xffffffff;
+-    memset(SPL_TCM_DATA, 0xff, sizeof(struct lpddr4_tcm_desc));
+-    lpddr4_data_set(SPL_TCM_DATA);
+-    mdelay(10);
+-    cl_eeprom_set_ddrinfo(ddr_info);
+-    mdelay(10);
+-    ddr_info = cl_eeprom_get_ddrinfo();
+-    printf("DDRINFO(E): mr5-8 [ 0x%x ], read back\n", ddr_info);
+-    printf("%s The epprom was cleaned up ... \n",__func__);
+-} 
+-
+ void spl_dram_init(void)
+ {
+-    if (!get_mng_gpio()) {
+-        spl_dram_eclean();
+-        while (1) {};
++    lpddr4_data_get(SPL_TCM_DATA);
++    if (_spl_dram_init()) {
++        lpddr4_data_set(SPL_TCM_DATA);
++        printf("%s Reset ... \n",__func__);
++        do_reset_spl();
+     }
+-	lpddr4_data_get(SPL_TCM_DATA);
+-	if (_spl_dram_init()) {
+-		lpddr4_data_set(SPL_TCM_DATA);
+-		printf("%s Reset ... \n",__func__);
+-		do_reset_spl();
+-	}
+ 
+-	printf("%s Continue w/out reset ... \n",__func__);
++    printf("%s Continue w/out reset ... \n",__func__);
+ }
+-- 
+2.17.1
+
