@@ -29,5 +29,6 @@ SRC_URI:append = " \
 	file://0027-compulab-iot-gate-imx8plus-Enable-CONFIG_INPUT_EVDEV.patch \
 	file://0028-compulab-iot-gate-imx8plus-update-defconfig.patch \
 	file://0029-compulab-iot-gate-imx8plus-fix-temperature-limits.patch \
+	file://0030-compulab-iot-gate-imx8plus-change-rtc-devices-enumer.patch \
 	file://defconfig \
 "
