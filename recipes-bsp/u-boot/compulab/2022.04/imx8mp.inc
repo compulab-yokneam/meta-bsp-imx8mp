@@ -8,6 +8,8 @@ SRC_URI:append = " \
 	file://0007-imx8mp-spl-Remove-the-management-gpio-usage.patch \
 	file://0008-imx8m-compulab-Fix-kernel_addr_r-value.patch \
 	file://0009-iot-gate-imx8plus-eeprom-Read-mac-from-the-dev_id-of.patch \
+	file://0010-compulab-imx8mp-binman-Fix-binman-dtsi.patch \
+	file://0011-compulab-imx8mp-Update-defconfig-s.patch \
 "
 
 SRC_URI:append:binman = " \
