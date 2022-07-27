@@ -30,5 +30,6 @@ SRC_URI:append = " \
 	file://0028-imx8-isi-Fix-the-5.15.5-stream-capture-color-distort.patch \
 	file://0029-compulab-iot-gate-imx8plus-fix-temperature-limits.patch \
 	file://0030-compulab-iot-gate-imx8plus-change-rtc-devices-enumer.patch \
+	file://0031-som-imx8m-plus-defconfig-Uplate-for-5.15.32.patch \
 	file://defconfig \
 "
