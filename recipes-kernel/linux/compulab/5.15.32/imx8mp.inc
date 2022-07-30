@@ -31,5 +31,13 @@ SRC_URI:append = " \
 	file://0029-compulab-iot-gate-imx8plus-fix-temperature-limits.patch \
 	file://0030-compulab-iot-gate-imx8plus-change-rtc-devices-enumer.patch \
 	file://0031-som-imx8m-plus-defconfig-Uplate-for-5.15.32.patch \
+	file://0032-ucm-imx8m-plus-dts-Update-the-mipi-csi-nodes-names.patch \
+	file://0033-ucm-imx8m-plus-dts-Update-the-sensor-compatible-stri.patch \
+	file://0034-ucm-imx8m-plus-dts-Add-the-ar0234-device-tree.patch \
+	file://0035-ucm-imx8m-plus-dts-Add-the-ar0521-device-tree.patch \
+	file://0036-ucm-imx8m-plus-dtsi-sensor-Move-non-sensors-node-to-.patch \
+	file://0037-ucm-imx8m-plus-dts-Add-dual-sensors-device-tree.patch \
+	file://0038-ucm-imx8m-plus-dts-Add-dual-sensors-device-tree.patch \
+	file://0039-ucm-imx8m-plus-defconfig-Enable-AR0234-and-AR0521.patch \
 	file://defconfig \
 "

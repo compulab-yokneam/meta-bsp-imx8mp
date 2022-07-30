@@ -1,0 +1,163 @@
+From a6c6bdc7637ecdd8b5b6872da6faca8dbf2c2ad2 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sat, 30 Jul 2022 09:57:51 +0300
+Subject: [PATCH] ucm-imx8m-plus: dtsi: sensor: Move non sensors node to the
+ dts file
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ .../compulab/ucm-imx8m-plus_mipi-csi1-ar0234.dts | 16 ++++++++++++++++
+ .../compulab/ucm-imx8m-plus_mipi-csi1-ar0521.dts | 16 ++++++++++++++++
+ .../dts/compulab/ucm-imx8m-plus_mipi-csi1.dts    | 16 ++++++++++++++++
+ .../dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi   | 16 ----------------
+ .../dts/compulab/ucm-imx8m-plus_mipi-csi2.dts    | 16 ++++++++++++++++
+ .../dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi   | 16 ----------------
+ 6 files changed, 64 insertions(+), 32 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1-ar0234.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1-ar0234.dts
+index ba749a8a8a8b..ce7e326c0a50 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1-ar0234.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1-ar0234.dts
+@@ -17,3 +17,19 @@
+ 	compatible = "econ,ar0234", "ar0234";
+ 	camera-mipi-clk = <800>;
+ };
++
++&cameradev {
++	status = "okay";
++};
++
++&isi_0 {
++	status = "okay";
++
++	cap_device {
++		status = "okay";
++	};
++
++	m2m_device {
++		status = "okay";
++	};
++};
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1-ar0521.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1-ar0521.dts
+index 0c6c24445823..5547e8e5f70e 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1-ar0521.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1-ar0521.dts
+@@ -16,3 +16,19 @@
+ &sensor_mipi1 {
+ 	compatible = "econ,ar0521", "ar0521";
+ };
++
++&cameradev {
++	status = "okay";
++};
++
++&isi_0 {
++	status = "okay";
++
++	cap_device {
++		status = "okay";
++	};
++
++	m2m_device {
++		status = "okay";
++	};
++};
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dts
+index 0ef36d9e3536..9b70a6b28cfe 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dts
+@@ -16,3 +16,19 @@
+ &sensor_mipi1 {
+ 	compatible = "econ,ar1335_af", "ar1335_af";
+ };
++
++&cameradev {
++	status = "okay";
++};
++
++&isi_0 {
++	status = "okay";
++
++	cap_device {
++		status = "okay";
++	};
++
++	m2m_device {
++		status = "okay";
++	};
++};
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi
+index 56b8f66cf602..603a8877d35e 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi
+@@ -49,19 +49,3 @@
+ 		};
+ 	};
+ };
+-
+-&cameradev {
+-	status = "okay";
+-};
+-
+-&isi_0 {
+-	status = "okay";
+-
+-	cap_device {
+-		status = "okay";
+-	};
+-
+-	m2m_device {
+-		status = "okay";
+-	};
+-};
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dts
+index 6a99d58c98b7..91758234241a 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dts
+@@ -16,3 +16,19 @@
+ &sensor_mipi2 {
+ 	compatible = "econ,ar1335_af", "ar1335_af";
+ };
++
++&cameradev {
++	status = "okay";
++};
++
++&isi_1 {
++	status = "okay";
++
++	cap_device {
++		status = "okay";
++	};
++
++	m2m_device {
++		status = "okay";
++	};
++};
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi
+index 1fb3322267cd..e77ee0ab8fc3 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi
+@@ -49,19 +49,3 @@
+ 		};
+ 	};
+ };
+-
+-&cameradev {
+-	status = "okay";
+-};
+-
+-&isi_1 {
+-	status = "okay";
+-
+-	cap_device {
+-		status = "okay";
+-	};
+-
+-	m2m_device {
+-		status = "okay";
+-	};
+-};
+-- 
+2.17.1
+

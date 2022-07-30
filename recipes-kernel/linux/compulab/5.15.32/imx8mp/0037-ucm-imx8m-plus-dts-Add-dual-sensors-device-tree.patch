@@ -1,0 +1,69 @@
+From 0d3cf4af05cacc8e5a69cbbf02f2a84038ded2ba Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sat, 30 Jul 2022 14:16:57 +0300
+Subject: [PATCH] ucm-imx8m-plus: dts: Add dual sensors device tree
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ .../dts/compulab/ucm-imx8m-plus_mipi-dual.dts | 49 +++++++++++++++++++
+ 1 file changed, 49 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-dual.dts
+
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-dual.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-dual.dts
+new file mode 100644
+index 000000000000..2f6ec8f603b0
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-dual.dts
+@@ -0,0 +1,49 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright 2021 CompuLab
++ */
++
++/dts-v1/;
++
++#include "ucm-imx8m-plus.dts"
++#include "ucm-imx8m-plus_mipi-csi1.dtsi"
++#include "ucm-imx8m-plus_mipi-csi2.dtsi"
++
++/ {
++	model = "CompuLab UCM-iMX8M-Plus with mipi dual enabled";
++	compatible = "compulab,ucm-imx8m-plus", "fsl,imx8mp";
++};
++
++&sensor_mipi1 {
++	compatible = "econ,ar0234", "ar0234";
++	camera-mipi-clk = <800>;
++};
++
++&sensor_mipi2 {
++	/delete-property/ pinctrl-0;
++	compatible = "econ,ar1335_af", "ar1335_af";
++};
++
++&cameradev {
++	status = "okay";
++};
++
++&isi_0 {
++	status = "disabled";
++};
++
++&isi_1 {
++	status = "disabled";
++};
++
++&isp_0 {
++	status = "okay";
++};
++
++&isp_1 {
++	status = "okay";
++};
++
++&dewarp {
++	status = "okay";
++};
+-- 
+2.17.1
+

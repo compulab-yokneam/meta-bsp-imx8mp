@@ -1,0 +1,27 @@
+From 76c1fd4e2e26e6e4adf42423271ed62ca0ff1a0e Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sat, 30 Jul 2022 14:18:26 +0300
+Subject: [PATCH] ucm-imx8m-plus: dts: Add dual sensors device tree
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/Makefile | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/compulab/Makefile b/arch/arm64/boot/dts/compulab/Makefile
+index 73fd12415366..01cd603234a7 100644
+--- a/arch/arm64/boot/dts/compulab/Makefile
++++ b/arch/arm64/boot/dts/compulab/Makefile
+@@ -3,6 +3,9 @@ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus_mipi-csi1.dtb
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus_mipi-csi2.dtb
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus_mipi-csi1-imx219.dtb
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus_mipi-csi1-imx477.dtb
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus_mipi-csi1-ar0234.dtb
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus_mipi-csi1-ar0521.dtb
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus_mipi-dual.dtb
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-mipi.dtb
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-hdmi.dtb
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-lvds.dtb
+-- 
+2.17.1
+

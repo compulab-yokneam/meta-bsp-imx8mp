@@ -1,0 +1,82 @@
+From c19470351a151200c03bb2189c30729a98a4c078 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sat, 30 Jul 2022 09:32:37 +0300
+Subject: [PATCH] ucm-imx8m-plus: dts: Update the mipi csi nodes' names
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ .../arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi | 8 ++++----
+ .../arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi | 6 +++---
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi
+index 1beaab5ba6de..56b8f66cf602 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dtsi
+@@ -7,7 +7,7 @@
+ 	#size-cells = <0>;
+ 	status = "okay";
+ 
+-	ar1335_af_mipi1: ar1335_af_mipi1@42 {
++	sensor_mipi1: mipi1@42 {
+ 		compatible = "econ,ar1335_af", "ar1335_af";
+ 		reg = <0x42>;
+ 		pinctrl-names = "default";
+@@ -27,7 +27,7 @@
+ 		status = "okay";
+ 
+ 		port {
+-			ar1335_af_mipi1_ep: endpoint {
++			mipi1_ep: endpoint {
+ 				data-lanes = <1 2 3 4>;
+ 				clock-lanes = <0>;
+ 				remote-endpoint = <&mipi1_sensor_ep>;
+@@ -40,12 +40,12 @@
+ 	status = "okay";
+ 	port@0 {
+ 		reg = <0>;
+-		mipi1_sensor_ep: endpoint@1 {
++		mipi1_sensor_ep: endpoint {
+ 			csis-hs-settle = <23>;
+ 			csis-clk-settle = <2>;
+ 			csis-wclk;
+ 			data-lanes = <4>;
+-			remote-endpoint = <&ar1335_af_mipi1_ep>;
++			remote-endpoint = <&mipi1_ep>;
+ 		};
+ 	};
+ };
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi
+index a7e5f908c637..1fb3322267cd 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dtsi
+@@ -7,7 +7,7 @@
+ 	#size-cells = <0>;
+ 	status = "okay";
+ 
+-	ar1335_af_mipi2: ar1335_af_mipi1@42 {
++	sensor_mipi2: mipi2@42 {
+ 		compatible = "econ,ar1335_af", "ar1335_af";
+ 		reg = <0x42>;
+ 		pinctrl-names = "default";
+@@ -27,7 +27,7 @@
+ 		status = "okay";
+ 
+ 		port {
+-			ar1335_af_mipi2_ep: endpoint {
++			mipi2_ep: endpoint {
+ 				data-lanes = <1 2 3 4>;
+ 				clock-lanes = <0>;
+ 				remote-endpoint = <&mipi2_sensor_ep>;
+@@ -45,7 +45,7 @@
+ 			csis-clk-settle = <2>;
+ 			csis-wclk;
+ 			data-lanes = <4>;
+-			remote-endpoint = <&ar1335_af_mipi2_ep>;
++			remote-endpoint = <&mipi2_ep>;
+ 		};
+ 	};
+ };
+-- 
+2.17.1
+

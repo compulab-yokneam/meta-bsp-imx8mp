@@ -1,0 +1,46 @@
+From 8778b7f71a9dd2cbd0e4ecb1bd217b5659dba407 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sat, 30 Jul 2022 09:38:11 +0300
+Subject: [PATCH] ucm-imx8m-plus: dts: Update the sensor compatible string
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dts | 6 +++++-
+ arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dts | 6 +++++-
+ 2 files changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dts
+index 5803b8715d74..0ef36d9e3536 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi1.dts
+@@ -9,6 +9,10 @@
+ #include "ucm-imx8m-plus_mipi-csi1.dtsi"
+ 
+ / {
+-	model = "CompuLab UCM-iMX8M-Plus with mipi csi1 enabled";
++	model = "CompuLab UCM-iMX8M-Plus with ar_1335_af mipi csi1 enabled";
+ 	compatible = "compulab,ucm-imx8m-plus", "fsl,imx8mp";
+ };
++
++&sensor_mipi1 {
++	compatible = "econ,ar1335_af", "ar1335_af";
++};
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dts
+index e593c9eb9cc2..6a99d58c98b7 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus_mipi-csi2.dts
+@@ -9,6 +9,10 @@
+ #include "ucm-imx8m-plus_mipi-csi2.dtsi"
+ 
+ / {
+-	model = "CompuLab UCM-iMX8M-Plus with mipi csi2 enabled";
++	model = "CompuLab UCM-iMX8M-Plus with ar_1335_af mipi csi2 enabled";
+ 	compatible = "compulab,ucm-imx8m-plus", "fsl,imx8mp";
+ };
++
++&sensor_mipi2 {
++	compatible = "econ,ar1335_af", "ar1335_af";
++};
+-- 
+2.17.1
+

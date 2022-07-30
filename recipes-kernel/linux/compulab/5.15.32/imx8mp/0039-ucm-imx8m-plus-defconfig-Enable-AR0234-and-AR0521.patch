@@ -1,0 +1,28 @@
+From a4e4b6e55fe168377322b156fa80b41caafdaef2 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sat, 30 Jul 2022 14:20:29 +0300
+Subject: [PATCH] ucm-imx8m-plus: defconfig: Enable AR0234 and AR0521
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/configs/ucm-imx8m-plus_defconfig | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm64/configs/ucm-imx8m-plus_defconfig b/arch/arm64/configs/ucm-imx8m-plus_defconfig
+index 7f690b472bd9..e1a843395d53 100644
+--- a/arch/arm64/configs/ucm-imx8m-plus_defconfig
++++ b/arch/arm64/configs/ucm-imx8m-plus_defconfig
+@@ -592,8 +592,10 @@ CONFIG_MXC_MIPI_CSI=y
+ CONFIG_MXC_CAMERA_OV5640_MIPI_V2=y
+ # CONFIG_IMX8_MIPI_CSI2_YAV is not set
+ CONFIG_VIDEO_ECAM=y
++CONFIG_MXC_CAMERA_AR0521=y
+ CONFIG_MXC_CAMERA_AR1335=y
+ CONFIG_MXC_CAMERA_AR1335_AF=y
++CONFIG_MXC_CAMERA_AR0234=y
+ CONFIG_V4L_MEM2MEM_DRIVERS=y
+ CONFIG_VIDEO_IMX8_JPEG=m
+ # CONFIG_VIDEO_IR_I2C is not set
+-- 
+2.17.1
+
