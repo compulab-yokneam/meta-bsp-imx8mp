@@ -12,6 +12,10 @@ SRC_URI:append = " \
 	file://0011-compulab-imx8mp-Update-defconfig-s.patch \
 "
 
+SRC_URI:append = " \
+	file://mp.cfg \
+"
+
 SRC_URI:append:binman = " \
 	file://0006-imx8mp-compulab-Enable-binman.patch \
 "
@@ -27,3 +31,13 @@ SRC_URI:append:som-imx8m-plus = " \
 SRC_URI:append:iot-gate-imx8plus = " \
 	file://iot-gate-imx8plus_defconfig \
 "
+
+do_compile:prepend () {
+    cd ${S}
+    cp ${S}/configs/${MACHINE}_defconfig ${S}/configs/compulab_defconfig
+    ${S}/scripts/kconfig/merge_config.sh  -O ${S}/configs/ -m ${S}/configs/${MACHINE}_defconfig ${WORKDIR}/*.cfg
+    mv ${S}/configs/.config ${S}/configs/${MACHINE}_defconfig
+    cd -
+    oe_runmake ${MACHINE}_defconfig
+    mv ${S}/configs/compulab_defconfig ${S}/configs/${MACHINE}_defconfig
+}
