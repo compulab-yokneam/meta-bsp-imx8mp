@@ -39,5 +39,6 @@ SRC_URI:append = " \
 	file://0037-ucm-imx8m-plus-dts-Add-dual-sensors-device-tree.patch \
 	file://0038-ucm-imx8m-plus-dts-Add-dual-sensors-device-tree.patch \
 	file://0039-ucm-imx8m-plus-defconfig-Enable-AR0234-and-AR0521.patch \
+	file://0040-imx8-isi-cap-Fix-the-5.15.5-stream-capture-color-dis.patch \
 	file://defconfig \
 "

@@ -1,0 +1,47 @@
+From 30407cb46bc054a2d7164e569d6b21fd65389f40 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Sat, 30 Jul 2022 09:01:30 +0300
+Subject: [PATCH] imx8-isi-cap: Fix the 5.15.5 stream capture color distortion
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ drivers/staging/media/imx/imx8-isi-cap.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/staging/media/imx/imx8-isi-cap.c b/drivers/staging/media/imx/imx8-isi-cap.c
+index 3193f7f8dec3..d18ba4f5b09a 100644
+--- a/drivers/staging/media/imx/imx8-isi-cap.c
++++ b/drivers/staging/media/imx/imx8-isi-cap.c
+@@ -41,14 +41,6 @@ static int mxc_isi_cap_streamoff(struct file *file, void *priv,
+  */
+ struct mxc_isi_fmt mxc_isi_src_formats[] = {
+ 	{
+-		.name		= "UYVY-16",
+-		.fourcc		= V4L2_PIX_FMT_UYVY,
+-		.depth		= { 16 },
+-		.color		= MXC_ISI_OUT_FMT_YUV422_1P8P,
+-		.memplanes	= 1,
+-		.colplanes	= 1,
+-		.mbus_code	= MEDIA_BUS_FMT_UYVY8_2X8,
+-	}, {
+ 		.name		= "RGB32",
+ 		.fourcc		= V4L2_PIX_FMT_RGB32,
+ 		.depth		= { 32 },
+@@ -62,6 +54,14 @@ struct mxc_isi_fmt mxc_isi_src_formats[] = {
+ 		.memplanes	= 1,
+ 		.colplanes	= 1,
+ 		.align		= 2,
++	}, {
++		.name		= "UYVY-16",
++		.fourcc		= V4L2_PIX_FMT_UYVY,
++		.depth		= { 16 },
++		.color		= MXC_ISI_OUT_FMT_YUV422_1P8P,
++		.memplanes	= 1,
++		.colplanes	= 1,
++		.mbus_code	= MEDIA_BUS_FMT_UYVY8_2X8,
+ 	}
+ };
+ 
+-- 
+2.17.1
+
