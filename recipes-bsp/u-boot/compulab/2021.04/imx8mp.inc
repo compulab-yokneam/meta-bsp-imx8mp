@@ -35,6 +35,7 @@ SRC_URI:append = " \
 	file://0033-spi-Add-w25128dw-configuration-string.patch \
 	file://0034-som-imx8m-plus-dts-Fix-the-flexspi-flash0-name.patch \
 	file://0035-compulab-imx8m-plus-defconfig-Enable-CONFIG_NXP_FSPI.patch \
+	file://0036-compulab-imx8mp-ddr-Fix-the-0xff060018-vendore-name.patch \
 	file://0037-compulab-imx8mp-dts-Increase-the-temperature-thresho.patch \
 	file://0038-compulab-imx8m-plus-Update-bootlist-with-usb.patch \
 	file://0039-imx8m-plus-Move-phy-reset-gpio-to-device-tree.patch \
