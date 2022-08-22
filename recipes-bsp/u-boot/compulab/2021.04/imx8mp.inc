@@ -60,6 +60,18 @@ SRC_URI:append = " \
 	file://0058-iot-gate-imx8plus-fix-temperature-limits.patch \
 	file://0059-imx8mp-spl-Remove-the-management-gpio-usage.patch \
 	file://0060-iot-gate-imx8plus-eeprom-Read-mac-from-the-dev_id-of.patch \
+	file://0061-imx8mp-ddr-Fix-memory-unit-print-size.patch \
+	file://0062-imx8mp-ddr-Issue-reset-from-the-main-function-only.patch \
+	file://0063-imx8mp-ddr-Pass-the-dram-info-from-SPL-to-U-Boot.patch \
+	file://0064-eeprom-Add-eeprom-read-write-functions-for-eeprom-me.patch \
+	file://0065-imx8mp-board-Add-ddr-command.patch \
+	file://0066-imx8mp-ddr-Refactoring-the-ddr-discovery-logic.patch \
+	file://0067-compulab-imx8m-plus-Reduce-the-SPL-bss-and-stack-siz.patch \
+	file://0068-imx8mp-defconfig-Disable-SPL_FIT_GENERATOR.patch \
+	file://0069-imx8mp-ddr-Add-2G-sufix-to-timing-parameters.patch \
+	file://0070-imx8mp-ddr-Add-Nanya-2G-support.patch \
+	file://0071-imx8mp-ddr-Make-the-subind-equal-to-dram-size-in-Gb.patch \
+	file://0072-imx8mp-ddr-Add-Samsung-4G-1G-support.patch \
 "
 
 SRC_URI:append:ucm-imx8m-plus = " \
