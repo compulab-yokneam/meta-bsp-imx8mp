@@ -2,8 +2,8 @@
 
 Supported machines:
 
-* `ucm-imxi8-plus`
-* `som-imxi8-plus`
+* `ucm-imx8-plus`
+* `som-imx8-plus`
 
 Define a `MACHINE` environment variable for the target product:
 
@@ -17,7 +17,7 @@ Define the following environment variables:
 |Description|Command Line|
 |---|---|
 |NXP release name|export NXP_RELEASE=lf-5.10.72-2.2.0|
-|CompuLab branch name|export CPL_BRANCH=hardknott|
+|CompuLab branch name|export CPL_BRANCH=hardknott-5.10.72-2.2.0|
 
 ## Prerequisites
 It is up to developer to setup arm64 build environment:
