@@ -38,6 +38,8 @@ setup_dirs() {
     mkdir -p ${NXP_PLATFORM}/{sources,results}
     export SRC_ROOT=$(readlink -f ${NXP_PLATFORM}/sources)
     export RESULTS=$(readlink -f ${NXP_PLATFORM}/results)
+    export KERNEL_BUILD=${RESULTS}/kernel/build
+    export KERNEL_INSTALL=${RESULTS}/kernel/install
     cd ${SRC_ROOT}
 }
 
@@ -120,6 +122,71 @@ get_nxp_bootloader() {
 
 }
 
+_KERNEL_BUILD=${RESULTS}/kernel/build
+_KERNEL_INSTALL=${RESULTS}/kernel/install
+
+_nxp_kernel_pre() {
+    mkdir -p ${KERNEL_BUILD} ${KERNEL_INSTALL}
+}
+
+_nxp_kernel_add() {
+
+    KERNEL_RELEASE=$(awk ''1 ${KERNEL_BUILD}/include/config/kernel.release)
+
+    export INSTALL_MOD_PATH=${KERNEL_INSTALL}
+    mkdir -p ${KERNEL_INSTALL}/lib/modules
+    mkdir -p ${KERNEL_INSTALL}/boot
+    make -C ${NXP_KERNEL} modules_install O=${KERNEL_BUILD}
+
+    # Copy linux images' files
+    for _file in ${KERNEL_BUILD}/arch/arm64/boot/Image*;do
+        [[ -f ${_file} ]] && cp -v ${_file} ${KERNEL_INSTALL}/boot/
+    done
+
+    # Copy dtbs' files
+    for _file in ${KERNEL_BUILD}/arch/arm64/boot/dts/compulab/*.dtb;do
+        [[ -f ${_file} ]] && cp -v ${_file} ${KERNEL_INSTALL}/boot/
+    done
+
+    for _file in build source;do
+        _file=${KERNEL_INSTALL}/lib/modules/${KERNEL_RELEASE}/${_file}
+        [[ -e ${_file} ]] && unlink ${_file}
+    done
+
+}
+
+_nxp_kernel_tar() {
+
+    time_stamp=$(date +%Y_%m_%d-%H_%M_%S)
+    KERNEL_RELEASE=$(awk ''1 ${KERNEL_BUILD}/include/config/kernel.release)
+    export KERNEL_IMAGE_TAR=${RESULTS}/linux-image-${KERNEL_RELEASE}-${time_stamp}.tar.bz2
+    fakeroot tar -C ${KERNEL_INSTALL} -cjvf ${KERNEL_IMAGE_TAR} .
+
+}
+
+_nxp_kernel_tar_stat() {
+    export KERNEL_IMAGE_TAR=$(ls -tr ${RESULTS}/*${KERNEL_RELEASE}* | awk '{ f=$0 } END { print f }')
+}
+
+get_nxp_kernel_tar() {
+
+    [[ ! -f ${KERNEL_INSTALL}/boot/Image ]] || _nxp_kernel_tar
+
+}
+
+get_nxp_kernel() {
+
+    _nxp_kernel_pre
+
+    NXP_SOURCE=${NXP_KERNEL} NXP_BRANCH=${NXP_KERNEL_BRANCH} CPL_PATCH=${CPL_KERNEL_PATCH} _get_nxp_source
+
+    export ARCH=arm64
+    make -j 16 -C ${NXP_KERNEL} O=${KERNEL_BUILD} ${MACHINE}_defconfig
+    make -j 16 -C ${NXP_KERNEL} O=${KERNEL_BUILD}
+
+    _nxp_kernel_add
+}
+
 clean_all() {
     clean_nxp_atf
     clean_nxp_optee
@@ -163,6 +230,14 @@ flist='get_compatible_machine
     clean_all
     exit'
 
+kernel_flist='get_compatible_machine
+    get_compulab_metalayer
+    get_nxp_kernel
+    get_nxp_kernel_tar
+    exit'
+
+[[ -n ${KERNEL} ]] && flist=${kernel_flist}
+
 usage () {
 local index=0
 cat << eof
@@ -184,16 +259,38 @@ alias ${index}=${_f}
 ((index++))
 done
 
-status() {
-local status=""
+uboot_status() {
+local status="Bootloader build status: "
 local bins="bl31.bin tee.bin ${MACHINE}-flash.bin ${MACHINE}-uui.img"
 for _b in ${bins};do
 status+=${_b}
-[[ -f ${RESULTS}/${_b} ]] && status+="[x]; " || status+="[-]; " 
+[[ -f ${RESULTS}/${_b} ]] && status+="[x]; " || status+="[-]; "
 done
 cat << eof
 ${status}
 eof
+}
+
+kernel_status() {
+
+[[ -f ${KERNEL_BUILD}/include/config/kernel.release ]] && KERNEL_RELEASE=$(awk ''1 ${KERNEL_BUILD}/include/config/kernel.release)
+export KERNEL_RELEASE=${KERNEL_RELEASE:-"?"}
+
+_nxp_kernel_tar_stat
+
+local status="Kernel [${KERNEL_RELEASE}] build status: "
+local bins="${KERNEL_INSTALL}/boot/Image ${KERNEL_IMAGE_TAR}"
+for _b in ${bins};do
+status+=$(basename ${_b})
+[[ -f ${_b} ]] && status+="[x]; " || status+="[-]; "
+done
+cat << eof
+${status}
+eof
+}
+
+status() {
+[[ -n ${KERNEL} ]] && kernel_status || uboot_status
 }
 
 get_aarch64_cross
