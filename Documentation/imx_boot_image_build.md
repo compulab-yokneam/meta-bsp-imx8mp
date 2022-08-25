@@ -4,7 +4,7 @@
 
 |Description|Command Line|
 |---|---|
-|CompuLab branch name|export CPL_BRANCH=honister|
+|CompuLab branch name|export CPL_BRANCH=kirkstone|
 
 * Create a folder to organize the files:
 <pre>
