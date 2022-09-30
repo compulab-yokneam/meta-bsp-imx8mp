@@ -21,5 +21,8 @@ for _d in ${T}/*;do
 	for _f in ${_d}/*;do
 		cat ${_f} >> conf/${_file}
 	done;
+        for _f in ${_d}/*.${MACHINE};do
+                cat ${_f} >> conf/${_file}
+        done;
 done
 fi
