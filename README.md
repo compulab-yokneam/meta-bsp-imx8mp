@@ -59,5 +59,5 @@ cd tmp/deploy/images/${MACHINE}
 
 * Deploy the image:
 ```
-sudo bmaptool copy imx-image-multimedia-ucm-imx8m-plus.wic.bz2 --bmap imx-image-multimedia-ucm-imx8m-plus.wic.bmap /dev/sdX
+sudo bmaptool copy imx-image-multimedia-${MACHINE}.wic.bz2 --bmap imx-image-multimedia-${MACHINE}.wic.bmap /dev/sdX
 ```
