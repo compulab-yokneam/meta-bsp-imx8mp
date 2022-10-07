@@ -1,0 +1,26 @@
+From 7d89ef24ad69fd175eb7bb9f669eae9bcbf2d741 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Fri, 7 Oct 2022 23:35:39 +0300
+Subject: [PATCH] compulab: imx8mp: dts: Add a backlight property to the
+ mipi_dsi node
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+index 7b41314a1619..e40e01074010 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+@@ -1397,6 +1397,7 @@
+ 
+ &mipi_dsi {
+ 	status = "okay";
++	backlight = <&dsi_backlight>;
+ 	panel: panel@0 {
+ 		compatible = "startek,kd050hdfia020";
+ 		reg = <0>;
+-- 
+2.17.1
+

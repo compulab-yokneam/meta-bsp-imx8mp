@@ -40,5 +40,7 @@ SRC_URI:append = " \
 	file://0038-ucm-imx8m-plus-dts-Add-dual-sensors-device-tree.patch \
 	file://0039-ucm-imx8m-plus-defconfig-Enable-AR0234-and-AR0521.patch \
 	file://0040-imx8-isi-cap-Fix-the-5.15.5-stream-capture-color-dis.patch \
+	file://0041-Enable-USB_NET_AX8817X-in-the-kernel.patch \
+	file://0042-compulab-imx8mp-dts-Add-a-backlight-property-to-the-.patch \
 	file://defconfig \
 "
