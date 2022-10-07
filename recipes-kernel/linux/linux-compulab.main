@@ -54,6 +54,13 @@ do_compile:prepend() {
     fi
 }
 
+do_install:append() {
+    oe_runmake headers_install INSTALL_HDR_PATH=${D}${exec_prefix}/src/linux-${KERNEL_VERSION} ARCH=$ARCH
+}
+
+PACKAGES =+ "linux-compulab-headers"
+FILES:linux-compulab-headers = "${exec_prefix}/src/linux*"
+
 PACKAGESPLITFUNCS:remove = "split_kernel_module_packages"
 
 FILES:${KERNEL_PACKAGE_NAME}-modules = "/lib/modules/ /etc/"
