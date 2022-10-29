@@ -45,10 +45,27 @@ repo sync
 ```
 source compulab-setup-env -b build-${MACHINE}
 ```
+
+* Enable the d2d4 dram setting's subset:
+```
+sed -i '$ a DRAM_CONF = "d2d4"' ${BUILDDIR}/conf/local.conf
+```
+
+* Enable the d1d8 dram setting's subset:
+```
+sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
+```
+
 * Building the image:
 ```
 bitbake -k imx-image-multimedia
 ```
+
+* Building the bootloader file only:
+
+| build command | binary file location |
+|---|---|
+|```bitbake -k imx-boot```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/imx-boot-tagged```|
 
 ## Deployment
 ### Create a bootable sd card
