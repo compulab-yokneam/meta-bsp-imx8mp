@@ -72,6 +72,13 @@ SRC_URI:append = " \
 	file://0070-imx8mp-ddr-Add-Nanya-2G-support.patch \
 	file://0071-imx8mp-ddr-Make-the-subind-equal-to-dram-size-in-Gb.patch \
 	file://0072-imx8mp-ddr-Add-Samsung-4G-1G-support.patch \
+	file://0073-imx8mp-ddr-Add-Samsung-1G-4000Mhz-support.patch \
+	file://0074-ucm-imx8m-plus-usb_hub_rest-Add-iot-gate-imx8plus-su.patch \
+	file://0075-compulab-imx8mp-Add-a-dram_subset-env-variable.patch \
+	file://0076-imx8mp-board-Add-ddr-command-version.patch \
+	file://0077-imx8mp-config-Introduced-D1D8-D2D4-configs.patch \
+	file://0078-mach-imx-Suppress-TMU-temperature-message.patch \
+	file://0079-iot-gate-imx8plus-config-Enable-TMU_IMX.patch \
 "
 
 SRC_URI:append:ucm-imx8m-plus = " \
@@ -84,4 +91,8 @@ SRC_URI:append:som-imx8m-plus = " \
 
 SRC_URI:append:iot-gate-imx8plus = " \
 	file://iot-gate-imx8plus_defconfig \
+"
+
+SRC_URI:append = " \
+        ${@bb.utils.contains('DRAM_CONF', 'd2d4', 'file://d2d4.cfg', 'file://d1d8.cfg', d)} \
 "

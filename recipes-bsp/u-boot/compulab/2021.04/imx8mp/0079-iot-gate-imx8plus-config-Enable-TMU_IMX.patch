@@ -1,0 +1,25 @@
+From 46130b75c376797de2caa948334186cf81bd88a8 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Wed, 26 Oct 2022 16:40:42 +0300
+Subject: [PATCH] iot-gate-imx8plus: config: Enable TMU_IMX
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ configs/iot-gate-imx8plus_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/configs/iot-gate-imx8plus_defconfig b/configs/iot-gate-imx8plus_defconfig
+index 219e846ee6..37cad07233 100644
+--- a/configs/iot-gate-imx8plus_defconfig
++++ b/configs/iot-gate-imx8plus_defconfig
+@@ -126,6 +126,7 @@ CONFIG_NXP_FSPI=y
+ CONFIG_SYSRESET=y
+ CONFIG_SYSRESET_PSCI=y
+ CONFIG_DM_THERMAL=y
++CONFIG_IMX_TMU=y
+ CONFIG_USB=y
+ CONFIG_DM_USB=y
+ CONFIG_USB_XHCI_HCD=y
+-- 
+2.17.1
+
