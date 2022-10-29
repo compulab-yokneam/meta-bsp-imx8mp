@@ -30,3 +30,5 @@ export AARCH64_CROSS_URL="https://developer.arm.com/-/media/Files/downloads/gnu-
 declare -A uarts=([1]="CFG_UART_BASE=UART1_BASE IMX_BOOT_UART_BASE=0x30860000" [2]="CFG_UART_BASE=UART2_BASE IMX_BOOT_UART_BASE=0x30890000")
 export CPL_DEBUG_UART=${CPL_DEBUG_UART:-2}
 export ${uarts[${CPL_DEBUG_UART}]}
+
+export COMPULAB_VERSION="-compulab-1.2"
