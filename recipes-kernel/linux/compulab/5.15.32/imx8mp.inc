@@ -44,5 +44,7 @@ SRC_URI:append = " \
 	file://0042-compulab-imx8mp-dts-Add-a-backlight-property-to-the-.patch \
 	file://0043-compulab-em9190-Fix-modem-driver-fo-5.15.32.patch \
 	file://0044-ucm-imx8m-plus-defconfig-Enable-EM9190-as-module.patch \
+	file://0045-compulab-Add-eCAM130-camera-support.patch \
+	file://0046-compulab-imx8m-plus-mipi_csi-Change-clock-parents-ra.patch \
 	file://defconfig \
 "
