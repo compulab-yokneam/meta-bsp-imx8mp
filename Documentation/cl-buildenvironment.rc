@@ -252,6 +252,10 @@ clean_all() {
     mkdir -p ${RESULTS}
 }
 
+get_compulab_bootloader() {
+    build_all
+}
+
 build_all() {
     get_compulab_metalayer
     get_nxp_firmware
@@ -259,6 +263,10 @@ build_all() {
     get_nxp_optee
     get_nxp_bootloader
     export SRC_UPDATE=0
+}
+
+get_compulab_bootloader() {
+    build_all
 }
 
 build_uui() {
@@ -279,6 +287,12 @@ mv uui/${uui_plat}/uui.img ${RESULTS}/${MACHINE}-uui.img
 
 flist='get_compatible_machine
     get_dram_config
+    get_compulab_bootloader
+    clean_all
+    exit'
+
+devel_flist='get_compatible_machine
+    get_dram_config
     get_compulab_metalayer
     get_nxp_firmware
     get_nxp_atf
@@ -288,6 +302,8 @@ flist='get_compatible_machine
     build_uui
     clean_all
     exit'
+
+[[ -n ${DEVEL_MODE} ]] && flist=${devel_flist}
 
 kernel_flist='get_compatible_machine
     get_compulab_metalayer
@@ -320,7 +336,10 @@ done
 
 uboot_status() {
 local status="Bootloader build status: "
-local bins="bl31.bin tee.bin ${MACHINE}-flash.bin ${MACHINE}-uui.img"
+local bins=""
+[[ -n ${DEVEL_MODE} ]] && bins+="bl31.bin tee.bin "
+bins+="${MACHINE}-flash.bin "
+[[ -n ${DEVEL_MODE} ]] && bins+="${MACHINE}-uui.img "
 for _b in ${bins};do
 status+=${_b}
 [[ -f ${RESULTS}/${_b} ]] && status+="[x]; " || status+="[-]; "
