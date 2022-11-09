@@ -27,5 +27,11 @@ SRC_URI:append = " \
 	file://0025-compulab-imx8mp-dts-Enable-uart1-if-used-as-a-consol.patch \
 	file://0026-compulab-imx8m-plus-Add-iot-gate-imx8plus-board-supp.patch \
 	file://0027-compulab-iot-gate-imx8plus-Enable-CONFIG_INPUT_EVDEV.patch \
+	file://0028-compulab-iot-gate-imx8plus-update-defconfig.patch \
+	file://0029-compulab-iot-gate-imx8plus-fix-temperature-limits.patch \
+	file://0030-compulab-iot-gate-imx8plus-change-rtc-devices-enumer.patch \
+	file://0031-net-phy-realtek-RTL8211E-make-use-of-realtek-clkout-.patch \
+	file://0032-compulab-iot-gate-imx8plus-enable-flexcan1.patch \
+	file://0033-compulab-iot-gate-imx8plus-sb-iotgimx8plus-support-r.patch \
 	file://defconfig \
 "

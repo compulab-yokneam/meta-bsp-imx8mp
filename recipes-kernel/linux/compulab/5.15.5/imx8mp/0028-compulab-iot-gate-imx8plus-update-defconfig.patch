@@ -1,0 +1,39 @@
+From c5508ce3c2a577b34c0530466b05b89b881f6cc9 Mon Sep 17 00:00:00 2001
+From: Ilya Ledvich <ilya@compulab.co.il>
+Date: Mon, 11 Jul 2022 17:12:14 +0300
+Subject: [PATCH] compulab: iot-gate-imx8plus: update defconfig
+
+Enable built-in:
+ - CONFIG_EROFS_FS
+
+Enable as module:
+ - CONFIG_VLAN_8021Q
+
+Signed-off-by: Ilya Ledvich <ilya@compulab.co.il>
+---
+ arch/arm64/configs/iot-gate-imx8plus_defconfig | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm64/configs/iot-gate-imx8plus_defconfig b/arch/arm64/configs/iot-gate-imx8plus_defconfig
+index 5dce99ec7bcc..593d9394575d 100644
+--- a/arch/arm64/configs/iot-gate-imx8plus_defconfig
++++ b/arch/arm64/configs/iot-gate-imx8plus_defconfig
+@@ -309,6 +309,7 @@ CONFIG_BRIDGE_VLAN_FILTERING=y
+ CONFIG_BRIDGE_MRP=y
+ CONFIG_BRIDGE_CFM=y
+ CONFIG_NET_DSA=m
++CONFIG_VLAN_8021Q=m
+ CONFIG_VLAN_8021Q_GVRP=y
+ CONFIG_VLAN_8021Q_MVRP=y
+ CONFIG_LLC2=m
+@@ -1289,6 +1290,7 @@ CONFIG_JFFS2_FS=y
+ CONFIG_UBIFS_FS=y
+ CONFIG_SQUASHFS=y
+ CONFIG_SQUASHFS_XZ=y
++CONFIG_EROFS_FS=y
+ CONFIG_NFS_FS=y
+ CONFIG_NFS_V4=y
+ CONFIG_NFS_V4_1=y
+-- 
+2.20.1
+
