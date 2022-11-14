@@ -61,6 +61,7 @@ setup_dirs() {
     export RESULTS=$(readlink -f ${NXP_PLATFORM}/results)
     export KERNEL_BUILD=${RESULTS}/kernel/build
     export KERNEL_INSTALL=${RESULTS}/kernel/install
+    export LOCAL_PDIR=${SRC_ROOT}/p
     cd ${SRC_ROOT}
 }
 
@@ -92,6 +93,7 @@ _get_nxp_source() {
     git -C ${NXP_SOURCE} checkout ${CPL_BRANCH} 2>/dev/null || {
         git -C ${NXP_SOURCE} checkout ${NXP_BRANCH} -b ${CPL_BRANCH} 2>/dev/null
         [[ -d ${LAYER_DIR}/${CPL_PATCH} ]] && git -C ${NXP_SOURCE} am ${LAYER_DIR}/${CPL_PATCH}/*.patch
+        [[ -d ${LOCAL_PDIR}/${NXP_SOURCE} ]] && git -C ${NXP_SOURCE} am ${LOCAL_PDIR}/${NXP_SOURCE}/*.patch
     }
 }
 
