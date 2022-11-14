@@ -79,6 +79,7 @@ SRC_URI:append = " \
 	file://0077-imx8mp-config-Introduced-D1D8-D2D4-configs.patch \
 	file://0078-mach-imx-Suppress-TMU-temperature-message.patch \
 	file://0079-iot-gate-imx8plus-config-Enable-TMU_IMX.patch \
+	file://0080-mx8mp-ddr-Fix-Samsung-4G-timing-issue.patch \
 "
 
 SRC_URI:append:ucm-imx8m-plus = " \
