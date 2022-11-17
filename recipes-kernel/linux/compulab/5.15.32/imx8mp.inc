@@ -46,5 +46,6 @@ SRC_URI:append = " \
 	file://0044-ucm-imx8m-plus-defconfig-Enable-EM9190-as-module.patch \
 	file://0045-compulab-Add-eCAM130-camera-support.patch \
 	file://0046-compulab-imx8m-plus-mipi_csi-Change-clock-parents-ra.patch \
+	file://0047-ucm-imx8m-plus-dts-Add-headless-device-tree.patch \
 	file://defconfig \
 "
