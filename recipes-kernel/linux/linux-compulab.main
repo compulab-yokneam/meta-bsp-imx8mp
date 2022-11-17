@@ -54,6 +54,10 @@ do_compile:prepend() {
     fi
 }
 
+do_kernel_localversion:prepend() {
+    touch ${WORKDIR}/defconfig
+}
+
 PACKAGESPLITFUNCS:remove = "split_kernel_module_packages"
 
 FILES:${KERNEL_PACKAGE_NAME}-modules = "/lib/modules/ /etc/"
