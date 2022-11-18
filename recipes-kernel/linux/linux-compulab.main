@@ -51,6 +51,7 @@ do_configure:append() {
 do_merge_config () {
     configs=arch/arm64/configs
     cp ${S}/${configs}/${MACHINE}_defconfig ${S}/${configs}/compulab_defconfig
+    echo "# CONFIG_MACHINE_STUB is not set " > ${WORKDIR}/CONFIG_MACHINE_STUB.cfg
     ${S}/scripts/kconfig/merge_config.sh  -O ${S}/${configs}/ -m ${S}/${configs}/${MACHINE}_defconfig ${WORKDIR}/*.cfg
     mv ${S}/${configs}/.config ${S}/${configs}/${MACHINE}_defconfig
     oe_runmake ${MACHINE}_defconfig
