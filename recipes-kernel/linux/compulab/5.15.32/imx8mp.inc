@@ -47,5 +47,11 @@ SRC_URI:append = " \
 	file://0045-compulab-Add-eCAM130-camera-support.patch \
 	file://0046-compulab-imx8m-plus-mipi_csi-Change-clock-parents-ra.patch \
 	file://0047-ucm-imx8m-plus-dts-Add-headless-device-tree.patch \
+	file://0048-som-imx8m-plus-dts-Add-headless-device-tree.patch \
+	file://0049-som-imx8m-plus-dts-Add-all-available-device-trees.patch \
 	file://defconfig \
+"
+
+SRC_URI:append = " \
+	file://expert.cfg \
 "

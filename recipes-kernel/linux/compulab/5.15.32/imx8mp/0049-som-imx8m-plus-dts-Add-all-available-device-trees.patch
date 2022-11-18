@@ -1,0 +1,30 @@
+From 23ce6a10568982ef3a7834d76496c3a18710055f Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Thu, 17 Nov 2022 13:57:47 +0200
+Subject: [PATCH] som-imx8m-plus: dts: Add all available device trees
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/Makefile | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/compulab/Makefile b/arch/arm64/boot/dts/compulab/Makefile
+index 0a9ad1b96bf4..3eed1e9d02d1 100644
+--- a/arch/arm64/boot/dts/compulab/Makefile
++++ b/arch/arm64/boot/dts/compulab/Makefile
+@@ -24,6 +24,12 @@ dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus.dtb
+ dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus_mipi-csi1.dtb
+ dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus_mipi-csi2.dtb
+ dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus-headless.dtb
++dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus-hdmi.dtb
++dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus-lvds.dtb
++dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus-mipi.dtb
++dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus-rpmsg.dtb
++dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus-thermal.dtb
++dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus-usbdev.dtb
+ 
+ always-y       := $(dtb-y)
+ subdir-y       := $(dts-dirs)
+-- 
+2.17.1
+

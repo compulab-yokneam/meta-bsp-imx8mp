@@ -1,0 +1,70 @@
+From b0555989f5a7e028267097e13c184b73f19bb260 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Thu, 17 Nov 2022 13:56:10 +0200
+Subject: [PATCH] som-imx8m-plus: dts: Add headless device tree
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/Makefile         |  1 +
+ .../dts/compulab/som-imx8m-plus-headless.dts  | 37 +++++++++++++++++++
+ 2 files changed, 38 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/compulab/som-imx8m-plus-headless.dts
+
+diff --git a/arch/arm64/boot/dts/compulab/Makefile b/arch/arm64/boot/dts/compulab/Makefile
+index 286d45534a46..0a9ad1b96bf4 100644
+--- a/arch/arm64/boot/dts/compulab/Makefile
++++ b/arch/arm64/boot/dts/compulab/Makefile
+@@ -23,6 +23,7 @@ dtb-$(CONFIG_ARCH_MXC) += iot-gate-imx8plus.dtb
+ dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus.dtb
+ dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus_mipi-csi1.dtb
+ dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus_mipi-csi2.dtb
++dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus-headless.dtb
+ 
+ always-y       := $(dtb-y)
+ subdir-y       := $(dts-dirs)
+diff --git a/arch/arm64/boot/dts/compulab/som-imx8m-plus-headless.dts b/arch/arm64/boot/dts/compulab/som-imx8m-plus-headless.dts
+new file mode 100644
+index 000000000000..ecde8bf2329e
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/som-imx8m-plus-headless.dts
+@@ -0,0 +1,37 @@
++/*
++ * Copyright 2021 CompuLab
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/dts-v1/;
++
++#include "som-imx8m-plus.dts"
++
++/ {
++	model = "CompuLab SOM-iMX8M-Plus (headless)";
++	compatible = "compulab,som-imx8m-plus", "fsl,imx8mp";
++};
++
++/* mipi dsi */
++&lcdif1 {
++	status = "disabled";
++};
++
++/* lvds */
++&lcdif2 {
++	status = "disabled";
++};
++
++/* hdmi */
++&lcdif3 {
++	status = "disabled";
++};
+-- 
+2.17.1
+
