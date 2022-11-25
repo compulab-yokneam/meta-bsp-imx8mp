@@ -49,6 +49,8 @@ SRC_URI:append = " \
 	file://0047-ucm-imx8m-plus-dts-Add-headless-device-tree.patch \
 	file://0048-som-imx8m-plus-dts-Add-headless-device-tree.patch \
 	file://0049-som-imx8m-plus-dts-Add-all-available-device-trees.patch \
+	file://0050-compulab-imx8m-plus-Move-usbdev-to-a-separate-dtsi-f.patch \
+	file://0051-iot-gate-imx8plus-dts-Add-usbdev-device-tree.patch \
 	file://defconfig \
 "
 
