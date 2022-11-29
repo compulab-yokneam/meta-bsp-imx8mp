@@ -1,8 +1,3 @@
-# Disclaimer
-
-| !IMPORTANT! | This is a development branch, that is not relelased by CompuLab officially yet|
-|---|---|
-
 # Configuring the build
 
 ## Setup Yocto environment
@@ -15,8 +10,6 @@ mkdir compulab-nxp-bsp && cd compulab-nxp-bsp
 
 | Machine | Command Line |
 |---|---|
-|ucm-imx8m-plus|```export MACHINE=ucm-imx8m-plus```|
-|som-imx8m-plus|```export MACHINE=som-imx8m-plus```|
 |iot-gate-imx8plus|```export MACHINE=iot-gate-imx8plus```|
 |sbc-iot-imx8plus|```export MACHINE=iot-gate-imx8plus```|
 
