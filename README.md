@@ -23,7 +23,7 @@ repo init -u https://source.codeaurora.org/external/imx/imx-manifest -b imx-linu
 * CompuLab
 ```
 mkdir -p .repo/local_manifests
-wget --directory-prefix .repo/local_manifests https://github.com/compulab-yokneam/meta-bsp-imx8mp/blob/iot-gate-imx8plus-r1.0/scripts/meta-bsp-imx8mp.xml
+wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/iot-gate-imx8plus-r1.0/scripts/meta-bsp-imx8mp.xml
 
 ```
 
