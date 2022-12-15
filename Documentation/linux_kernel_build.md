@@ -3,12 +3,14 @@
 Supported machines:
 
 * `iot-gate-imx8plus`
+* `sbc-iot-imx8plus`
 
 Define a `MACHINE` environment variable for the target product:
 
 |Machine|Command Line|
 |---|---|
 |iot-gate-imx8plus|export MACHINE=iot-gate-imx8plus
+|sbc-iot-imx8plus|export MACHINE=iot-gate-imx8plus
 
 Define the following environment variables:
 
