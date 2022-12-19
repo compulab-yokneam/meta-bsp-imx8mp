@@ -1,0 +1,107 @@
+From e3ce0055e1a36619126c63045baf98a0878629fb Mon Sep 17 00:00:00 2001
+From: Ilya Ledvich <ilya@compulab.co.il>
+Date: Fri, 16 Dec 2022 12:25:28 +0200
+Subject: [PATCH] iot-gate-imx8plus: detect expansion board in M.2 slot and
+ choose a proper dtb
+
+Add support for detection expansion board type installed in M.2 exanpion slot and
+choose a proper device tree blob.
+
+Signed-off-by: Ilya Ledvich <ilya@compulab.co.il>
+---
+ .../iot-gate-imx8plus/iot-gate-imx8plus.c     | 82 +++++++++++++++++++
+ 1 file changed, 82 insertions(+)
+
+diff --git a/board/compulab/iot-gate-imx8plus/iot-gate-imx8plus.c b/board/compulab/iot-gate-imx8plus/iot-gate-imx8plus.c
+index 2ed6c99af1..43fbc6e2c6 100644
+--- a/board/compulab/iot-gate-imx8plus/iot-gate-imx8plus.c
++++ b/board/compulab/iot-gate-imx8plus/iot-gate-imx8plus.c
+@@ -39,3 +39,85 @@ void imx_get_mac_from_fuse(int dev_id, unsigned char *mac)
+ 	return;
+ }
+ #endif
++
++/* IOT-GATE-IMX8PLUS M.2 extension boards ID */
++typedef enum {
++	IOTG_IMX8PLUS_EXT_FIRST,
++	IOTG_IMX8PLUS_EXT_M2TPM = IOTG_IMX8PLUS_EXT_FIRST, /* TPM module */
++	IOTG_IMX8PLUS_EXT_EMPTY,
++	IOTG_IMX8PLUS_EXT_LAST = IOTG_IMX8PLUS_EXT_EMPTY,
++	IOTG_IMX8PLUS_EXT_NUM,
++} iotg_imx8plus_ext_type;
++
++static char *iotg_imx8plus_ext_type_name[IOTG_IMX8PLUS_EXT_LAST] = {
++	[IOTG_IMX8PLUS_EXT_M2TPM] = "M2TPM",
++};
++
++/* Device tree names array */
++static char *iotg_imx8plus_dtb[IOTG_IMX8PLUS_EXT_NUM] = {
++	[IOTG_IMX8PLUS_EXT_M2TPM] = "iot-gate-imx8plus-m2tpm.dtb",
++	[IOTG_IMX8PLUS_EXT_EMPTY] = "iot-gate-imx8plus.dtb",
++};
++
++/* I2C bus numbers array */
++static int iotg_imx8plus_ext_i2c_bus[IOTG_IMX8PLUS_EXT_LAST] = {
++	[IOTG_IMX8PLUS_EXT_M2TPM] = 4,
++};
++
++/* I2C device addresses array */
++static uint iotg_imx8plus_ext_i2c_addr[IOTG_IMX8PLUS_EXT_LAST] = {
++	[IOTG_IMX8PLUS_EXT_M2TPM] = 0x54,
++};
++
++/* Extension board type detected */
++static int iotg_imx8plus_ext_id = IOTG_IMX8PLUS_EXT_EMPTY;
++/*
++ * iotg_imx8plus_detect_ext() - extended board detection
++ * The detection is done according to the detected I2C devices.
++ */
++static void iotg_imx8plus_detect_ext(void)
++{
++	int ret;
++	struct udevice *i2c_bus, *i2c_dev;
++	int type;
++
++	for (type = IOTG_IMX8PLUS_EXT_FIRST; type < IOTG_IMX8PLUS_EXT_LAST; type++) {
++		debug("%s: type_idx = %d, probing I2C bus %d\n", __func__, type, iotg_imx8plus_ext_i2c_bus[type]);
++		ret = uclass_get_device_by_seq(UCLASS_I2C, iotg_imx8plus_ext_i2c_bus[type], &i2c_bus);
++		if (ret) {
++			debug("%s: Failed probing I2C bus %d\n", __func__, iotg_imx8plus_ext_i2c_bus[type]);
++			continue;
++		}
++
++		debug("%s: type_idx = %d, probing I2C addr = %d\n", __func__, type, iotg_imx8plus_ext_i2c_addr[type]);
++		ret = dm_i2c_probe(i2c_bus, iotg_imx8plus_ext_i2c_addr[type], 0, &i2c_dev);
++		if (!ret) {
++			iotg_imx8plus_ext_id = type;
++			debug("%s: detected module type_idx = %d, type_name = %s\n", __func__, type,
++				iotg_imx8plus_ext_type_name[type]);
++			return;
++		}
++	}
++}
++
++#define IOTG_IMX8PLUS_ENV_FDT_FILE "fdtfile"
++/*
++ * iot_gate_imx8plus_select_dtb() - select the kernel device tree blob
++ * The device tree blob is selected according to the detected extended board.
++ */
++static void iotg_imx8plus_select_dtb(void)
++{
++	char *env_fdt_file = env_get(IOTG_IMX8PLUS_ENV_FDT_FILE);
++
++	debug("%s: set %s = %s\n", __func__, IOTG_IMX8PLUS_ENV_FDT_FILE,
++		iotg_imx8plus_dtb[iotg_imx8plus_ext_id]);
++	env_set(IOTG_IMX8PLUS_ENV_FDT_FILE,
++		iotg_imx8plus_dtb[iotg_imx8plus_ext_id]);
++}
++
++void board_vendor_late_init(void) {
++	/* Detect extension module in M.2 expantion connector */
++	iotg_imx8plus_detect_ext();
++	/* Apply an appropriate dtb */
++	iotg_imx8plus_select_dtb();
++}
+-- 
+2.20.1
+

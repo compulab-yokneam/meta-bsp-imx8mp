@@ -80,6 +80,10 @@ SRC_URI:append = " \
 	file://0078-mach-imx-Suppress-TMU-temperature-message.patch \
 	file://0079-iot-gate-imx8plus-config-Enable-TMU_IMX.patch \
 	file://0080-mx8mp-ddr-Fix-Samsung-4G-timing-issue.patch \
+	file://0081-compulab-imx8mp-board-introduce-board_vendor_late_in.patch \
+	file://0082-iot-gate-imx8plus-enable-i2c5-bus.patch \
+	file://0083-iot-gate-imx8plus-detect-expansion-board-in-M.2-slot.patch \
+	file://0084-iot-gate-imx8plus-fix-baseboard-EEPROM-i2c-bus-num-a.patch \
 "
 
 SRC_URI:append:ucm-imx8m-plus = " \

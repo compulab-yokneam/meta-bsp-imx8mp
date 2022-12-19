@@ -1,0 +1,42 @@
+From c454ec91e44f38505e3ba9a8b5b95dfb1386e026 Mon Sep 17 00:00:00 2001
+From: Ilya Ledvich <ilya@compulab.co.il>
+Date: Tue, 20 Dec 2022 11:09:48 +0200
+Subject: [PATCH] iot-gate-imx8plus: fix baseboard EEPROM i2c bus num and
+ address
+
+Signed-off-by: Ilya Ledvich <ilya@compulab.co.il>
+---
+ board/compulab/iot-gate-imx8plus/Kconfig | 2 +-
+ configs/iot-gate-imx8plus_defconfig      | 3 ++-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/board/compulab/iot-gate-imx8plus/Kconfig b/board/compulab/iot-gate-imx8plus/Kconfig
+index 34e20392b0..50afe4a723 100644
+--- a/board/compulab/iot-gate-imx8plus/Kconfig
++++ b/board/compulab/iot-gate-imx8plus/Kconfig
+@@ -24,7 +24,7 @@ config SYS_I2C_EEPROM_ADDR
+ 
+ config SYS_I2C_EEPROM_BUS_SB
+ 	hex "SB eeprom bus address"
+-	default 0x4
++	default 1
+ 
+ config SYS_I2C_EEPROM_ADDR_SB
+ 	hex "SB eeprom dev address"
+diff --git a/configs/iot-gate-imx8plus_defconfig b/configs/iot-gate-imx8plus_defconfig
+index 4ac8320dc6..b8f14d4038 100644
+--- a/configs/iot-gate-imx8plus_defconfig
++++ b/configs/iot-gate-imx8plus_defconfig
+@@ -14,7 +14,8 @@ CONFIG_SYS_I2C_MXC_I2C3=y
+ CONFIG_DM_GPIO=y
+ CONFIG_SPL_TEXT_BASE=0x920000
+ CONFIG_TARGET_IOT_GATE_IMX8PLUS=y
+-CONFIG_SYS_I2C_EEPROM_BUS_SB=0x1
++CONFIG_SYS_I2C_EEPROM_BUS_SB=1
++CONFIG_SYS_I2C_EEPROM_ADDR_SB=0x54
+ CONFIG_SPL_SERIAL_SUPPORT=y
+ CONFIG_SPL_DRIVERS_MISC_SUPPORT=y
+ CONFIG_SPL=y
+-- 
+2.20.1
+

@@ -1,0 +1,73 @@
+From 8c29a7ac81d6b9b366de54f32fef9a8cbf923770 Mon Sep 17 00:00:00 2001
+From: Ilya Ledvich <ilya@compulab.co.il>
+Date: Fri, 16 Dec 2022 12:17:03 +0200
+Subject: [PATCH] iot-gate-imx8plus: enable i2c5 bus
+
+Signed-off-by: Ilya Ledvich <ilya@compulab.co.il>
+---
+ arch/arm/dts/iot-gate-imx8plus-u-boot.dtsi | 20 ++++++++++++++++++++
+ arch/arm/dts/sb-iotgimx8plus.dtsi          | 10 ++++------
+ 2 files changed, 24 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm/dts/iot-gate-imx8plus-u-boot.dtsi b/arch/arm/dts/iot-gate-imx8plus-u-boot.dtsi
+index 5144e44eeb..31b51793a0 100644
+--- a/arch/arm/dts/iot-gate-imx8plus-u-boot.dtsi
++++ b/arch/arm/dts/iot-gate-imx8plus-u-boot.dtsi
+@@ -120,6 +120,10 @@
+ 	u-boot,dm-spl;
+ };
+ 
++&i2c5 {
++	u-boot,dm-spl;
++};
++
+ &pinctrl_i2c1 {
+ 	u-boot,dm-spl;
+ };
+@@ -136,6 +140,22 @@
+ 	u-boot,dm-spl;
+ };
+ 
++&pinctrl_i2c3 {
++	u-boot,dm-spl;
++};
++
++&pinctrl_i2c3_gpio {
++	u-boot,dm-spl;
++};
++
++&pinctrl_i2c5 {
++	u-boot,dm-spl;
++};
++
++&pinctrl_i2c5_gpio {
++	u-boot,dm-spl;
++};
++
+ &usdhc3 {
+ 	u-boot,dm-spl;
+ 	mmc-hs400-1_8v;
+diff --git a/arch/arm/dts/sb-iotgimx8plus.dtsi b/arch/arm/dts/sb-iotgimx8plus.dtsi
+index b813a22b14..83279e08cb 100644
+--- a/arch/arm/dts/sb-iotgimx8plus.dtsi
++++ b/arch/arm/dts/sb-iotgimx8plus.dtsi
+@@ -67,12 +67,10 @@
+ };
+ 
+ &i2c3 {
+-	clock-frequency = <100000>;
+-	pinctrl-names = "default", "gpio";
+-	pinctrl-0 = <&pinctrl_i2c3>;
+-	pinctrl-1 = <&pinctrl_i2c3_gpio>;
+-	scl-gpios = <&gpio5 18 GPIO_ACTIVE_HIGH>;
+-	sda-gpios = <&gpio5 19 GPIO_ACTIVE_HIGH>;
++	status = "okay";
++};
++
++&i2c5 {
+ 	status = "okay";
+ };
+ 
+-- 
+2.20.1
+

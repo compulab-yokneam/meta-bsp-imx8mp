@@ -1,0 +1,40 @@
+From 26a27823611738f69c774a7f4b86ded7bb1d7688 Mon Sep 17 00:00:00 2001
+From: Ilya Ledvich <ilya@compulab.co.il>
+Date: Fri, 16 Dec 2022 12:12:33 +0200
+Subject: [PATCH] compulab: imx8mp: board: introduce board_vendor_late_init()
+
+Introduce board_vendor_late_init() routine to be used for board specific
+late init.
+
+Signed-off-by: Ilya Ledvich <ilya@compulab.co.il>
+---
+ board/compulab/plat/imx8mp/board/board.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/board/compulab/plat/imx8mp/board/board.c b/board/compulab/plat/imx8mp/board/board.c
+index e3218c0666..16b502ad6f 100644
+--- a/board/compulab/plat/imx8mp/board/board.c
++++ b/board/compulab/plat/imx8mp/board/board.c
+@@ -470,6 +470,10 @@ __weak void board_vendor_init(void) {
+ 	return;
+ }
+ 
++__weak void board_vendor_late_init(void) {
++	return;
++}
++
+ int board_init(void)
+ {
+ 	struct arm_smccc_res res;
+@@ -520,6 +524,8 @@ int board_late_init(void)
+ #else
+ 	env_set("dram_subset", "d1d8");
+ #endif
++	board_vendor_late_init();
++
+ 	return 0;
+ }
+ 
+-- 
+2.20.1
+
