@@ -1,0 +1,50 @@
+From a8d834894c2a629e8210984efd1f5391c6d0115a Mon Sep 17 00:00:00 2001
+From: Ilya Ledvich <ilya@compulab.co.il>
+Date: Mon, 12 Sep 2022 10:43:24 +0300
+Subject: [PATCH] compulab: iot-gate-imx8plus: enable flexcan1
+
+Enable flexcan1 signals which are routed to indistrial I/O slot C.
+This is required for supporting a new industrial I/O module IE-CAN.
+
+Signed-off-by: Ilya Ledvich <ilya@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/sb-iotgimx8plus.dtsi | 4 ++++
+ arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dtsi  | 6 ++++--
+ 2 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/compulab/sb-iotgimx8plus.dtsi b/arch/arm64/boot/dts/compulab/sb-iotgimx8plus.dtsi
+index 626bec53227d..288187032fa9 100644
+--- a/arch/arm64/boot/dts/compulab/sb-iotgimx8plus.dtsi
++++ b/arch/arm64/boot/dts/compulab/sb-iotgimx8plus.dtsi
+@@ -134,6 +134,10 @@
+ 	};
+ };
+ 
++&flexcan1 {
++	status = "okay";
++};
++
+ &flexcan2 {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dtsi b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dtsi
+index a36fa3bbbb6e..f1a56d6ee072 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dtsi
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dtsi
+@@ -154,9 +154,11 @@
+ 	};
+ };
+ 
++&flexcan1 {
++	status = "disabled";
++};
++
+ &flexcan2 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_flexcan2>;
+ 	status = "disabled";
+ };
+ 
+-- 
+2.20.1
+

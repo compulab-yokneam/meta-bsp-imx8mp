@@ -51,6 +51,10 @@ SRC_URI:append = " \
 	file://0049-som-imx8m-plus-dts-Add-all-available-device-trees.patch \
 	file://0050-compulab-imx8m-plus-Move-usbdev-to-a-separate-dtsi-f.patch \
 	file://0051-iot-gate-imx8plus-dts-Add-usbdev-device-tree.patch \
+	file://0052-net-phy-realtek-RTL8211E-make-use-of-realtek-clkout-.patch \
+	file://0053-compulab-iot-gate-imx8plus-enable-flexcan1.patch \
+	file://0054-compulab-iot-gate-imx8plus-sb-iotgimx8plus-support-r.patch \
+	file://0055-compulab-iot-gate-imx8plus-add-support-for-TPM.patch \
 	file://defconfig \
 "
 

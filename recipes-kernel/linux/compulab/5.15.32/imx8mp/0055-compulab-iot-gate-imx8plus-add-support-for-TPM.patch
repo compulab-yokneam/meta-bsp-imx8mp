@@ -1,0 +1,110 @@
+From ce2773f1ef518603ce7c8ca238b2c570e34b9fdd Mon Sep 17 00:00:00 2001
+From: Ilya Ledvich <ilya@compulab.co.il>
+Date: Fri, 25 Nov 2022 16:19:32 +0200
+Subject: [PATCH] compulab: iot-gate-imx8plus: add support for TPM
+
+Add support for TPM extension module in M.2 Expansion Connector (aka M2TPM).
+The M2TPM module features SLB9670 Trusted Platform Module by Infineon over SPI.
+
+Signed-off-by: Ilya Ledvich <ilya@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/Makefile         |  1 +
+ .../dts/compulab/iot-gate-imx8plus-m2tpm.dts  | 61 +++++++++++++++++++
+ .../arm64/configs/iot-gate-imx8plus_defconfig |  1 +
+ 3 files changed, 63 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/compulab/iot-gate-imx8plus-m2tpm.dts
+
+diff --git a/arch/arm64/boot/dts/compulab/Makefile b/arch/arm64/boot/dts/compulab/Makefile
+index 4fbb26d4bcec..60205dd04b1f 100644
+--- a/arch/arm64/boot/dts/compulab/Makefile
++++ b/arch/arm64/boot/dts/compulab/Makefile
+@@ -20,6 +20,7 @@ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-uart1.dtb
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx8m-plus-headless.dtb
+ dtb-$(CONFIG_ARCH_MXC) += iot-gate-imx8plus.dtb
+ dtb-$(CONFIG_ARCH_MXC) += iot-gate-imx8plus-usbdev.dtb
++dtb-$(CONFIG_ARCH_MXC) += iot-gate-imx8plus-m2tpm.dtb
+ 
+ dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus.dtb
+ dtb-$(CONFIG_ARCH_MXC) += som-imx8m-plus_mipi-csi1.dtb
+diff --git a/arch/arm64/boot/dts/compulab/iot-gate-imx8plus-m2tpm.dts b/arch/arm64/boot/dts/compulab/iot-gate-imx8plus-m2tpm.dts
+new file mode 100644
+index 000000000000..f1e94e21e904
+--- /dev/null
++++ b/arch/arm64/boot/dts/compulab/iot-gate-imx8plus-m2tpm.dts
+@@ -0,0 +1,61 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright 2022 CompuLab Ltd
++ */
++
++#include "iot-gate-imx8plus.dts"
++
++/* IOT-GATE-IMX8PLUS with TPM extension module in M.2 Expansion Connector */
++
++/ {
++	tpm_nreset: tpm-nreset {
++		compatible = "gpio-reset";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_tpm_nrst>;
++		reset-gpios = <&gpio3 20 GPIO_ACTIVE_HIGH>;
++		#reset-cells = <0>;
++		initially-in-reset;
++	};
++};
++
++&ecspi2 {
++	status = "okay";
++
++	/delete-node/ spidev2@0;
++
++	slb9670: slb9670-ecspi2@0 {
++		resets = <&tpm_nreset>;
++		compatible = "infineon,slb9670", "tcg,tpm_tis-spi";
++		reg = <0>;
++		spi-max-frequency = <5000000>;
++		status = "okay";
++	};
++};
++
++&i2c5 {
++	status = "okay";
++
++	eeprom_m2: eeprom-i2c5@54 {
++		compatible = "atmel,24c08";
++		pagesize = <16>;
++		reg = <0x54>;
++		status = "okay";
++	};
++};
++
++&i2c6 {
++	status = "disabled";
++};
++
++&usdhc2 {
++	status = "disabled";
++};
++
++&iomuxc {
++	pinctrl_tpm_nrst: tpmnrstgrp {
++		fsl,pins = <
++			MX8MP_IOMUXC_SAI5_RXC__GPIO3_IO20			0x19
++		>;
++	};
++};
++
+diff --git a/arch/arm64/configs/iot-gate-imx8plus_defconfig b/arch/arm64/configs/iot-gate-imx8plus_defconfig
+index d72dc869651c..575741d2e1e8 100644
+--- a/arch/arm64/configs/iot-gate-imx8plus_defconfig
++++ b/arch/arm64/configs/iot-gate-imx8plus_defconfig
+@@ -683,6 +683,7 @@ CONFIG_HW_RANDOM_TIMERIOMEM=m
+ CONFIG_HW_RANDOM_BA431=m
+ CONFIG_HW_RANDOM_VIRTIO=m
+ CONFIG_TCG_TPM=y
++CONFIG_TCG_TIS_SPI=m
+ CONFIG_TCG_TIS_I2C_INFINEON=y
+ CONFIG_I2C_CHARDEV=y
+ CONFIG_I2C_MUX=y
+-- 
+2.20.1
+
