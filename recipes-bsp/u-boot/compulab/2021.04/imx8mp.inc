@@ -84,6 +84,7 @@ SRC_URI:append = " \
 	file://0082-iot-gate-imx8plus-enable-i2c5-bus.patch \
 	file://0083-iot-gate-imx8plus-detect-expansion-board-in-M.2-slot.patch \
 	file://0084-iot-gate-imx8plus-fix-baseboard-EEPROM-i2c-bus-num-a.patch \
+	file://0085-compulab-imx8mp-som-Add-rev1.1-support.patch \
 "
 
 SRC_URI:append:ucm-imx8m-plus = " \

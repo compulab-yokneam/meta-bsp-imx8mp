@@ -1,0 +1,58 @@
+From 1f49ac686367ce510df77856eab2abe645ad1bb6 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Mon, 2 Jan 2023 12:09:12 +0200
+Subject: [PATCH] compulab: imx8mp: som: Add rev1.1 support
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm/dts/som-imx8m-plus.dts  | 8 ++++----
+ include/configs/som-imx8m-plus.h | 4 ++--
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm/dts/som-imx8m-plus.dts b/arch/arm/dts/som-imx8m-plus.dts
+index e639bb384c..679870fc27 100644
+--- a/arch/arm/dts/som-imx8m-plus.dts
++++ b/arch/arm/dts/som-imx8m-plus.dts
+@@ -132,9 +132,9 @@
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 
+-		ethphy0: ethernet-phy@0 {
++		ethphy0: ethernet-phy@4 {
+ 			compatible = "ethernet-phy-ieee802.3-c22";
+-			reg = <0>;
++			reg = <4>;
+ 			eee-broken-1000t;
+ 		};
+ 	};
+@@ -156,9 +156,9 @@
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 
+-		ethphy1: ethernet-phy@1 {
++		ethphy1: ethernet-phy@5 {
+ 			compatible = "ethernet-phy-ieee802.3-c22";
+-			reg = <1>;
++			reg = <5>;
+ 			eee-broken-1000t;
+ 		};
+ 	};
+diff --git a/include/configs/som-imx8m-plus.h b/include/configs/som-imx8m-plus.h
+index aea6f173ec..055421d4ad 100644
+--- a/include/configs/som-imx8m-plus.h
++++ b/include/configs/som-imx8m-plus.h
+@@ -15,9 +15,9 @@
+ #define CONFIG_ETHPRIME                 "eth0"
+ 
+ #define CONFIG_FEC_XCV_TYPE             RGMII
+-#define CONFIG_FEC_MXC_PHYADDR          1
++#define CONFIG_FEC_MXC_PHYADDR          5
+ 
+-#define DWC_NET_PHYADDR	                0
++#define DWC_NET_PHYADDR	                4
+ 
+ #define PHY_ANEG_TIMEOUT 20000
+ 
+-- 
+2.17.1
+
