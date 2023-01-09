@@ -55,6 +55,8 @@ SRC_URI:append = " \
 	file://0053-compulab-iot-gate-imx8plus-enable-flexcan1.patch \
 	file://0054-compulab-iot-gate-imx8plus-sb-iotgimx8plus-support-r.patch \
 	file://0055-compulab-iot-gate-imx8plus-add-support-for-TPM.patch \
+	file://0056-som-imx8m-plus-Update-defconfig.patch \
+	file://0057-compulab-som-imx8m-plus-Update-eqos-iface-node.patch \
 	file://defconfig \
 "
 
