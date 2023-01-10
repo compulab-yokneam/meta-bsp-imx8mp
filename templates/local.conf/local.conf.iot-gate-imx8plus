@@ -1,3 +1,0 @@
-CORE_IMAGE_EXTRA_INSTALL += " linux-firmware-ax210 firmware-imx-sdma-imx7d "
-CORE_IMAGE_EXTRA_INSTALL += " libgpiod-tools bluez5 gpsd gps-utils can-utils minicom eeprom-util usbutils i2c-tools "
-CORE_IMAGE_EXTRA_INSTALL += " connman wireless-tools wvdial dhcpcd ifupdown wpa-supplicant ppp modemmanager ntp ntpdate "
