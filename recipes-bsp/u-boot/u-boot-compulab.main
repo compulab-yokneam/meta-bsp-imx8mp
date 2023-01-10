@@ -24,9 +24,7 @@ LOCALVERSION = "-compulab"
 BOOT_TOOLS = "imx-boot-tools"
 
 do_compile:prepend () {
-    if [ ${BUILD_REPRODUCIBLE_BINARIES} -eq 1 ];then
-        export SOURCE_DATE_EPOCH=$(date +%s)
-    fi
+    export SOURCE_DATE_EPOCH=$(date +%s)
 }
 
 do_deploy:append () {
