@@ -23,6 +23,11 @@ export NXP_KERNEL=linux-imx
 export NXP_KERNEL_BRANCH=${NXP_RELEASE}
 export CPL_KERNEL_PATCH=recipes-kernel/linux/compulab/5.15.32/imx8mp
 
+export NXP_IMX_GIT="https://github.com/nxp-imx"
+export CodeAurora_GIT="https://source.codeaurora.org/external/imx"
+export SRC_GIT_REPO_LIST="CodeAurora NXP_IMX"
+export SRC_GIT_REPO_NAME="CodeAurora"
+
 export USER_APP_DIR=${HOME}/Applications
 export CROSS_COMPILE=${USER_APP_DIR}/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-
 export AARCH64_CROSS_URL="https://developer.arm.com/-/media/Files/downloads/gnu-a/10.3-2021.07/binrel/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu.tar.xz"

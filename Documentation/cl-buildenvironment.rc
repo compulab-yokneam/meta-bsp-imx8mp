@@ -76,6 +76,25 @@ get_compulab_metalayer() {
     fi
 }
 
+get_git_repo() {
+set -o posix
+	[[ -n ${1} ]] && trap get_compatible_machine_signal INT
+	local gitrepo_list=${SRC_GIT_REPO_LIST}" ${1}"
+	PS3="Select git repository: ? "
+	select _gitrepo in ${gitrepo_list}
+	do
+		case $i in
+		*)
+			SRC_GIT_REPO_NAME=${_gitrepo}
+			break
+			;;
+		esac
+	done
+	trap - INT
+	[[ ${MACHINE} = ${get_compatible_machine_exit} ]] && exit 0
+set +o posix
+}
+
 export firmware_files='lpddr4_pmu_train_1d_dmem.bin lpddr4_pmu_train_1d_imem.bin lpddr4_pmu_train_2d_dmem.bin lpddr4_pmu_train_2d_imem.bin'
 get_nxp_firmware() {
     local NXP_FIRMWARE_DIR=$(printf ${NXP_FIRMWARE} | awk -F".bin" '$0=$1')
@@ -88,7 +107,8 @@ done
 }
 
 _get_nxp_source() {
-    [[ -d ${NXP_SOURCE} ]] || git clone https://source.codeaurora.org/external/imx/${NXP_SOURCE}
+    export SRC_GIT_REPO=${SRC_GIT_REPO_NAME}_GIT
+    [[ -d ${NXP_SOURCE} ]] || (echo ${!SRC_GIT_REPO}/${NXP_SOURCE}; git clone ${!SRC_GIT_REPO}/${NXP_SOURCE})
     [[ ${SRC_UPDATE} = '1' ]] && ( git -C ${NXP_SOURCE} checkout ${NXP_BRANCH} 2>/dev/null; git -C ${NXP_SOURCE} branch -D ${CPL_BRANCH} 2>/dev/null )
     git -C ${NXP_SOURCE} checkout ${CPL_BRANCH} 2>/dev/null || {
         git -C ${NXP_SOURCE} checkout ${NXP_BRANCH} -b ${CPL_BRANCH} 2>/dev/null
@@ -289,12 +309,14 @@ mv uui/${uui_plat}/uui.img ${RESULTS}/${MACHINE}-uui.img
 
 flist='get_compatible_machine
     get_dram_config
+    get_git_repo
     get_compulab_bootloader
     clean_all
     exit'
 
 devel_flist='get_compatible_machine
     get_dram_config
+    get_git_repo
     get_compulab_metalayer
     get_nxp_firmware
     get_nxp_atf
@@ -309,6 +331,7 @@ devel_flist='get_compatible_machine
 
 kernel_flist='get_compatible_machine
     get_compulab_metalayer
+    get_git_repo
     get_nxp_kernel
     get_nxp_kernel_tar
     exit'
@@ -379,4 +402,4 @@ get_compulab_metalayer
 get_compatible_machine ${get_compatible_machine_exit}
 
 export SRC_UPDATE=0
-PS1='$(usage)\n\ncl-buildenvironment [ MACHINE=${MACHINE}; DEBUG_UART=${CPL_DEBUG_UART}; DRAM=${DRAM}; CROSS_COMPILE=${CROSS_COMPILE} ]\n\n$(status) > '
+PS1='$(usage)\n\ncl-buildenvironment [ MACHINE=${MACHINE}; DEBUG_UART=${CPL_DEBUG_UART}; DRAM=${DRAM}; CROSS_COMPILE=${CROSS_COMPILE} GIT_REPO=${SRC_GIT_REPO_NAME}]\n\n$(status) > '
