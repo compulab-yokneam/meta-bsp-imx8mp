@@ -56,10 +56,8 @@ Use the 'D' option code from the device label.
 
 |Product DRAM Option|DRAM_CONF|
 |---|---|
-|D1|d1d8|
-|D2|d2d4|
-|D4|d2d4|
-|D8|d1d8|
+|D1,D8|d1d8|
+|D2,D4|d2d4|
 
 ## Setup build environment
 
