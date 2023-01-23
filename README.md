@@ -30,7 +30,7 @@ repo init -u git://github.com/nxp-imx/imx-manifest.git -b imx-linux-kirkstone -m
 * CompuLab
 ```
 mkdir -p .repo/local_manifests
-wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/kirkstone/scripts/meta-bsp-imx8mp.xml
+wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/kirkstone-5.15.71-2.2.0/scripts/meta-bsp-imx8mp.xml
 ```
 
 * Sync Them all
