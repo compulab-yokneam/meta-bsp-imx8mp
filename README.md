@@ -56,10 +56,8 @@ Use the 'D' option code from the device label.
 
 |Product DRAM Option|DRAM_CONF|
 |---|---|
-|D1|d1d8|
-|D2|d2d4|
-|D4|d2d4|
-|D8|d1d8|
+|D1,D8|d1d8|
+|D2,D4|d2d4|
 
 ## Setup build environment
 
@@ -67,7 +65,6 @@ Use the 'D' option code from the device label.
 ```
 source compulab-setup-env -b build-${MACHINE}
 ```
-
 
 * Enable the d2d4 dram setting's subset:
 ```
@@ -100,5 +97,6 @@ cd tmp/deploy/images/${MACHINE}
 
 * Deploy the image:
 ```
-sudo bmaptool copy imx-image-multimedia-${MACHINE}.wic.bz2 --bmap imx-image-multimedia-${MACHINE}.wic.bmap /dev/sdX
+zstd -dc imx-image-full-${MACHINE}.wic.zst > imx-image-full-${MACHINE}.wic
+sudo bmaptool copy --bmap imx-image-full-${MACHINE}.wic.bmap imx-image-full-${MACHINE}.wic /dev/sdX
 ```
