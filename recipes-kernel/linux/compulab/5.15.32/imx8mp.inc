@@ -58,6 +58,7 @@ SRC_URI:append = " \
 	file://0056-som-imx8m-plus-Update-defconfig.patch \
 	file://0057-compulab-som-imx8m-plus-Update-eqos-iface-node.patch \
 	file://0058-compulab-iot-gate-imx8plus-add-support-for-break-out.patch \
+	file://0059-compulab-som-imx8m-plus-Revision-1.1-update.patch \
 	file://defconfig \
 "
 
