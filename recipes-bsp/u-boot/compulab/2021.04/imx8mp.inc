@@ -85,6 +85,8 @@ SRC_URI:append = " \
 	file://0083-iot-gate-imx8plus-detect-expansion-board-in-M.2-slot.patch \
 	file://0084-iot-gate-imx8plus-fix-baseboard-EEPROM-i2c-bus-num-a.patch \
 	file://0085-compulab-som-imx8m-plus-Revision-1.1-update.patch \
+	file://0086-compulab-imx8m-plus-Fix-bsp-boot-device-order.patch \
+	file://0087-video-startek-ili9881c-Disable-video-if-device-disco.patch \
 "
 
 SRC_URI:append:ucm-imx8m-plus = " \
