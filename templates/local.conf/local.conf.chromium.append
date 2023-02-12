@@ -1,0 +1,7 @@
+# Conflicts with Qt6
+# Remover the :conflicts_with_qt6 from the IMAGE_INSTALL:append string
+# in order to add the Chromium to the build
+IMAGE_INSTALL:append:conflicts_with_qt6 = \
+    "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', ' chromium-ozone-wayland', \
+        bb.utils.contains('DISTRO_FEATURES',     'x11', ' chromium-x11', \
+                                                        '', d), d)}"
