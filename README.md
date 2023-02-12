@@ -79,7 +79,7 @@ sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
 
 * Building the image:
 ```
-bitbake -k imx-image-multimedia
+bitbake -k imx-image-full
 ```
 
 * Building the bootloader file only:
@@ -98,5 +98,5 @@ cd tmp/deploy/images/${MACHINE}
 
 * Deploy the image:
 ```
-sudo bmaptool copy imx-image-multimedia-${MACHINE}.wic.bz2 --bmap imx-image-multimedia-${MACHINE}.wic.bmap /dev/sdX
+sudo bmaptool copy imx-image-full-${MACHINE}.wic.bz2 --bmap imx-image-full-${MACHINE}.wic.bmap /dev/sdX
 ```
