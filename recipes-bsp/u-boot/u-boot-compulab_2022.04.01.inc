@@ -11,3 +11,5 @@ SRC_URI = "git://github.com/compulab-yokneam/u-boot-clab;protocol=https;branch=u
 SRCREV = "7117919c876c38fec0fb8a0e4a6257766c923a5a"
 
 DEPENDS += " python3-setuptools-native "
+
+COMPATIBLE_MACHINE = "(mx8mp-devel)"
