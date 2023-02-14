@@ -15,8 +15,6 @@ mkdir compulab-nxp-bsp && cd compulab-nxp-bsp
 
 | Machine | Command Line |
 |---|---|
-|ucm-imx8m-plus|```export MACHINE=ucm-imx8m-plus```|
-|som-imx8m-plus|```export MACHINE=som-imx8m-plus```|
 |iot-gate-imx8plus|```export MACHINE=iot-gate-imx8plus```|
 |sbc-iot-imx8plus|```export MACHINE=iot-gate-imx8plus```|
 
@@ -30,7 +28,7 @@ repo init -u https://source.codeaurora.org/external/imx/imx-manifest -b imx-linu
 * CompuLab
 ```
 mkdir -p .repo/local_manifests
-wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/kirkstone-5.15.32-2.0.0/scripts/meta-bsp-imx8mp.xml
+wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/iot-gate-imx8plus-r2.0/scripts/meta-bsp-imx8mp.xml
 ```
 
 * Sync Them all
