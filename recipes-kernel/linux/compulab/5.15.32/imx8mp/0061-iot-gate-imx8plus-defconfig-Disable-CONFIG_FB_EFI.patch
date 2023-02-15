@@ -1,0 +1,54 @@
+From 4e6f672fae071a37f0eae5843b48322748c680e4 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Wed, 15 Feb 2023 17:10:31 +0200
+Subject: [PATCH] iot-gate-imx8plus: defconfig: Disable CONFIG_FB_EFI
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/configs/iot-gate-imx8plus_defconfig | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/arch/arm64/configs/iot-gate-imx8plus_defconfig b/arch/arm64/configs/iot-gate-imx8plus_defconfig
+index 575741d2e1e8..f68bdca50ffa 100644
+--- a/arch/arm64/configs/iot-gate-imx8plus_defconfig
++++ b/arch/arm64/configs/iot-gate-imx8plus_defconfig
+@@ -305,12 +305,9 @@ CONFIG_IP_SCTP=m
+ CONFIG_SCTP_DBG_OBJCNT=y
+ CONFIG_SCTP_COOKIE_HMAC_SHA1=y
+ CONFIG_BRIDGE=m
+-CONFIG_BRIDGE_VLAN_FILTERING=y
+ CONFIG_BRIDGE_MRP=y
+ CONFIG_BRIDGE_CFM=y
+ CONFIG_NET_DSA=m
+-CONFIG_VLAN_8021Q_GVRP=y
+-CONFIG_VLAN_8021Q_MVRP=y
+ CONFIG_LLC2=m
+ CONFIG_NET_SCHED=y
+ CONFIG_NET_SCH_MULTIQ=m
+@@ -327,7 +324,6 @@ CONFIG_NET_CLS_ACT=y
+ CONFIG_NET_ACT_GACT=m
+ CONFIG_NET_ACT_MIRRED=m
+ CONFIG_NET_ACT_GATE=m
+-CONFIG_TSN=y
+ CONFIG_QRTR=m
+ CONFIG_QRTR_SMD=m
+ CONFIG_QRTR_TUN=m
+@@ -529,7 +525,6 @@ CONFIG_FSL_DPAA2_SWITCH=m
+ CONFIG_FSL_ENETC=y
+ CONFIG_FSL_ENETC_VF=y
+ CONFIG_FSL_ENETC_QOS=y
+-CONFIG_ENETC_TSN=y
+ CONFIG_HIX5HD2_GMAC=y
+ CONFIG_HNS_DSAF=y
+ CONFIG_HNS_ENET=y
+@@ -910,7 +905,6 @@ CONFIG_DRM_LIMA=m
+ CONFIG_DRM_PANFROST=m
+ CONFIG_FB=y
+ CONFIG_FB_ARMCLCD=y
+-CONFIG_FB_EFI=y
+ CONFIG_FB_MXC_EINK_V2_PANEL=y
+ CONFIG_BACKLIGHT_PWM=y
+ CONFIG_BACKLIGHT_LP855X=m
+-- 
+2.17.1
+
