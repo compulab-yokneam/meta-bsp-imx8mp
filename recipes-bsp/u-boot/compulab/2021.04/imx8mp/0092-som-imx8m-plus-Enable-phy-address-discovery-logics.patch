@@ -1,0 +1,27 @@
+From e83fde77800df80b0eb34b4a5fb54f0363bd3df2 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Fri, 17 Feb 2023 21:20:41 +0200
+Subject: [PATCH] som-imx8m-plus: Enable phy address discovery logics
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ include/configs/som-imx8m-plus.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/configs/som-imx8m-plus.h b/include/configs/som-imx8m-plus.h
+index 11bf93430a..222322ad4d 100644
+--- a/include/configs/som-imx8m-plus.h
++++ b/include/configs/som-imx8m-plus.h
+@@ -15,7 +15,9 @@
+ #define CONFIG_ETHPRIME                 "eth0"
+ 
+ #define CONFIG_FEC_XCV_TYPE             RGMII
++#define CONFIG_FEC_MXC_PHYADDR         	-1
+ 
++#define DWC_NET_PHYADDR	               	-1
+ #define PHY_ANEG_TIMEOUT 20000
+ 
+ #endif
+-- 
+2.17.1
+

@@ -1,0 +1,72 @@
+From 39adcbf4e341d465f0d721c0e32c4ffa6de9c96a Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Fri, 17 Feb 2023 21:22:05 +0200
+Subject: [PATCH] compulab: imx8mp: Update u-boot prompt
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ include/configs/compulab-imx8m-plus.h | 4 ++++
+ include/configs/iot-gate-imx8plus.h   | 5 -----
+ include/configs/som-imx8m-plus.h      | 6 ------
+ include/configs/ucm-imx8m-plus.h      | 6 ------
+ 4 files changed, 4 insertions(+), 17 deletions(-)
+
+diff --git a/include/configs/compulab-imx8m-plus.h b/include/configs/compulab-imx8m-plus.h
+index c1f192fd1d..e00d7efb58 100644
+--- a/include/configs/compulab-imx8m-plus.h
++++ b/include/configs/compulab-imx8m-plus.h
+@@ -247,3 +247,7 @@
+ #define CONFIG_VIDEO_BMP_LOGO
+ #endif
+ 
++#ifdef CONFIG_SYS_PROMPT
++#undef CONFIG_SYS_PROMPT
++#define CONFIG_SYS_PROMPT CONFIG_SYS_BOARD"=> "
++#endif
+diff --git a/include/configs/iot-gate-imx8plus.h b/include/configs/iot-gate-imx8plus.h
+index ac27817ebe..5dc357a57e 100644
+--- a/include/configs/iot-gate-imx8plus.h
++++ b/include/configs/iot-gate-imx8plus.h
+@@ -25,9 +25,4 @@
+ 
+ #endif
+ 
+-#ifdef CONFIG_SYS_PROMPT
+-#undef CONFIG_SYS_PROMPT
+-#endif
+-#define CONFIG_SYS_PROMPT "iot-gate-imx8plus=> "
+-
+ #endif
+diff --git a/include/configs/som-imx8m-plus.h b/include/configs/som-imx8m-plus.h
+index 222322ad4d..a3792c6113 100644
+--- a/include/configs/som-imx8m-plus.h
++++ b/include/configs/som-imx8m-plus.h
+@@ -25,10 +25,4 @@
+ #if defined(CONFIG_ANDROID_SUPPORT)
+ #include "som-imx8m-plus_android.h"
+ #endif
+-
+-#ifdef CONFIG_SYS_PROMPT
+-#undef CONFIG_SYS_PROMPT
+-#endif
+-#define CONFIG_SYS_PROMPT "som-imx8m-plus=> "
+-
+ #endif
+diff --git a/include/configs/ucm-imx8m-plus.h b/include/configs/ucm-imx8m-plus.h
+index c71a39b6af..c3581df4aa 100644
+--- a/include/configs/ucm-imx8m-plus.h
++++ b/include/configs/ucm-imx8m-plus.h
+@@ -33,10 +33,4 @@
+ #if defined(CONFIG_ANDROID_SUPPORT)
+ #include "ucm-imx8m-plus_android.h"
+ #endif
+-
+-#ifdef CONFIG_SYS_PROMPT
+-#undef CONFIG_SYS_PROMPT
+-#endif
+-#define CONFIG_SYS_PROMPT "ucm-imx8m-plus=> "
+-
+ #endif
+-- 
+2.17.1
+

@@ -1,0 +1,49 @@
+From 6a9d684356babe35dc76e4ba3fb15ccc87184e4b Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Fri, 17 Feb 2023 21:19:11 +0200
+Subject: [PATCH] compulab: imx8mp: Introduce board_save_phyaddr() and
+ fdt_board_vendor_setup()
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/plat/imx8mp/board/board.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/board/compulab/plat/imx8mp/board/board.c b/board/compulab/plat/imx8mp/board/board.c
+index ec26baf9a6..24dd196828 100644
+--- a/board/compulab/plat/imx8mp/board/board.c
++++ b/board/compulab/plat/imx8mp/board/board.c
+@@ -58,6 +58,14 @@ int board_phys_sdram_size(phys_size_t *size)
+ 
+ 
+ #ifdef CONFIG_OF_BOARD_SETUP
++__weak int fdt_board_vendor_setup(void *blob) {
++	return 0;
++}
++
++__weak void board_save_phyaddr(int phy_addr) {
++	return;
++}
++
+ int ft_board_setup(void *blob, struct bd_info *bd)
+ {
+ #ifdef CONFIG_IMX8M_DRAM_INLINE_ECC
+@@ -88,6 +96,7 @@ int ft_board_setup(void *blob, struct bd_info *bd)
+ 
+ 	fdt_set_env_addr(blob);
+ 	fdt_set_sn(blob);
++	fdt_board_vendor_setup(blob);
+ 	return 0;
+ }
+ #endif
+@@ -614,6 +623,7 @@ static int mx8_rgmii_rework(struct phy_device *phydev)
+ 		break;
+ 	}
+ 
++	board_save_phyaddr(phydev->addr);
+ 	return 0;
+ }
+ 
+-- 
+2.17.1
+
