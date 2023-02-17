@@ -61,6 +61,7 @@ SRC_URI:append = " \
 	file://0059-compulab-som-imx8m-plus-Revision-1.1-update.patch \
 	file://0060-ucm-imx8m-plus-Update-defconfig.patch \
 	file://0061-iot-gate-imx8plus-defconfig-Disable-CONFIG_FB_EFI.patch \
+	file://0062-compulab-som-imx8m-plus-Prepare-for-all-revisions-su.patch \
 	file://defconfig \
 "
 

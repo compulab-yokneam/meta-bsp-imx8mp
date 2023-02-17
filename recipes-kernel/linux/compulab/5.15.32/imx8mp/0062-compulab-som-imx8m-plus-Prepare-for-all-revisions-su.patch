@@ -1,0 +1,62 @@
+From 81fbe0d05fa26fe7e6a9f43754e8d5fa5c818d08 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Fri, 17 Feb 2023 21:05:11 +0200
+Subject: [PATCH] compulab: som-imx8m-plus: Prepare for all revisions support
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/som-imx8m-plus.dts | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/compulab/som-imx8m-plus.dts b/arch/arm64/boot/dts/compulab/som-imx8m-plus.dts
+index f943ebff0204..45973218cd0e 100644
+--- a/arch/arm64/boot/dts/compulab/som-imx8m-plus.dts
++++ b/arch/arm64/boot/dts/compulab/som-imx8m-plus.dts
+@@ -285,7 +285,7 @@
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_eqos>;
+ 	phy-mode = "rgmii-id";
+-	phy-handle = <&ethphy0>;
++	phy-handle = <&ethphy1>;
+ 	snps,force_thresh_dma_mode;
+ 	snps,mtl-tx-config = <&mtl_tx_setup>;
+ 	snps,mtl-rx-config = <&mtl_rx_setup>;
+@@ -296,12 +296,12 @@
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 
+-		ethphy0: ethernet-phy@0 {
++		ethphy1: ethernet-phy@1 {
+ 			compatible = "ethernet-phy-ieee802.3-c22";
+ 			reset-gpios = <&gpio1 10 GPIO_ACTIVE_LOW>;
+ 			reset-assert-us = <10000>;
+ 			reset-deassert-us = <80000>;
+-			reg = <4>;
++			reg = <0>;
+ 			eee-broken-1000t;
+ 			realtek,clkout-disable;
+ 		};
+@@ -367,7 +367,7 @@
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_fec>;
+ 	phy-mode = "rgmii-id";
+-	phy-handle = <&ethphy1>;
++	phy-handle = <&ethphy0>;
+ 	fsl,magic-packet;
+ 	status = "okay";
+ 
+@@ -375,9 +375,9 @@
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 
+-		ethphy1: ethernet-phy@1 {
++		ethphy0: ethernet-phy@0 {
+ 			compatible = "ethernet-phy-ieee802.3-c22";
+-			reg = <5>;
++			reg = <0>;
+ 			eee-broken-1000t;
+ 		};
+ 	};
+-- 
+2.17.1
+
