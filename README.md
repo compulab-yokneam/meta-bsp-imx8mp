@@ -66,16 +66,17 @@ Use the 'D' option code from the device label.
 source compulab-setup-env -b build-${MACHINE}
 ```
 
+* Enable the required dram setting's subset:
 
-* Enable the d2d4 dram setting's subset:
-```
-sed -i '$ a DRAM_CONF = "d2d4"' ${BUILDDIR}/conf/local.conf
-```
+  * For d2d4 dram setting's subset:
+  ```
+  sed -i '$ a DRAM_CONF = "d2d4"' ${BUILDDIR}/conf/local.conf
+  ```
 
-* Enable the d1d8 dram setting's subset:
-```
-sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
-```
+  * For d1d8 dram setting's subset:
+  ```
+  sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
+  ```
 
 * Building the image:
 ```
