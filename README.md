@@ -1,8 +1,3 @@
-# Disclaimer
-
-| !IMPORTANT! | This is a development branch, that is not relelased by CompuLab officially yet|
-|---|---|
-
 # Configuring the build
 
 ## Setup Yocto environment
@@ -16,9 +11,6 @@ mkdir compulab-nxp-bsp && cd compulab-nxp-bsp
 | Machine | Command Line |
 |---|---|
 |ucm-imx8m-plus|```export MACHINE=ucm-imx8m-plus```|
-|som-imx8m-plus|```export MACHINE=som-imx8m-plus```|
-|iot-gate-imx8plus|```export MACHINE=iot-gate-imx8plus```|
-|sbc-iot-imx8plus|```export MACHINE=iot-gate-imx8plus```|
 
 ## Initialize repo manifests
 
@@ -30,7 +22,7 @@ repo init -u https://source.codeaurora.org/external/imx/imx-manifest -b imx-linu
 * CompuLab
 ```
 mkdir -p .repo/local_manifests
-wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/kirkstone-5.15.32-2.0.0/scripts/meta-bsp-imx8mp.xml
+wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/ucm-imx8m-plus-r2.0/scripts/meta-bsp-imx8mp.xml
 ```
 
 * Sync Them all
@@ -67,36 +59,41 @@ source compulab-setup-env -b build-${MACHINE}
 ```
 
 
-* Enable the d2d4 dram setting's subset:
-```
-sed -i '$ a DRAM_CONF = "d2d4"' ${BUILDDIR}/conf/local.conf
-```
+* Enable the required dram setting's subset:
 
-* Enable the d1d8 dram setting's subset:
-```
-sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
-```
+  * For d2d4 dram setting's subset:
+  ```
+  sed -i '$ a DRAM_CONF = "d2d4"' ${BUILDDIR}/conf/local.conf
+  ```
 
-* Building the image:
-```
-bitbake -k imx-image-full
-```
+  * For d1d8 dram setting's subset:
+  ```
+  sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
+  ```
 
-* Building the bootloader file only:
+##  Building full rootfs image:
 
-| build command | binary file location |
-|---|---|
-|```bitbake -k imx-boot```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/imx-boot-tagged```|
+| Build Target | Build command | binary file location |
+|---|---|---|
+| full rootfs image |```bitbake -k imx-image-full```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/imx-image-full-${MACHINE}.wic.bz2```|
+
 
 ## Deployment
-### Create a bootable sd card
+### Create a live SD card
 
-* Goto the `tmp/deploy/images/${MACHINE}` directory:
+* Goto the `${BUILDDIR}/tmp/deploy/images/${MACHINE}` directory:
 ```
-cd tmp/deploy/images/${MACHINE}
+cd ${BUILDDIR}/tmp/deploy/images/${MACHINE}
 ```
 
 * Deploy the image:
 ```
 sudo bmaptool copy imx-image-full-${MACHINE}.wic.bz2 --bmap imx-image-full-${MACHINE}.wic.bmap /dev/sdX
 ```
+
+## Optional targets
+* Building bootloader only:
+
+| Build Target | Build command | binary file location |
+|---|---|---|
+| bootloader |```bitbake -k imx-boot```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/imx-boot-tagged```|
