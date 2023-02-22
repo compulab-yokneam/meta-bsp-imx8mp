@@ -245,7 +245,7 @@ _nxp_kernel_tar() {
 }
 
 _nxp_kernel_tar_stat() {
-    export KERNEL_IMAGE_TAR=$(ls -tr ${RESULTS}/*${KERNEL_RELEASE}* | awk '{ f=$0 } END { print f }')
+    export KERNEL_IMAGE_TAR=$(ls -tr ${RESULTS}/*${KERNEL_RELEASE}* 2>/dev/null | awk '{ f=$0 } END { print f }')
 }
 
 get_nxp_kernel_tar() {
