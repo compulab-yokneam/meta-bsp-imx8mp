@@ -35,7 +35,7 @@ set +o posix
 }
 
 CPL_DRAMS="D1D8 D2D4"
-export DRAM="D1D8"
+export DRAM="D2D4"
 get_dram_config() {
 set -o posix
 [[ -n ${1} ]] && trap get_compatible_machine_signal INT
