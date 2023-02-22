@@ -3,7 +3,7 @@ export NXP_FIRMWARE=firmware-imx-8.16.bin
 export NXP_PLATFORM=imx8mp
 
 export CPL_META_LAYER=https://github.com/compulab-yokneam/meta-bsp-imx8mp.git
-export CPL_META_BRANCH=kirkstone
+export CPL_META_BRANCH=ucm-imx8m-plus-r2.0
 export CPL_BRANCH=compulab-${NXP_RELEASE}
 export CPL_MACHINES="ucm-imx8m-plus som-imx8m-plus iot-gate-imx8plus"
 

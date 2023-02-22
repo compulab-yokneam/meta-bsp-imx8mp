@@ -4,7 +4,7 @@
 
 |Description|Command Line|
 |---|---|
-|CompuLab branch name|export CPL_BRANCH=kirkstone|
+|CompuLab branch name|export CPL_BRANCH=ucm-imx8m-plus-r2.0|
 
 * Create a folder to organize the files:
 <pre>
