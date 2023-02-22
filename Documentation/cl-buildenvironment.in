@@ -36,4 +36,4 @@ declare -A uarts=([1]="CFG_UART_BASE=UART1_BASE IMX_BOOT_UART_BASE=0x30860000" [
 export CPL_DEBUG_UART=${CPL_DEBUG_UART:-2}
 export ${uarts[${CPL_DEBUG_UART}]}
 
-export COMPULAB_VERSION="-compulab-1.2"
+export COMPULAB_VERSION="-compulab-2.0"
