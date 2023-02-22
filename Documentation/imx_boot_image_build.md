@@ -87,5 +87,3 @@ Bootloader build status: ucm-imx8m-plus-flash.bin[x];  > ls -ltr ../results/ | t
 -rw-rw-r--  1 user user 1840680 Nov  1 09:53 ucm-imx8m-plus-flash.bin-d2d4
 lrwxrwxrwx  1 user user      29 Nov  1 09:53 ucm-imx8m-plus-flash.bin -> ucm-imx8m-plus-flash.bin-d2d4
 </pre>
-
-* Precompiled `flash.bin` images can be downloaded from [here](https://drive.google.com/drive/folders/1e4JRoArD_yecUv4ppIy5--FK72Ofcwi_)
