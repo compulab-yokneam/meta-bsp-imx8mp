@@ -1,0 +1,28 @@
+From 8ac143d11629a9d35e9fb6cf31709371347cdc03 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Fri, 24 Feb 2023 11:53:48 +0200
+Subject: [PATCH] ucm-imx8m-plus: dts: Update ucm-imx8m-plus-thermal.dts
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/ucm-imx8m-plus-thermal.dts | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-thermal.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-thermal.dts
+index 97a230766e51..c85c09b69def 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-thermal.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus-thermal.dts
+@@ -16,8 +16,9 @@
+ 
+ #include "ucm-imx8m-plus.dts"
+ #include "compulab-imx8m-plus-thermal.dtsi"
++#include "compulab-imx8m-plus-headless.dtsi"
+ 
+ / {
+-	model = "CompuLab UCM-iMX8M-Plus (thermal)";
++	model = "CompuLab UCM-iMX8M-Plus (thermal+headless)";
+ 	compatible = "compulab,ucm-imx8m-plus", "fsl,imx8mp";
+ };
+-- 
+2.17.1
+

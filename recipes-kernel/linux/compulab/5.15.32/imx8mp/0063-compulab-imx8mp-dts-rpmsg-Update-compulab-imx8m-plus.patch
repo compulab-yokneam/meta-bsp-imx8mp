@@ -1,0 +1,91 @@
+From 2198873cb294e26a05bba350beaa20627e1353df Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Fri, 17 Feb 2023 18:24:24 +0200
+Subject: [PATCH] compulab: imx8mp: dts: rpmsg: Update
+ compulab-imx8m-plus-rpmsg.dtsi
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ .../compulab/compulab-imx8m-plus-rpmsg.dtsi   | 52 +++++++++++++++++++
+ 1 file changed, 52 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/compulab/compulab-imx8m-plus-rpmsg.dtsi b/arch/arm64/boot/dts/compulab/compulab-imx8m-plus-rpmsg.dtsi
+index 96cf81445492..ec70aba494ec 100644
+--- a/arch/arm64/boot/dts/compulab/compulab-imx8m-plus-rpmsg.dtsi
++++ b/arch/arm64/boot/dts/compulab/compulab-imx8m-plus-rpmsg.dtsi
+@@ -43,6 +43,42 @@
+ 			reg = <0 0x550ff000 0 0x1000>;
+ 			no-map;
+ 		};
++
++		audio_reserved: audio@0x81000000 {
++			compatible = "shared-dma-pool";
++			no-map;
++			reg = <0 0x81000000 0 0x10000000>;
++		};
++
++		micfil_reserved: mic_rpmsg@91000000 {
++			compatible = "shared-dma-pool";
++			no-map;
++			reg = <0 0x91000000 0 0x100000>;
++		};
++	};
++
++	sound-micfil {
++		status = "disabled";
++	};
++
++	rpmsg_micfil: rpmsg_micfil {
++		compatible = "fsl,imx8mp-rpmsg-audio";
++		model = "micfil-audio";
++		fsl,platform = "rpmsg-micfil-channel";
++		fsl,enable-lpa;
++		fsl,rpmsg-in;
++		assigned-clocks = <&clk IMX8MP_CLK_PDM>;
++		assigned-clock-parents = <&clk IMX8MP_AUDIO_PLL1_OUT>;
++		assigned-clock-rates = <196608000>;
++		clocks = <&audio_blk_ctrl IMX8MP_CLK_AUDIO_BLK_CTRL_PDM_IPG>,
++			 <&audio_blk_ctrl IMX8MP_CLK_AUDIO_BLK_CTRL_PDM_ROOT>,
++			 <&audio_blk_ctrl IMX8MP_CLK_AUDIO_BLK_CTRL_SDMA3_ROOT>,
++			 <&clk IMX8MP_AUDIO_PLL1_OUT>,
++			 <&clk IMX8MP_AUDIO_PLL2_OUT>;
++		clock-names = "ipg", "mclk", "dma", "pll8k", "pll11k";
++		memory-region = <&micfil_reserved>;
++		power-domains = <&audiomix_pd>;
++		status = "okay";
+ 	};
+ 
+ 	imx8mp-cm7 {
+@@ -58,6 +94,18 @@
+ 	};
+ };
+ 
++&flexcan1 {
++	status = "disabled";
++};
++
++&flexcan2 {
++	status = "disabled";
++};
++
++&flexspi {
++	status = "disabled";
++};
++
+ &pwm4{
+ 	status = "disabled";
+ };
+@@ -74,6 +122,10 @@
+ 	status = "disabled";
+ };
+ 
++&uart3 {
++    status = "disabled";
++};
++
+ &uart4 {
+ 	status = "disabled";
+ };
+-- 
+2.17.1
+

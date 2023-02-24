@@ -1,0 +1,25 @@
+From e7d9946077b480fe6fd1f5e799fca6c163329ebb Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Fri, 17 Feb 2023 18:25:55 +0200
+Subject: [PATCH] som-imx8m-plus: dts: Update som-imx8m-plus-headless.dts
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/boot/dts/compulab/som-imx8m-plus-headless.dts | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/boot/dts/compulab/som-imx8m-plus-headless.dts b/arch/arm64/boot/dts/compulab/som-imx8m-plus-headless.dts
+index ecde8bf2329e..fd0e4deed297 100644
+--- a/arch/arm64/boot/dts/compulab/som-imx8m-plus-headless.dts
++++ b/arch/arm64/boot/dts/compulab/som-imx8m-plus-headless.dts
+@@ -15,6 +15,7 @@
+ /dts-v1/;
+ 
+ #include "som-imx8m-plus.dts"
++#include "compulab-imx8m-plus-headless.dtsi"
+ 
+ / {
+ 	model = "CompuLab SOM-iMX8M-Plus (headless)";
+-- 
+2.17.1
+
