@@ -1,0 +1,80 @@
+From 58d6bc89240dbb35ceb9ad2066a0d546350db8e4 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Fri, 24 Feb 2023 13:51:26 +0200
+Subject: [PATCH] som-imx8m-plus: dts: Update device tree
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ .../boot/dts/compulab/som-imx8m-plus.dts      | 30 ++++---------------
+ 1 file changed, 5 insertions(+), 25 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/compulab/som-imx8m-plus.dts b/arch/arm64/boot/dts/compulab/som-imx8m-plus.dts
+index 45973218cd0e..dbf14de5070a 100644
+--- a/arch/arm64/boot/dts/compulab/som-imx8m-plus.dts
++++ b/arch/arm64/boot/dts/compulab/som-imx8m-plus.dts
+@@ -101,19 +101,6 @@
+ 		regulator-always-on;
+ 	};
+ 
+-	reg_enet1_reset: regulator-enet1-reset {
+-                compatible = "regulator-fixed";
+-                regulator-name = "enet1_rst";
+-                pinctrl-names = "default";
+-                pinctrl-0 = <&pinctrl_enet1_rst>;
+-                regulator-min-microvolt = <3300000>;
+-                regulator-max-microvolt = <3300000>;
+-                gpio = <&gpio4 24 GPIO_ACTIVE_HIGH>;
+-                regulator-boot-on;
+-                enable-active-high;
+-                regulator-always-on;
+-        };
+-
+ 	sound-hdmi {
+ 		compatible = "fsl,imx-audio-cdnhdmi";
+ 		model = "audio-hdmi";
+@@ -377,8 +364,12 @@
+ 
+ 		ethphy0: ethernet-phy@0 {
+ 			compatible = "ethernet-phy-ieee802.3-c22";
++			reset-gpios = <&gpio4 24 GPIO_ACTIVE_LOW>;
++			reset-assert-us = <10000>;
++			reset-deassert-us = <80000>;
+ 			reg = <0>;
+ 			eee-broken-1000t;
++			realtek,clkout-disable;
+ 		};
+ 	};
+ };
+@@ -896,12 +887,6 @@
+ 		>;
+ 	};
+ 
+-        pinctrl_enet0_rst: enet0rst {
+-                fsl,pins = <
+-			MX8MP_IOMUXC_GPIO1_IO10__GPIO1_IO10     0x19
+-                >;
+-        };
+-
+ 	pinctrl_fec: fecgrp {
+ 		fsl,pins = <
+ 			MX8MP_IOMUXC_SAI1_RXD2__ENET1_MDC		0x3
+@@ -918,15 +903,10 @@
+ 			MX8MP_IOMUXC_SAI1_TXD3__ENET1_RGMII_TD3		0x1f
+ 			MX8MP_IOMUXC_SAI1_TXD4__ENET1_RGMII_TX_CTL	0x1f
+ 			MX8MP_IOMUXC_SAI1_TXD5__ENET1_RGMII_TXC		0x1f
++			MX8MP_IOMUXC_SAI2_TXFS__GPIO4_IO24		0x19
+ 		>;
+ 	};
+ 
+-        pinctrl_enet1_rst: enet1rst {
+-                fsl,pins = <
+-			MX8MP_IOMUXC_SAI2_TXFS__GPIO4_IO24		0x19
+-                >;
+-        };
+-
+ 	pinctrl_flexcan1: flexcan1grp {
+ 		fsl,pins = <
+ 			MX8MP_IOMUXC_SAI2_RXC__CAN1_TX          0x154
+-- 
+2.17.1
+

@@ -67,6 +67,8 @@ SRC_URI:append = " \
 	file://0065-som-imx8m-plus-dts-Update-som-imx8m-plus-headless.dt.patch \
 	file://0066-som-imx8m-plus-dts-Update-som-imx8m-plus-thermal.dts.patch \
 	file://0067-ucm-imx8m-plus-dts-Update-ucm-imx8m-plus-thermal.dts.patch \
+	file://0068-som-imx8m-plus-dts-Update-device-tree.patch \
+	file://0069-ucm-imx8m-plus-dts-Update-device-tree.patch \
 	file://defconfig \
 "
 
