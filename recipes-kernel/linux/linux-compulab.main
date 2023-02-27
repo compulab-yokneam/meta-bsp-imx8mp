@@ -38,6 +38,8 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/compulab/${PV}/imx8mp:"
 
 require compulab/${PV}/imx8mp.inc
 
+KERNEL_CONFIG = "${MACHINE}_defconfig compulab.config"
+
 do_configure:append() {
     if [ -z ${SKIP_MACHINE_DEFCONFIG} ];then
         if [ -z ${KERNEL_CONFIG} ];then
