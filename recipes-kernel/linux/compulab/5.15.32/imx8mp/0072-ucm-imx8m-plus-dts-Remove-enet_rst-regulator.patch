@@ -1,0 +1,52 @@
+From 673eeaf929c7176f0a83c429a74a53252ce637c8 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Tue, 28 Feb 2023 23:30:41 +0200
+Subject: [PATCH] ucm-imx8m-plus: dts: Remove enet_rst regulator
+
+Remove enet_rst regulator.
+The network interface driver takes on the reset handling.
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ .../arm64/boot/dts/compulab/ucm-imx8m-plus.dts | 18 ------------------
+ 1 file changed, 18 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+index 2d598d6d4d0f..d83eb8530747 100644
+--- a/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
++++ b/arch/arm64/boot/dts/compulab/ucm-imx8m-plus.dts
+@@ -79,18 +79,6 @@
+ 		off-on-delay-us = <12000>;
+ 	};
+ 
+-	reg_reset: regulator-reset {
+-                compatible = "regulator-fixed";
+-                regulator-name = "enet_rst";
+-                pinctrl-names = "default";
+-                pinctrl-0 = <&pinctrl_enet_rst>;
+-                regulator-min-microvolt = <3300000>;
+-                regulator-max-microvolt = <3300000>;
+-                gpio = <&gpio1 10 GPIO_ACTIVE_HIGH>;
+-                enable-active-high;
+-                regulator-always-on;
+-        };
+-
+ 	sound-hdmi {
+ 		compatible = "fsl,imx-audio-hdmi";
+ 		model = "audio-hdmi";
+@@ -831,12 +819,6 @@
+ 		>;
+ 	};
+ 
+-        pinctrl_enet_rst: enet1rst {
+-                fsl,pins = <
+-			MX8MP_IOMUXC_GPIO1_IO10__GPIO1_IO10     0x19
+-                >;
+-        };
+-
+ 	pinctrl_pwm1: pwm1grp {
+ 		fsl,pins = <
+ 			MX8MP_IOMUXC_SPDIF_EXT_CLK__PWM1_OUT	0x116
+-- 
+2.17.1
+
