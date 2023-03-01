@@ -1,1 +1,0 @@
-linux-compulab-mfgtool.main
