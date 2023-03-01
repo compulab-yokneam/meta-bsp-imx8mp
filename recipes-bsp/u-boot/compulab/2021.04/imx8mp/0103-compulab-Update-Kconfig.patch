@@ -1,0 +1,335 @@
+From 44029f881a614edd3ba2738928908d146b6059d1 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Wed, 1 Mar 2023 14:00:56 +0200
+Subject: [PATCH] compulab: Update Kconfig
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm/mach-imx/imx8m/Kconfig          | 43 +--------------
+ board/compulab/iot-gate-imx8/Kconfig     |  1 -
+ board/compulab/iot-gate-imx8plus/Kconfig | 12 ++--
+ board/compulab/mcm-imx8m-mini/Kconfig    |  1 -
+ board/compulab/plat/Kconfig              | 70 +++++++++++++++++++++++-
+ board/compulab/plat/imx8mp/Kconfig       | 18 ------
+ board/compulab/som-imx8m-plus/Kconfig    | 12 ++--
+ board/compulab/ucm-imx8m-mini/Kconfig    |  1 -
+ board/compulab/ucm-imx8m-plus/Kconfig    | 16 +++---
+ 9 files changed, 87 insertions(+), 87 deletions(-)
+ delete mode 100644 board/compulab/plat/imx8mp/Kconfig
+
+diff --git a/arch/arm/mach-imx/imx8m/Kconfig b/arch/arm/mach-imx/imx8m/Kconfig
+index 812b0a53ae..f9af50febd 100644
+--- a/arch/arm/mach-imx/imx8m/Kconfig
++++ b/arch/arm/mach-imx/imx8m/Kconfig
+@@ -202,42 +202,6 @@ config TARGET_PHYCORE_IMX8MP
+         select SUPPORT_SPL
+ 	select IMX8M_LPDDR4
+ 
+-config TARGET_UCM_IMX8M_MINI
+-	bool "CompuLab ucm-imx8m-mini"
+-	select IMX8MM
+-	select SUPPORT_SPL
+-	select IMX8M_LPDDR4
+-
+-config TARGET_MCM_IMX8M_MINI
+-	bool "CompuLab mcm-imx8m-mini"
+-	select IMX8MM
+-	select SUPPORT_SPL
+-	select IMX8M_LPDDR4
+-
+-config TARGET_IOT_GATE_IMX8
+-	bool "CompuLab iot-gate-imx8"
+-	select IMX8MM
+-	select SUPPORT_SPL
+-	select IMX8M_LPDDR4
+-
+-config TARGET_UCM_IMX8M_PLUS
+-	bool "CompuLab ucm-imx8m-plus"
+-	select IMX8MP
+-	select SUPPORT_SPL
+-	select IMX8M_LPDDR4
+-
+-config TARGET_SOM_IMX8M_PLUS
+-	bool "CompuLab som-imx8m-plus"
+-	select IMX8MP
+-	select SUPPORT_SPL
+-	select IMX8M_LPDDR4
+-
+-config TARGET_IOT_GATE_IMX8PLUS
+-	bool "CompuLab iot-gate-imx8plus"
+-	select IMX8MP
+-	select SUPPORT_SPL
+-	select IMX8M_LPDDR4
+-
+ endchoice
+ 
+ source "board/freescale/imx8mq_evk/Kconfig"
+@@ -254,11 +218,6 @@ source "board/beacon/imx8mm/Kconfig"
+ source "board/beacon/imx8mn/Kconfig"
+ source "board/phytec/phycore_imx8mm/Kconfig"
+ source "board/phytec/phycore_imx8mp/Kconfig"
+-source "board/compulab/ucm-imx8m-mini/Kconfig"
+-source "board/compulab/mcm-imx8m-mini/Kconfig"
+-source "board/compulab/iot-gate-imx8/Kconfig"
+-source "board/compulab/ucm-imx8m-plus/Kconfig"
+-source "board/compulab/som-imx8m-plus/Kconfig"
+-source "board/compulab/iot-gate-imx8plus/Kconfig"
++source "board/compulab/plat/Kconfig"
+ 
+ endif
+diff --git a/board/compulab/iot-gate-imx8/Kconfig b/board/compulab/iot-gate-imx8/Kconfig
+index 84f53ca6b9..8ee0509813 100644
+--- a/board/compulab/iot-gate-imx8/Kconfig
++++ b/board/compulab/iot-gate-imx8/Kconfig
+@@ -10,7 +10,6 @@ config SYS_CONFIG_NAME
+ 	default "iot-gate-imx8"
+ 
+ config DEFAULT_DTB
+-	string "U-Boot Default Device Tree File"
+ 	depends on TARGET_IOT_GATE_IMX8
+ 	default "sb-iotgimx8-can.dtb"
+ 
+diff --git a/board/compulab/iot-gate-imx8plus/Kconfig b/board/compulab/iot-gate-imx8plus/Kconfig
+index dc05641966..df2748bba3 100644
+--- a/board/compulab/iot-gate-imx8plus/Kconfig
++++ b/board/compulab/iot-gate-imx8plus/Kconfig
+@@ -10,25 +10,23 @@ config SYS_CONFIG_NAME
+ 	default "iot-gate-imx8plus"
+ 
+ config DEFAULT_DTB
+-	string "U-Boot Default Device Tree File"
++	string
+ 	default "iot-gate-imx8plus.dtb"
+ 
+ config SYS_I2C_EEPROM_BUS
+-	int "SOM eeprom bus address"
++	int
+ 	default 1
+ 
+ config SYS_I2C_EEPROM_ADDR
+-	hex "SOM eeprom dev address"
++	hex
+ 	default 0x50
+ 
+ config SYS_I2C_EEPROM_BUS_SB
+-	hex "SB eeprom bus address"
++	hex
+ 	default 0x1
+ 
+ config SYS_I2C_EEPROM_ADDR_SB
+-	hex "SB eeprom dev address"
++	hex
+ 	default 0x54
+ 
+-source "board/compulab/plat/imx8mp/Kconfig"
+-
+ endif
+diff --git a/board/compulab/mcm-imx8m-mini/Kconfig b/board/compulab/mcm-imx8m-mini/Kconfig
+index 254399755a..d11480b557 100644
+--- a/board/compulab/mcm-imx8m-mini/Kconfig
++++ b/board/compulab/mcm-imx8m-mini/Kconfig
+@@ -10,7 +10,6 @@ config SYS_CONFIG_NAME
+ 	default "mcm-imx8m-mini"
+ 
+ config DEFAULT_DTB
+-	string "U-Boot Default Device Tree File"
+ 	depends on TARGET_MCM_IMX8M_MINI
+ 	default "sbc-mcm-imx8m-mini.dtb"
+ 
+diff --git a/board/compulab/plat/Kconfig b/board/compulab/plat/Kconfig
+index af14b8b642..361cf0bff4 100644
+--- a/board/compulab/plat/Kconfig
++++ b/board/compulab/plat/Kconfig
+@@ -1,4 +1,45 @@
+-menu "Compulab platform features"
++choice
++	prompt  "CompuLab i.MX8M select"
++
++config TARGET_UCM_IMX8M_MINI
++	bool "CompuLab ucm-imx8m-mini"
++	select IMX8MM
++	select SUPPORT_SPL
++	select IMX8M_LPDDR4
++
++config TARGET_MCM_IMX8M_MINI
++	bool "CompuLab mcm-imx8m-mini"
++	select IMX8MM
++	select SUPPORT_SPL
++	select IMX8M_LPDDR4
++
++config TARGET_IOT_GATE_IMX8
++	bool "CompuLab iot-gate-imx8"
++	select IMX8MM
++	select SUPPORT_SPL
++	select IMX8M_LPDDR4
++
++config TARGET_UCM_IMX8M_PLUS
++	bool "CompuLab ucm-imx8m-plus"
++	select IMX8MP
++	select SUPPORT_SPL
++	select IMX8M_LPDDR4
++
++config TARGET_SOM_IMX8M_PLUS
++	bool "CompuLab som-imx8m-plus"
++	select IMX8MP
++	select SUPPORT_SPL
++	select IMX8M_LPDDR4
++
++config TARGET_IOT_GATE_IMX8PLUS
++	bool "CompuLab iot-gate-imx8plus"
++	select IMX8MP
++	select SUPPORT_SPL
++	select IMX8M_LPDDR4
++
++endchoice
++
++menu "Compulab i.MX8MM platform features"
+ 	depends on TARGET_UCM_IMX8M_MINI || TARGET_MCM_IMX8M_MINI || TARGET_IOT_GATE_IMX8
+ 
+ config SPL_REPORT_FAKE_MEMSIZE
+@@ -9,3 +50,30 @@ config SPL_REPORT_FAKE_MEMSIZE
+ 	  size. For debug purposes ONLY!!!
+ 
+ endmenu
++
++menu  "Compulab i.MX8MP platform features"
++	depends on TARGET_SOM_IMX8M_PLUS || TARGET_UCM_IMX8M_PLUS || TARGET_IOT_GATE_IMX8PLUS
++
++config DRAM_D2D4
++	bool "Enable D2D4 or D1D8 dram support"
++	default y
++	help
++	  If 'Y' then support for D2 and D4 configuration is enabled
++	  else support for D1 and D8 configuration is enabled
++
++config ATF_LOAD_ADDR
++	hex
++	default 0x00970000
++
++config TEE_LOAD_ADDR
++	hex
++	default 0x56000000
++
++endmenu
++
++source "board/compulab/ucm-imx8m-mini/Kconfig"
++source "board/compulab/mcm-imx8m-mini/Kconfig"
++source "board/compulab/iot-gate-imx8/Kconfig"
++source "board/compulab/ucm-imx8m-plus/Kconfig"
++source "board/compulab/som-imx8m-plus/Kconfig"
++source "board/compulab/iot-gate-imx8plus/Kconfig"
+diff --git a/board/compulab/plat/imx8mp/Kconfig b/board/compulab/plat/imx8mp/Kconfig
+deleted file mode 100644
+index 0ccf5ac9b9..0000000000
+--- a/board/compulab/plat/imx8mp/Kconfig
++++ /dev/null
+@@ -1,18 +0,0 @@
+-if TARGET_SOM_IMX8M_PLUS || TARGET_UCM_IMX8M_PLUS || TARGET_IOT_GATE_IMX8PLUS
+-
+-config DRAM_D2D4
+-	bool "Enable D2,D4 or D1,D8 dram support"
+-	default n
+-	help
+-	  If 'Y' then support for D2 and D4 configuration is enabled
+-	  else support for D1 and D8 configuration is enabled
+-
+-config ATF_LOAD_ADDR
+-	hex "bl31.bin load address"
+-	default 0x00970000
+-
+-config TEE_LOAD_ADDR
+-	hex "tee.bin load address"
+-	default 0x56000000
+-
+-endif
+diff --git a/board/compulab/som-imx8m-plus/Kconfig b/board/compulab/som-imx8m-plus/Kconfig
+index 1a512f28d0..6eefa03c47 100644
+--- a/board/compulab/som-imx8m-plus/Kconfig
++++ b/board/compulab/som-imx8m-plus/Kconfig
+@@ -10,25 +10,23 @@ config SYS_CONFIG_NAME
+ 	default "som-imx8m-plus"
+ 
+ config DEFAULT_DTB
+-	string "U-Boot Default Device Tree File"
++	string
+ 	default "sbc-som-imx8m-plus.dtb"
+ 
+ config SYS_I2C_EEPROM_BUS
+-	int "SOM eeprom bus address"
++	int
+ 	default 1
+ 
+ config SYS_I2C_EEPROM_ADDR
+-	hex "SOM eeprom dev address"
++	hex
+ 	default 0x50
+ 
+ config SYS_I2C_EEPROM_BUS_SB
+-	hex "SB eeprom bus address"
++	hex
+ 	default 0x2
+ 
+ config SYS_I2C_EEPROM_ADDR_SB
+-	hex "SB eeprom dev address"
++	hex
+ 	default 0x54
+ 
+-source "board/compulab/plat/imx8mp/Kconfig"
+-
+ endif
+diff --git a/board/compulab/ucm-imx8m-mini/Kconfig b/board/compulab/ucm-imx8m-mini/Kconfig
+index ed4f21608a..e8dfb0c940 100644
+--- a/board/compulab/ucm-imx8m-mini/Kconfig
++++ b/board/compulab/ucm-imx8m-mini/Kconfig
+@@ -10,7 +10,6 @@ config SYS_CONFIG_NAME
+ 	default "ucm-imx8m-mini"
+ 
+ config DEFAULT_DTB
+-	string "U-Boot Default Device Tree File"
+ 	depends on TARGET_UCM_IMX8M_MINI
+ 	default "sbc-ucm-imx8m-mini.dtb"
+ 
+diff --git a/board/compulab/ucm-imx8m-plus/Kconfig b/board/compulab/ucm-imx8m-plus/Kconfig
+index a2a5d1887d..38a4aa45bd 100644
+--- a/board/compulab/ucm-imx8m-plus/Kconfig
++++ b/board/compulab/ucm-imx8m-plus/Kconfig
+@@ -10,29 +10,27 @@ config SYS_CONFIG_NAME
+ 	default "ucm-imx8m-plus"
+ 
+ config DEFAULT_DTB
+-	string "U-Boot Default Device Tree File"
+-	default "sbc-ucm-imx8m-plus.dtb"
++	string
++	default "ucm-imx8m-plus.dtb"
+ 
+ config SYS_I2C_EEPROM_BUS
+-	int "SOM eeprom bus address"
++	int
+ 	default 1
+ 
+ config SYS_I2C_EEPROM_ADDR
+-	hex "SOM eeprom dev address"
++	hex
+ 	default 0x50
+ 
+ config SYS_I2C_EEPROM_BUS_SB
+-	hex "SB eeprom bus address"
+-	default 0x4
++	hex
++	default 0x1
+ 
+ config SYS_I2C_EEPROM_ADDR_SB
+-	hex "SB eeprom dev address"
++	hex
+ 	default 0x54
+ 
+ config COMPULAB_DEBUG_UART1
+ 	bool "System Debug UART1"
+ 	default false
+ 
+-source "board/compulab/plat/imx8mp/Kconfig"
+-
+ endif
+-- 
+2.17.1
+

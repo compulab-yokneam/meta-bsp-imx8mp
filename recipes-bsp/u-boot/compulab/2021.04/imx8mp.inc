@@ -102,6 +102,7 @@ SRC_URI:append = " \
 	file://0100-iot-gate-imx8plus-Update-defconfig.patch \
 	file://0101-iot-gate-imx8plus-Update-Kconfig.patch \
 	file://0102-som-imx8m-plus-Update-Kconfig.patch \
+	file://0103-compulab-Update-Kconfig.patch \
 "
 
 SRC_URI:append:ucm-imx8m-plus = " \
