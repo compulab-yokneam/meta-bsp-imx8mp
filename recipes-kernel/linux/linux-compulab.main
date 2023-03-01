@@ -38,6 +38,8 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/compulab/${PV}/imx8mp:"
 
 require compulab/${PV}/imx8mp.inc
 
+KERNEL_CONFIG = "${MACHINE}_defconfig compulab.config"
+
 do_configure:append() {
     if [ -z ${SKIP_MACHINE_DEFCONFIG} ];then
         if [ -z ${KERNEL_CONFIG} ];then
@@ -48,21 +50,8 @@ do_configure:append() {
     fi
 }
 
-do_merge_config () {
-    configs=arch/arm64/configs
-    cp ${S}/${configs}/${MACHINE}_defconfig ${S}/${configs}/compulab_defconfig
-    echo "# CONFIG_MACHINE_STUB is not set " > ${WORKDIR}/CONFIG_MACHINE_STUB.cfg
-    ${S}/scripts/kconfig/merge_config.sh  -O ${S}/${configs}/ -m ${S}/${configs}/${MACHINE}_defconfig ${WORKDIR}/*.cfg
-    mv ${S}/${configs}/.config ${S}/${configs}/${MACHINE}_defconfig
-    oe_runmake ${MACHINE}_defconfig
-    mv ${S}/${configs}/compulab_defconfig ${S}/${configs}/${MACHINE}_defconfig
-}
-
 do_compile:prepend() {
-    if [ "${BUILD_REPRODUCIBLE_BINARIES}" = "1" ];then
-        export SOURCE_DATE_EPOCH=$(date +%s)
-    fi
-    do_merge_config
+    export SOURCE_DATE_EPOCH=$(date +%s)
 }
 
 do_install:append() {

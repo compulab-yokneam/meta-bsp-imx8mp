@@ -1,0 +1,23 @@
+From 05dfcffb362710be10e525ab36d5bf0808862f19 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Fri, 24 Feb 2023 13:39:29 +0200
+Subject: [PATCH] compulab: Add common compulab config
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ arch/arm64/configs/compulab.config | 3 +++
+ 1 file changed, 3 insertions(+)
+ create mode 100644 arch/arm64/configs/compulab.config
+
+diff --git a/arch/arm64/configs/compulab.config b/arch/arm64/configs/compulab.config
+new file mode 100644
+index 000000000000..0c3eed846dc8
+--- /dev/null
++++ b/arch/arm64/configs/compulab.config
+@@ -0,0 +1,3 @@
++CONFIG_EXPERT=y
++CONFIG_GPIO_SYSFS=y
++CONFIG_DEBUG_KERNEL=y
+-- 
+2.17.1
+

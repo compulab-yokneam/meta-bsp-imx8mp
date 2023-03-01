@@ -1,0 +1,50 @@
+From 8ae4feca5fd670c0fc2b75f0ecf154899902df72 Mon Sep 17 00:00:00 2001
+From: Ilya Ledvich <ilya@compulab.co.il>
+Date: Mon, 8 Aug 2022 15:55:29 +0300
+Subject: [PATCH] net: phy: realtek: RTL8211E: make use of
+ "realtek,clkout-disable" property
+
+RTL8211E PHY features 125MHz Reference Clock named CLK125.
+CLK125 is enabled by default after PHY hardware reset.
+Make use of dt "realtek,clkout-disable" property to disable the clock if unused.
+
+Signed-off-by: Ilya Ledvich <ilya@compulab.co.il>
+---
+ drivers/net/phy/realtek.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+index fb608b31a574..b3b5a9a866f2 100644
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@ -13,6 +13,9 @@
+ #include <linux/module.h>
+ #include <linux/delay.h>
+ 
++#define RTL821E_PHYCR				0x10
++#define RTL821E_PHYCR_CLK125			BIT(4)
++
+ #define RTL821x_PHYSR				0x11
+ #define RTL821x_PHYSR_DUPLEX			BIT(13)
+ #define RTL821x_PHYSR_SPEED			GENMASK(15, 14)
+@@ -438,9 +441,17 @@ static int rtl821x_resume(struct phy_device *phydev)
+ 
+ static int rtl8211e_config_init(struct phy_device *phydev)
+ {
++	struct device *dev = &phydev->mdio.dev;
+ 	int ret = 0, oldpage;
+ 	u16 val;
+ 
++	if (of_property_read_bool(dev->of_node, "realtek,clkout-disable")) {
++		 __phy_modify(phydev, RTL821E_PHYCR, RTL821E_PHYCR_CLK125, RTL821E_PHYCR_CLK125);
++	}
++
++	val = __phy_read(phydev, RTL821E_PHYCR) & RTL821E_PHYCR_CLK125;
++	dev_dbg(dev, "CLK125 clock is %s\n",  val ? "disabled" : "enabled");
++
+ 	/* enable TX/RX delay for rgmii-* modes, and disable them for rgmii. */
+ 	switch (phydev->interface) {
+ 	case PHY_INTERFACE_MODE_RGMII:
+-- 
+2.17.1
+
