@@ -93,6 +93,15 @@ SRC_URI:append = " \
 	file://0091-compulab-imx8mp-Introduce-board_save_phyaddr-and-fdt.patch \
 	file://0092-som-imx8m-plus-Enable-phy-address-discovery-logics.patch \
 	file://0093-compulab-imx8mp-Update-u-boot-prompt.patch \
+	file://0094-compulab-imx8mp-Report-on-phy-0-except-for-som-imx8m.patch \
+	file://0095-ucm-imx8m-plus-Enable-phy-address-discovery-logics.patch \
+	file://0096-iot-gate-imx8plus-Enable-phy-address-discovery-logic.patch \
+	file://0097-som-imx8m-plus-Enable-FEC_QUIRK_ENET_MAC.patch \
+	file://0098-ucm-imx8m-plus-Update-defconfig.patch \
+	file://0099-ucm-imx8m-plus-Update-Kconfig.patch \
+	file://0100-iot-gate-imx8plus-Update-defconfig.patch \
+	file://0101-iot-gate-imx8plus-Update-Kconfig.patch \
+	file://0102-som-imx8m-plus-Update-Kconfig.patch \
 "
 
 SRC_URI:append:ucm-imx8m-plus = " \

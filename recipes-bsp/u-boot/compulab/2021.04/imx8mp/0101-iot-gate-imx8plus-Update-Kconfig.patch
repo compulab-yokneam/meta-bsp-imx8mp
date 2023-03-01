@@ -1,0 +1,43 @@
+From eb38a772f19d907d1c2c06bb01473e66b5173c3f Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Wed, 1 Mar 2023 00:01:59 +0200
+Subject: [PATCH] iot-gate-imx8plus: Update Kconfig
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/iot-gate-imx8plus/Kconfig | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/board/compulab/iot-gate-imx8plus/Kconfig b/board/compulab/iot-gate-imx8plus/Kconfig
+index 50afe4a723..dc05641966 100644
+--- a/board/compulab/iot-gate-imx8plus/Kconfig
++++ b/board/compulab/iot-gate-imx8plus/Kconfig
+@@ -11,7 +11,6 @@ config SYS_CONFIG_NAME
+ 
+ config DEFAULT_DTB
+ 	string "U-Boot Default Device Tree File"
+-	depends on TARGET_IOT_GATE_IMX8PLUS
+ 	default "iot-gate-imx8plus.dtb"
+ 
+ config SYS_I2C_EEPROM_BUS
+@@ -24,16 +23,12 @@ config SYS_I2C_EEPROM_ADDR
+ 
+ config SYS_I2C_EEPROM_BUS_SB
+ 	hex "SB eeprom bus address"
+-	default 1
++	default 0x1
+ 
+ config SYS_I2C_EEPROM_ADDR_SB
+ 	hex "SB eeprom dev address"
+ 	default 0x54
+ 
+-config COMPULAB_DEBUG_UART1
+-	bool "System Debug UART1"
+-	default false
+-
+ source "board/compulab/plat/imx8mp/Kconfig"
+ 
+ endif
+-- 
+2.17.1
+

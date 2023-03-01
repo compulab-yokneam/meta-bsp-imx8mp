@@ -1,0 +1,25 @@
+From 6d3faf78acd52ee921be1a8e86c2e7eeab5028cb Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Wed, 1 Mar 2023 00:02:39 +0200
+Subject: [PATCH] som-imx8m-plus: Update Kconfig
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/som-imx8m-plus/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/board/compulab/som-imx8m-plus/Kconfig b/board/compulab/som-imx8m-plus/Kconfig
+index 732c447cd9..1a512f28d0 100644
+--- a/board/compulab/som-imx8m-plus/Kconfig
++++ b/board/compulab/som-imx8m-plus/Kconfig
+@@ -11,7 +11,6 @@ config SYS_CONFIG_NAME
+ 
+ config DEFAULT_DTB
+ 	string "U-Boot Default Device Tree File"
+-	depends on TARGET_SOM_IMX8M_PLUS
+ 	default "sbc-som-imx8m-plus.dtb"
+ 
+ config SYS_I2C_EEPROM_BUS
+-- 
+2.17.1
+

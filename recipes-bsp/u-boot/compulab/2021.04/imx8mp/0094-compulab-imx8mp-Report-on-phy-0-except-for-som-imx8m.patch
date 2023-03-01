@@ -1,0 +1,32 @@
+From 349f1b8b0d846430a0a42e7becf0d953567010fe Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Mon, 27 Feb 2023 18:34:29 +0200
+Subject: [PATCH] compulab: imx8mp: Report on phy#0 except for som-imx8m-plus
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/plat/imx8mp/board/board.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/board/compulab/plat/imx8mp/board/board.c b/board/compulab/plat/imx8mp/board/board.c
+index 24dd196828..04b9d69001 100644
+--- a/board/compulab/plat/imx8mp/board/board.c
++++ b/board/compulab/plat/imx8mp/board/board.c
+@@ -559,12 +559,13 @@ int get_phy_id(struct mii_dev *bus, int addr, int devad, u32 *phy_id)
+ 
+ 	*phy_id |= (phy_reg & 0xffff);
+ 
++#ifdef CONFIG_TARGET_SOM_IMX8M_PLUS
+ 	/* Specical case for REALTEK */
+ 	phy_reg = (( phy_reg >> 4 ) & PHY_VENDOR_ID_MASK);
+ 	if ((addr ==  0) &&  (phy_reg == PHY_REALTEK_ID)) {
+ 		return -ENODEV;
+ 	}
+-
++#endif
+ 	return 0;
+ }
+ 
+-- 
+2.17.1
+

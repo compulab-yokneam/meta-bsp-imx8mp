@@ -1,0 +1,25 @@
+From 33b345b465b81da153f268a40d8616da45829bfa Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Mon, 27 Feb 2023 18:43:48 +0200
+Subject: [PATCH] som-imx8m-plus: Enable FEC_QUIRK_ENET_MAC
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ include/configs/som-imx8m-plus.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/configs/som-imx8m-plus.h b/include/configs/som-imx8m-plus.h
+index a3792c6113..4a71b8bf9f 100644
+--- a/include/configs/som-imx8m-plus.h
++++ b/include/configs/som-imx8m-plus.h
+@@ -16,6 +16,7 @@
+ 
+ #define CONFIG_FEC_XCV_TYPE             RGMII
+ #define CONFIG_FEC_MXC_PHYADDR         	-1
++#define FEC_QUIRK_ENET_MAC
+ 
+ #define DWC_NET_PHYADDR	               	-1
+ #define PHY_ANEG_TIMEOUT 20000
+-- 
+2.17.1
+

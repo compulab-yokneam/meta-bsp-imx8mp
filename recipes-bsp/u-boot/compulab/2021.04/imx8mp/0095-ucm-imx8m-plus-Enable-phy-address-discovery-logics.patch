@@ -1,0 +1,30 @@
+From c158a8788cc264b7858dc270ab24b4d34c3b8509 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Mon, 27 Feb 2023 18:42:39 +0200
+Subject: [PATCH] ucm-imx8m-plus: Enable phy address discovery logics
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ include/configs/ucm-imx8m-plus.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/configs/ucm-imx8m-plus.h b/include/configs/ucm-imx8m-plus.h
+index c3581df4aa..fd7c996a50 100644
+--- a/include/configs/ucm-imx8m-plus.h
++++ b/include/configs/ucm-imx8m-plus.h
+@@ -15,10 +15,12 @@
+ #define CONFIG_ETHPRIME                 "eth0" /* Set eqos to primary since we use its MDIO */
+ 
+ #define CONFIG_FEC_XCV_TYPE             RGMII
++#define CONFIG_FEC_MXC_PHYADDR         	-1
+ #define FEC_QUIRK_ENET_MAC
+ 
+ #ifdef CONFIG_DWC_ETH_QOS
+ #define CONFIG_SYS_NONCACHED_MEMORY     (1 * SZ_1M)     /* 1M */
++#define DWC_NET_PHYADDR	               	-1
+ #endif
+ 
+ #define PHY_ANEG_TIMEOUT 20000
+-- 
+2.17.1
+
