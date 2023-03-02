@@ -51,9 +51,7 @@ do_configure:append() {
 }
 
 do_compile:prepend() {
-    if [ "${BUILD_REPRODUCIBLE_BINARIES}" = "1" ];then
-        export SOURCE_DATE_EPOCH=$(date +%s)
-    fi
+    export SOURCE_DATE_EPOCH=$(date +%s)
 }
 
 do_install:append() {
