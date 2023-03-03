@@ -8,5 +8,6 @@ SRC_URI:append = " \
 	file://0006-som-imx8m-plus-dts-Fix-usdhc2-performance-issue.patch \
 	file://0007-ucm-imx8m-plus-dts-Update-device-tree.patch \
 	file://0008-arm64-config-Add-compulab.config.patch \
+	file://0009-compulab-Update-common-compulab-config.patch \
 	file://defconfig \
 "
