@@ -27,6 +27,10 @@ export NXP_KERNEL=linux-imx
 export NXP_KERNEL_BRANCH=${NXP_RELEASE}
 export CPL_KERNEL_PATCH=recipes-kernel/linux/compulab/5.15.71/imx8mp
 
+export COMPULAB_KERNEL=linux-compulab
+export COMPULAB_KERNEL_BRANCH=linux-compulab_v5.15.71
+export COMPULAB_KERNEL_PATCH=/path/to/linux-compulab_v5.15.71
+
 export NXP_IMX_GIT="https://github.com/nxp-imx"
 export CompuLab_GIT="https://github.com/compulab-yokneam"
 export CodeAurora_GIT="https://source.codeaurora.org/external/imx"

@@ -204,7 +204,7 @@ _nxp_kernel_add() {
     export INSTALL_MOD_PATH=${KERNEL_INSTALL}
     mkdir -p ${KERNEL_INSTALL}/lib/modules
     mkdir -p ${KERNEL_INSTALL}/boot
-    make -C ${NXP_KERNEL} modules_install O=${KERNEL_BUILD}
+    make -C ${COMPULAB_KERNEL} modules_install O=${KERNEL_BUILD}
 
     # Copy linux images' files
     for _file in ${KERNEL_BUILD}/arch/arm64/boot/Image*;do
@@ -233,7 +233,7 @@ _nxp_kernel_tar() {
 }
 
 _nxp_kernel_tar_stat() {
-    export KERNEL_IMAGE_TAR=$(ls -tr ${RESULTS}/*${KERNEL_RELEASE}* | awk '{ f=$0 } END { print f }')
+    export KERNEL_IMAGE_TAR=$(ls -tr ${RESULTS}/*${KERNEL_RELEASE}* 2>/dev/null | awk '{ f=$0 } END { print f }')
 }
 
 get_nxp_kernel_tar() {
@@ -246,13 +246,18 @@ get_nxp_kernel() {
 
     _nxp_kernel_pre
 
-    NXP_SOURCE=${NXP_KERNEL} NXP_BRANCH=${NXP_KERNEL_BRANCH} CPL_PATCH=${CPL_KERNEL_PATCH} _get_nxp_source
+    local _SRC_GIT_REPO_NAME=${SRC_GIT_REPO_NAME}
+    export SRC_GIT_REPO_NAME="CompuLab"
+
+    NXP_SOURCE=${COMPULAB_KERNEL} NXP_BRANCH=${COMPULAB_KERNEL_BRANCH} CPL_PATCH=${COMPULAB_KERNEL_PATCH} _get_nxp_source
 
     export ARCH=arm64
-    make -j 16 -C ${NXP_KERNEL} O=${KERNEL_BUILD} ${MACHINE}_defconfig
-    make -j 16 -C ${NXP_KERNEL} O=${KERNEL_BUILD}
+    make -j 16 -C ${COMPULAB_KERNEL} O=${KERNEL_BUILD} ${MACHINE}_defconfig compulab.config
+    make -j 16 -C ${COMPULAB_KERNEL} O=${KERNEL_BUILD}
 
     _nxp_kernel_add
+
+    export SRC_GIT_REPO_NAME=${_SRC_GIT_REPO_NAME}
 }
 
 clean_all() {
