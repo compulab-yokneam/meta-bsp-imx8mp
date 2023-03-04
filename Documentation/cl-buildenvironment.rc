@@ -115,6 +115,9 @@ _get_nxp_source() {
         [[ -d ${LAYER_DIR}/${CPL_PATCH} ]] && git -C ${NXP_SOURCE} am ${LAYER_DIR}/${CPL_PATCH}/*.patch
         [[ -d ${LOCAL_PDIR}/${NXP_SOURCE} ]] && git -C ${NXP_SOURCE} am ${LOCAL_PDIR}/${NXP_SOURCE}/*.patch
     }
+    local tag="${COMPULAB_VERSION}"
+    git -C ${NXP_SOURCE} tag | grep -q ${tag} && git -C ${NXP_SOURCE} tag -d ${tag} || true
+    git -C ${NXP_SOURCE} tag -a -m "Build tag message ${tag}" "${tag}"
 }
 
 get_nxp_atf() {
@@ -151,25 +154,13 @@ clean_nxp_optee() {
 
 get_nxp_bootloader() {
     local NXP_FLASH=${1:-flash.bin}
+    local _SRC_GIT_REPO_NAME=${SRC_GIT_REPO_NAME}
+    export SRC_GIT_REPO_NAME="CompuLab"
 
-    NXP_SOURCE=${NXP_UBOOT} NXP_BRANCH=${NXP_UBOOT_BRANCH} CPL_PATCH=${CPL_UBOOT_PATCH} _get_nxp_source
-    local tag="build_tag_$(date +%s)"
-    git -C ${NXP_UBOOT} tag -a -m "Build tag message ${tag}" "v${tag}"
+    NXP_SOURCE=${COMPULAB_UBOOT} NXP_BRANCH=${COMPULAB_UBOOT_BRANCH} CPL_PATCH=${COMPULAB_UBOOT_PATCH} _get_nxp_source
 
     export ARCH=arm64
-    make -j 16 -C ${NXP_UBOOT} O=${RESULTS} ${MACHINE}_defconfig
-
-    # Clean up the conf fragment
-    rm -rf ${RESULTS}/cfg.cfg
-
-    [[ ${CPL_DEBUG_UART} == 1 ]] && {
-        CFG_LINE="CONFIG_COMPULAB_DEBUG_UART1=y"
-    } || {
-        CFG_LINE="# CONFIG_COMPULAB_DEBUG_UART1 is not set"
-    }
-cat << eof >> ${RESULTS}/cfg.cfg
-${CFG_LINE}
-eof
+    make -j 16 -C ${COMPULAB_UBOOT} O=${RESULTS} ${MACHINE}_defconfig
 
     # dram configurations
     [[ ${DRAM} == "D2D4" ]] && {
@@ -183,23 +174,20 @@ cat << eof >> ${RESULTS}/cfg.cfg
 ${CFG_LINE}
 eof
 
-    # Enable fit generator
 cat << eof >> ${RESULTS}/cfg.cfg
-CONFIG_USE_SPL_FIT_GENERATOR=y
-CONFIG_SPL_FIT_GENERATOR="arch/arm/mach-imx/mkimage_fit_atf.sh"
+CONFIG_LOCALVERSION="-${COMPULAB_VERSION}"
 eof
 
-cat << eof >> ${RESULTS}/cfg.cfg
-CONFIG_LOCALVERSION="${COMPULAB_VERSION}"
-eof
-
-    pushd ${NXP_UBOOT}
+    pushd ${COMPULAB_UBOOT}
     KCONFIG_CONFIG=${RESULTS}/.config  ./scripts/kconfig/merge_config.sh -m ${RESULTS}/.config ${RESULTS}/cfg.cfg
     popd
 
-    make -j 16 -C ${NXP_UBOOT} O=${RESULTS} ${NXP_FLASH}
+    make -j 16 -C ${COMPULAB_UBOOT}/board/compulab/plat/imx8mp/firmware all
+    make -j 16 -C ${COMPULAB_UBOOT} O=${RESULTS} ${NXP_FLASH}
     cp ${RESULTS}/${NXP_FLASH} ${RESULTS}/${MACHINE}-${NXP_FLASH}-${DRAM_CFG}
     ln -fs ${MACHINE}-${NXP_FLASH}-${DRAM_CFG} ${RESULTS}/${MACHINE}-${NXP_FLASH}
+
+    export SRC_GIT_REPO_NAME=${_SRC_GIT_REPO_NAME}
 }
 
 _KERNEL_BUILD=${RESULTS}/kernel/build
@@ -275,7 +263,7 @@ clean_all() {
 }
 
 get_compulab_bootloader() {
-    build_all
+    get_nxp_bootloader
 }
 
 build_all() {
@@ -285,10 +273,6 @@ build_all() {
     get_nxp_optee
     get_nxp_bootloader
     export SRC_UPDATE=0
-}
-
-get_compulab_bootloader() {
-    build_all
 }
 
 build_uui() {
@@ -401,5 +385,5 @@ setup_dirs
 get_compulab_metalayer
 get_compatible_machine ${get_compatible_machine_exit}
 
-export SRC_UPDATE=0
+export SRC_UPDATE=1
 PS1='$(usage)\n\ncl-buildenvironment [ MACHINE=${MACHINE}; DEBUG_UART=${CPL_DEBUG_UART}; DRAM=${DRAM}; CROSS_COMPILE=${CROSS_COMPILE} GIT_REPO=${SRC_GIT_REPO_NAME}]\n\n$(status) > '
