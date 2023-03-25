@@ -40,6 +40,13 @@ require compulab/${PV}/imx8mp.inc
 
 KERNEL_CONFIG = "${MACHINE}_defconfig compulab.config"
 
+do_configure:prepend() {
+    # Configuration fragments add support
+    for cfg_frag in $(ls ${WORKDIR}/*.cfg 2>/dev/null);do
+        cat ${cfg_frag} >> ${S}/arch/arm64/configs/compulab.config
+    done
+}
+
 do_configure:append() {
     if [ -z ${SKIP_MACHINE_DEFCONFIG} ];then
         if [ -z ${KERNEL_CONFIG} ];then
@@ -55,8 +62,14 @@ do_compile:prepend() {
 }
 
 do_install:append() {
+    cd ${D}/${KERNEL_IMAGEDEST}
+    ln -s Image-${KERNEL_VERSION} kernel-${KERNEL_VERSION}
+    cd -
+    install -m 0644 ${B}/.config ${D}/${KERNEL_IMAGEDEST}/config-${KERNEL_VERSION}
     oe_runmake headers_install INSTALL_HDR_PATH=${D}${exec_prefix}/src/linux-${KERNEL_VERSION} ARCH=$ARCH
 }
+
+FILES:${KERNEL_PACKAGE_NAME}-image:append = " /boot/kernel-${KERNEL_VERSION} /boot/config-${KERNEL_VERSION} "
 
 do_kernel_localversion:prepend() {
     touch ${WORKDIR}/defconfig
