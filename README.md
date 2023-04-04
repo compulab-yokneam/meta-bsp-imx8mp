@@ -22,7 +22,7 @@ mkdir compulab-nxp-bsp && cd compulab-nxp-bsp
 
 * NXP
 ```
-repo init -u https://source.codeaurora.org/external/imx/imx-manifest -b imx-linux-kirkstone -m imx-5.15.32-2.0.0.xml
+repo init -u https://github.com/nxp-imx/imx-manifest -b imx-linux-kirkstone -m imx-5.15.32-2.0.0.xml
 ```
 
 * CompuLab
