@@ -15,7 +15,7 @@ mkdir compulab-bsp && cd compulab-bsp
 
 * Initialize repo manifests:
 ```
-repo init -u git://source.codeaurora.org/external/imx/imx-manifest.git -b imx-linux-hardknott -m imx-5.10.72-2.2.0.xml
+repo init -u https://github.com/nxp-imx/imx-manifest -b imx-linux-hardknott -m imx-5.10.72-2.2.0.xml
 wget --directory-prefix .repo/manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/hardknott-5.10.72-2.2.0/scripts/imx-5.10.72-2.2.0_compulab.xml
 repo init -m imx-5.10.72-2.2.0_compulab.xml
 repo sync
