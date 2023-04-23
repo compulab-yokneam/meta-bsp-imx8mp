@@ -23,7 +23,7 @@ repo init -u https://github.com/nxp-imx/imx-manifest -b imx-linux-hardknott -m i
 * CompuLab
 ```
 mkdir -p .repo/local_manifests
-wget --directory-prefix mkdir -p .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/som-imx8m-plus-r1.0/scripts/imx-5.10.72-2.2.0_compulab.xml
+wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/som-imx8m-plus-r1.0/scripts/imx-5.10.72-2.2.0_compulab.xml
 ```
 
 * Sync Them all
