@@ -1,17 +1,15 @@
-## Developmet
+# Yocto toolchain how to
 
-* Update bb layers:
-```
-bitbake-layers add-layer ${BUILDDIR}/../sources/meta-compulab-bsp/meta-sdk
-```
+## Yocto SDK
+
 * Build the SDK
 ```
-bitbake -c populate_sdk compulab-qt6-build-env
+bitbake -c populate_sdk imx-image-full
 ```
 
 * Install the SDK
 ```
-sudo ${BUILDDIR}/tmp/deploy/sdk/fsl-imx-xwayland-glibc-x86_64-compulab-qt6-build-env-armv8a-ucm-imx8m-plus-toolchain-5.15-kirkstone.sh
+sudo ${BUILDDIR}/tmp/deploy/sdk/fsl-imx-xwayland-glibc-x86_64-imx-image-full-armv8a-ucm-imx8m-plus-toolchain-5.15-kirkstone.sh
 ```
 
 * Set the installation path or accept the default:
@@ -40,7 +38,23 @@ Each time you wish to use the SDK in a new shell session, you need to source the
  $ . /opt/fsl-imx-xwayland/5.15-kirkstone/environment-setup-armv8a-poky-linux
 ```
 
-* Make use of the build environment
+* Setup the build environment
 ```
-. /opt/fsl-imx-xwayland/5.15-kirkstone/environment-setup-armv8a-poky-linux
+source /opt/fsl-imx-xwayland/5.15-kirkstone/environment-setup-armv8a-poky-linux
+```
+
+* Validate installed compiler location
+
+```
+which ${CROSS_COMPILE}gcc
+/opt/fsl-imx-xwayland/5.15-kirkstone/sysroots/x86_64-pokysdk-linux/usr/bin/aarch64-poky-linux/aarch64-poky-linux-gcc
+```
+
+* Validate installed compiler version
+```
+${CROSS_COMPILE}gcc --version
+aarch64-poky-linux-gcc (GCC) 11.3.0
+Copyright (C) 2021 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ```
