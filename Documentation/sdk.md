@@ -1,5 +1,9 @@
 ## Developmet
 
+* Update bb layers:
+```
+bitbake-layers add-layer ${BUILDDIR}/../sources/meta-compulab-bsp/meta-sdk
+```
 * Build the SDK
 ```
 bitbake -c populate_sdk compulab-qt6-build-env
