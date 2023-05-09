@@ -39,6 +39,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/compulab/${PV}/imx8mp:"
 require compulab/${PV}/imx8mp.inc
 
 KERNEL_CONFIG = "${MACHINE}_defconfig compulab.config"
+EXTRA_OEMAKE += "DTC_FLAGS=-@ "
 
 do_configure:prepend() {
     # Configuration fragments add support
@@ -62,11 +63,41 @@ do_compile:prepend() {
 }
 
 do_install:append() {
-    cd ${D}/${KERNEL_IMAGEDEST}
-    ln -s Image-${KERNEL_VERSION} kernel-${KERNEL_VERSION}
-    cd -
+    ln -s Image-${KERNEL_VERSION} ${D}/${KERNEL_IMAGEDEST}/kernel-${KERNEL_VERSION}
     install -m 0644 ${B}/.config ${D}/${KERNEL_IMAGEDEST}/config-${KERNEL_VERSION}
-    oe_runmake headers_install INSTALL_HDR_PATH=${D}${exec_prefix}/src/linux-${KERNEL_VERSION} ARCH=$ARCH
+
+    INSTALL_HDR_PATH=${D}${exec_prefix}/src/linux-headers-${KERNEL_VERSION}
+    INSTALL_MOD_PATH=${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}
+
+    oe_runmake headers_install INSTALL_HDR_PATH=$INSTALL_HDR_PATH ARCH=$ARCH
+    install -m 0644 ${B}/.config ${INSTALL_HDR_PATH}/.config
+
+    (
+        cd ${S}
+        find . arch/$ARCH -maxdepth 1 -name Makefile\*
+        find include scripts -type f -o -type l
+        find arch/$ARCH -name Kbuild.platforms -o -name Platform
+        find $(find arch/$ARCH -name include -o -name scripts -type d) -type f
+    ) > ${WORKDIR}/temp/hdrsrcfiles
+
+    (
+        cd ${B}
+        echo tools/objtool/objtool
+        find arch/$ARCH/include Module.symvers include scripts -type f
+    ) > ${WORKDIR}/temp/hdrobjfiles
+
+	tar -c -f - -C ${S} -T ${WORKDIR}/temp/hdrsrcfiles | tar -xf - -C ${INSTALL_HDR_PATH}
+	tar -c -f - -C ${B} -T ${WORKDIR}/temp/hdrobjfiles | tar -xf - -C ${INSTALL_HDR_PATH}
+
+    (
+        for f in $(find ${INSTALL_HDR_PATH});do
+            file ${f} | awk -F":" '(/ELF.*x86-64/)&&($0="rm -rf "$1)' | sh -x
+        done
+    )
+    chown -R 0:0 ${INSTALL_HDR_PATH}
+
+    install -d 0755 ${INSTALL_MOD_PATH}
+    ln -s /usr/src/linux-headers-${KERNEL_VERSION} ${INSTALL_MOD_PATH}/build
 }
 
 FILES:${KERNEL_PACKAGE_NAME}-image:append = " /boot/kernel-${KERNEL_VERSION} /boot/config-${KERNEL_VERSION} "
@@ -75,8 +106,8 @@ do_kernel_localversion:prepend() {
     touch ${WORKDIR}/defconfig
 }
 
-PACKAGES =+ "linux-compulab-headers"
-FILES:linux-compulab-headers = "${exec_prefix}/src/linux*"
+PACKAGES =+ "linux-headers"
+FILES:linux-headers = "${exec_prefix}/src/linux* ${nonarch_base_libdir}/modules/${KERNEL_VERSION}/build"
 
 PACKAGESPLITFUNCS:remove = "split_kernel_module_packages"
 
