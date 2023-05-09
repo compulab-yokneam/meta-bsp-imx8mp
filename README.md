@@ -87,6 +87,13 @@ bitbake -k imx-image-multimedia
 |---|---|
 |```bitbake -k imx-boot```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/imx-boot-tagged```|
 
+## Get back to the already created build environment
+```
+cd compulab-nxp-bsp
+repo sync
+source setup build-${MACHINE}
+```
+
 ## Deployment
 ### Create a bootable sd card
 
