@@ -76,6 +76,8 @@ sed -i '$ a DRAM_CONF = "d2d4"' ${BUILDDIR}/conf/local.conf
 sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
 ```
 
+## Build targets
+
 * Building the image:
 ```
 bitbake -k imx-image-full
