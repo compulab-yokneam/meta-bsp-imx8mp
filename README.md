@@ -77,7 +77,7 @@ sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
 
 * Building the image:
 ```
-bitbake -k imx-image-full
+bitbake -k imx-image-multimedia
 ```
 
 * Building the bootloader file only:
@@ -87,7 +87,7 @@ bitbake -k imx-image-full
 |```bitbake -k imx-boot```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/imx-boot-tagged```|
 
 ## Deployment
-### Create a bootable sd card
+### Create a bootable media
 
 * Goto the `tmp/deploy/images/${MACHINE}` directory:
 ```
