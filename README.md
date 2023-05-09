@@ -78,7 +78,7 @@ sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
 
 * Building the image:
 ```
-bitbake -k imx-image-multimedia
+bitbake -k imx-image-full
 ```
 
 * Building the bootloader file only:
