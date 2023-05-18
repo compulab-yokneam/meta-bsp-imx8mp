@@ -93,7 +93,7 @@ bitbake -k imx-image-full
 ```
 cd compulab-nxp-bsp
 repo sync
-source setup build-${MACHINE}
+source setup-environment build-${MACHINE}
 ```
 
 ## Deployment
