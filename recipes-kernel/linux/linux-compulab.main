@@ -24,6 +24,8 @@ KCONFIG_MODE="--alldefconfig"
 # We need to pass it as param since kernel might support more then one
 # machine, with different entry points
 KERNEL_EXTRA_ARGS += "LOADADDR=${UBOOT_ENTRYPOINT}"
+KERNEL_CONFIG = "${MACHINE}_defconfig compulab.config"
+EXTRA_OEMAKE += "DTC_FLAGS=-@ "
 
 DEPENDS += "lzop-native bc-native"
 
@@ -37,9 +39,6 @@ KERNEL_VERSION_SANITY_SKIP="1"
 FILESEXTRAPATHS:prepend := "${THISDIR}/compulab/${PV}/imx8mp:"
 
 require compulab/${PV}/imx8mp.inc
-
-KERNEL_CONFIG = "${MACHINE}_defconfig compulab.config"
-EXTRA_OEMAKE += "DTC_FLAGS=-@ "
 
 do_configure:prepend() {
     # Configuration fragments add support
