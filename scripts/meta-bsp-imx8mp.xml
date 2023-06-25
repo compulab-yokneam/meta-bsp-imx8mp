@@ -2,10 +2,10 @@
   <manifest>
   <remote fetch="https://github.com/compulab-yokneam" name="compulab"/>
 
-  <project name="meta-compulab" remote="compulab" revision="honister" path="sources/meta-compulab"/>
-  <project name="meta-compulab-bsp" remote="compulab" revision="honister" path="sources/meta-compulab-bsp"/>
-  <project name="meta-compulab-uefi" remote="compulab" revision="honister" path="sources/meta-compulab-uefi"/>
-  <project name="meta-bsp-imx8mp" remote="compulab" revision="iot-gate-imx8plus-r2.0" path="sources/meta-bsp-imx8mp" >
+  <project name="meta-compulab" remote="compulab" revision="a24b401bd79d0d9c371060346d3c5bba86eace7c" path="sources/meta-compulab"/>
+  <project name="meta-compulab-bsp" remote="compulab" revision="c4a9744e7db5d7c782b6613bfbf3794ee9728934" path="sources/meta-compulab-bsp"/>
+  <project name="meta-compulab-uefi" remote="compulab" revision="531f5a55aaeb7d60bb788d9312d6774080b276ad" path="sources/meta-compulab-uefi"/>
+  <project name="meta-bsp-imx8mp" remote="compulab" revision="fe1d2ccaba6fab06f0071b80d06fbe7d8cb6ff5e" path="sources/meta-bsp-imx8mp" >
     <linkfile src="tools/compulab-setup-env" dest="compulab-setup-env" />
   </project>
 
