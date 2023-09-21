@@ -1,68 +1,17 @@
-SRC_URI:append = " \
-	file://0000-compulab-em9190-Add-modem-driver.patch \
-	file://0001-compulab-ili9881c-Add-panel-driver.patch \
-	file://0002-compulab-winbond-Add-w25q128dw-support.patch \
-	file://0003-compulab-dts-Add-device-trees.patch \
-	file://0004-compulab-configs-Add-compulab-soms-configs.patch \
-	file://0005-compulab-imx8mp-dts-Update-device-tree-files.patch \
-	file://0006-compulab-Add-econ-cameras-support.patch \
-	file://0007-ucm-imx8m-plus-defconfig-Disable-CONFIG_FW_LOADER_US.patch \
-	file://0008-compulab-mipi-csi-camera-nodes-update.patch \
-	file://0009-compulab-ecam-Add-separate-menu.patch \
-	file://0010-compulab-defconfig-Enable-ar1335_af.patch \
-	file://0011-compulab-dts-csi-Fix-econ-camera-property-and-clocks.patch \
-	file://0012-compulab-ucm-dts-Add-_ldo4_-device-tree.patch \
-	file://0013-ucm-imx8m-plus-defconfig-Disable-CONFIG_FB_EFI.patch \
-	file://0014-ucm-imx8m-plus-defconfig-Update-for-docker.patch \
-	file://0015-compulab-imx8mp-dts-Make-wm8731-default-status-as-di.patch \
-	file://0016-compulab-imx8mp-dts-Add-ucm-imx8m-plus-wm8731.dts.patch \
-	file://0017-compulab-imx8mp-dts-Add-ucm-imx8m-plus-nopcie.dts.patch \
-	file://0018-compulab-imx8mp-dts-Add-ucm-imx8m-plus-p21.dts.patch \
-	file://0019-compulab-imx8mp-dts-Update-the-device-tree-build-lis.patch \
-	file://0020-compulab-imx8mp-dts-Add-ucm-imx8m-plus-uart1.dts.patch \
-	file://0021-compulab-imx8mp-dts-Disable-uart1-if-not-used-as-a-c.patch \
-	file://0022-compulab-imx8mp-dts-Add-uart2-clocks-to-the-node.patch \
-	file://0023-compulab-imx8mp-dts-Modify-uart3-definition.patch \
-	file://0024-compulab-imx8mp-dts-Enable-uart1-if-used-as-a-consol.patch \
-	file://0025-compulab-imx8m-plus-Add-iot-gate-imx8plus-board-supp.patch \
-	file://0026-compulab-iot-gate-imx8plus-Enable-CONFIG_INPUT_EVDEV.patch \
-	file://0027-compulab-iot-gate-imx8plus-Enable-CONFIG_EROFS_FS.patch \
-	file://0028-imx8-isi-Fix-the-5.15.5-stream-capture-color-distort.patch \
-	file://0029-compulab-iot-gate-imx8plus-fix-temperature-limits.patch \
-	file://0030-compulab-iot-gate-imx8plus-change-rtc-devices-enumer.patch \
-	file://0031-som-imx8m-plus-defconfig-Uplate-for-5.15.32.patch \
-	file://0032-ucm-imx8m-plus-dts-Update-the-mipi-csi-nodes-names.patch \
-	file://0033-ucm-imx8m-plus-dts-Update-the-sensor-compatible-stri.patch \
-	file://0034-ucm-imx8m-plus-dts-Add-the-ar0234-device-tree.patch \
-	file://0035-ucm-imx8m-plus-dts-Add-the-ar0521-device-tree.patch \
-	file://0036-ucm-imx8m-plus-dtsi-sensor-Move-non-sensors-node-to-.patch \
-	file://0037-ucm-imx8m-plus-dts-Add-dual-sensors-device-tree.patch \
-	file://0038-ucm-imx8m-plus-dts-Add-dual-sensors-device-tree.patch \
-	file://0039-ucm-imx8m-plus-defconfig-Enable-AR0234-and-AR0521.patch \
-	file://0040-imx8-isi-cap-Fix-the-5.15.5-stream-capture-color-dis.patch \
-	file://0041-Enable-USB_NET_AX8817X-in-the-kernel.patch \
-	file://0042-compulab-imx8mp-dts-Add-a-backlight-property-to-the-.patch \
-	file://0043-compulab-em9190-Fix-modem-driver-fo-5.15.32.patch \
-	file://0044-ucm-imx8m-plus-defconfig-Enable-EM9190-as-module.patch \
-	file://0045-compulab-Add-eCAM130-camera-support.patch \
-	file://0046-compulab-imx8m-plus-mipi_csi-Change-clock-parents-ra.patch \
-	file://0047-ucm-imx8m-plus-dts-Add-headless-device-tree.patch \
-	file://0048-som-imx8m-plus-dts-Add-headless-device-tree.patch \
-	file://0049-som-imx8m-plus-dts-Add-all-available-device-trees.patch \
-	file://0050-compulab-imx8m-plus-Move-usbdev-to-a-separate-dtsi-f.patch \
-	file://0051-iot-gate-imx8plus-dts-Add-usbdev-device-tree.patch \
-	file://0052-net-phy-realtek-RTL8211E-make-use-of-realtek-clkout-.patch \
-	file://0053-compulab-iot-gate-imx8plus-enable-flexcan1.patch \
-	file://0054-compulab-iot-gate-imx8plus-sb-iotgimx8plus-support-r.patch \
-	file://0055-compulab-iot-gate-imx8plus-add-support-for-TPM.patch \
-	file://0056-som-imx8m-plus-Update-defconfig.patch \
-	file://0057-compulab-som-imx8m-plus-Update-eqos-iface-node.patch \
-	file://0058-compulab-iot-gate-imx8plus-add-support-for-break-out.patch \
-	file://0059-compulab-som-imx8m-plus-Revision-1.1-update.patch \
-	file://0060-ucm-imx8m-plus-Update-defconfig.patch \
+SRC_URI += " \
 	file://defconfig \
+	file://linux-headers.cfg \
 "
 
-SRC_URI:append = " \
-	file://expert.cfg \
-"
+SRC_URI:append:som-imx8m-plus = " https://github.com/compulab-yokneam/bin/raw/linux-firmware/imx-sdma-20230404.tar.bz2;name=imx-sdma-firmware "
+SRC_URI[imx-sdma-firmware.md5sum] = "a1169448bf2f020a3f48f51c4961022a"
+SRC_URI[imx-sdma-firmware.sha256sum] = "004ad1f9cf5b1176e71765794a5bfdcffdf44b9a5c1545188a171554bf4439a1"
+SRC_URI:append:som-imx8m-plus = " file://linux-firmware-sdma.cfg "
+
+do_patch:append() {
+    if [ ! -d ${WORKDIR}/imx ];then
+        return
+    fi
+    mkdir -p ${S}/lib/firmware/
+    cp -rfv ${WORKDIR}/imx ${S}/lib/firmware/
+}
