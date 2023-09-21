@@ -25,7 +25,7 @@ repo init -u https://github.com/nxp-imx/imx-manifest -b imx-linux-kirkstone -m i
 * CompuLab
 ```
 mkdir -p .repo/local_manifests
-wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/iot-gate-imx8plus_r2.0/scripts/meta-bsp-imx8mp.xml
+wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/iot-gate-imx8plus_r2.1/scripts/meta-bsp-imx8mp.xml
 ```
 
 * Sync Them all
