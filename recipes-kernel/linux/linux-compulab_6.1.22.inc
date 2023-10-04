@@ -1,5 +1,5 @@
-SRCBRANCH = "linux-compulab_v6.1.36"
+SRCBRANCH = "linux-compulab_v6.1.22"
 SRC_URI = "git://github.com/compulab-yokneam/linux-compulab;protocol=https;branch=${SRCBRANCH}"
 SRCREV = "${AUTOREV}"
-LINUX_VERSION = "6.1.36"
+LINUX_VERSION = "6.1.22"
 KERNEL_CONFIG = "compulab_v8_defconfig"
