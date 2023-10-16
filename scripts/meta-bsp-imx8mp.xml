@@ -5,11 +5,9 @@
   <project name="meta-compulab" remote="compulab" revision="honister" path="sources/meta-compulab"/>
   <project name="meta-compulab-bsp" remote="compulab" revision="honister" path="sources/meta-compulab-bsp"/>
   <project name="meta-compulab-uefi" remote="compulab" revision="honister" path="sources/meta-compulab-uefi"/>
+  <project name="meta-imx8mp-isp-imx219" remote="compulab" revision="kirkstone-2.2.0" path="sources/meta-imx8mp-isp-imx219"/>
   <project name="meta-bsp-imx8mp" remote="compulab" revision="kirkstone-2.2.0" path="sources/meta-bsp-imx8mp" >
     <linkfile src="tools/compulab-setup-env" dest="compulab-setup-env" />
   </project>
-
-  <remote fetch="https://github.com/nxp-imx-support" name="imx-support"/>
-  <project name="imx8mp-imx219-sensor-enablement" path="sources/imx8mp-imx219-sensor-enablement" remote="imx-support" revision="L5.15.71_isp_p20"/>
 
   </manifest>
