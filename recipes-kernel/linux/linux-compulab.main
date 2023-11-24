@@ -45,6 +45,9 @@ do_configure:prepend() {
     for cfg_frag in $(ls ${WORKDIR}/*.cfg 2>/dev/null);do
         cat ${cfg_frag} >> ${S}/arch/arm64/configs/compulab.config
     done
+    if [ -n ${CL_RELEASE} ];then
+        echo CONFIG_LOCALVERSION=\"-${CL_RELEASE}\" >> ${S}/arch/arm64/configs/compulab.config
+    fi
 }
 
 do_configure:append() {
