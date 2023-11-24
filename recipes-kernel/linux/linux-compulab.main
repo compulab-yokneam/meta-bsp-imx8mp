@@ -111,8 +111,6 @@ do_kernel_localversion:prepend() {
 PACKAGES =+ "linux-headers"
 FILES:linux-headers = "${exec_prefix}/src/linux* ${nonarch_base_libdir}/modules/${KERNEL_VERSION}/build"
 
-PACKAGESPLITFUNCS:remove = "split_kernel_module_packages"
-
-FILES:${KERNEL_PACKAGE_NAME}-modules = "/lib/modules/ /etc/"
+KERNEL_SPLIT_MODULES = "0"
 
 COMPATIBLE_MACHINE = "(ucm-imx8m-plus|som-imx8m-plus|iot-gate-imx8plus)"
