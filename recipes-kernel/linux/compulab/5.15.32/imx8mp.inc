@@ -61,6 +61,7 @@ SRC_URI:append = " \
 	file://0059-compulab-som-imx8m-plus-Revision-1.1-update.patch \
 	file://0060-ucm-imx8m-plus-Update-defconfig.patch \
 	file://0061-dts-add-vqmmc-supply-property-to-usdhc2-node.patch \
+	file://0062-ucm-imx8m-plus-Update-defconfig.patch \
 	file://defconfig \
 "
 

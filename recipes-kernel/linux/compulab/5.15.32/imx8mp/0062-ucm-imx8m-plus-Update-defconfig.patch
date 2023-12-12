@@ -1,0 +1,59 @@
+From 43548853b2c0d28f95f4e710c1df0a51e654d58c Mon Sep 17 00:00:00 2001
+From: compulab <compulab@CompuLab.com>
+Date: Tue, 12 Dec 2023 22:06:18 +0000
+Subject: [PATCH 62/62] ucm-imx8m-plus: Update defconfig
+
+Enabled these configs:
+CONFIG_RTL_CARDS=m
+CONFIG_RTL8192CE=m
+CONFIG_RTL8192SE=m
+CONFIG_RTL8192DE=m
+CONFIG_RTL8723AE=m
+CONFIG_RTL8723BE=m
+CONFIG_RTL8188EE=m
+CONFIG_RTL8192EE=m
+CONFIG_RTL8821AE=m
+CONFIG_RTL8192CU=m
+CONFIG_RTL8XXXU=m
+CONFIG_RTW88=m
+CONFIG_R8188EU=m
+
+Signed-off-by: compulab <compulab@CompuLab.com>
+---
+ arch/arm64/configs/ucm-imx8m-plus_defconfig | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/arch/arm64/configs/ucm-imx8m-plus_defconfig b/arch/arm64/configs/ucm-imx8m-plus_defconfig
+index 9656c33b9a99..5eddbacf0f96 100644
+--- a/arch/arm64/configs/ucm-imx8m-plus_defconfig
++++ b/arch/arm64/configs/ucm-imx8m-plus_defconfig
+@@ -397,6 +397,18 @@ CONFIG_IWLWIFI=m
+ CONFIG_IWLDVM=m
+ CONFIG_IWLMVM=m
+ CONFIG_HOSTAP=y
++CONFIG_RTL_CARDS=m
++CONFIG_RTL8192CE=m
++CONFIG_RTL8192SE=m
++CONFIG_RTL8192DE=m
++CONFIG_RTL8723AE=m
++CONFIG_RTL8723BE=m
++CONFIG_RTL8188EE=m
++CONFIG_RTL8192EE=m
++CONFIG_RTL8821AE=m
++CONFIG_RTL8192CU=m
++CONFIG_RTL8XXXU=m
++CONFIG_RTW88=m
+ CONFIG_WL18XX=m
+ CONFIG_WLCORE_SDIO=m
+ CONFIG_XEN_NETDEV_BACKEND=m
+@@ -907,6 +919,7 @@ CONFIG_VIRTIO_IVSHMEM=y
+ CONFIG_XEN_GNTDEV=y
+ CONFIG_XEN_GRANT_DEV_ALLOC=y
+ CONFIG_STAGING=y
++CONFIG_R8188EU=m
+ CONFIG_STAGING_MEDIA=y
+ CONFIG_VIDEO_HANTRO=m
+ CONFIG_VIDEO_IMX_CAPTURE=y
+-- 
+2.25.1
+
