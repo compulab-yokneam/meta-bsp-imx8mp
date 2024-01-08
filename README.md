@@ -31,7 +31,7 @@ repo init -u git://github.com/nxp-imx/imx-manifest.git -b imx-linux-mickledore -
 * CompuLab
 ```
 mkdir -p .repo/local_manifests
-wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/mickledore/scripts/meta-bsp-imx8mp.xml
+wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/mickledore-2.0.0/scripts/meta-bsp-imx8mp.xml
 ```
 
 * Sync Them all
