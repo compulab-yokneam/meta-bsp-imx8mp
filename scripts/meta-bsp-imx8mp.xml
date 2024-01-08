@@ -9,7 +9,4 @@
     <linkfile src="tools/compulab-setup-env" dest="compulab-setup-env" />
   </project>
 
-  <remote fetch="https://github.com/nxp-imx-support" name="imx-support"/>
-  <project name="imx8mp-imx219-sensor-enablement" path="sources/imx8mp-imx219-sensor-enablement" remote="imx-support" revision="L6.1.22_isp_p22"/>
-
   </manifest>
