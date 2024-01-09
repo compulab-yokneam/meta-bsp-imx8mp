@@ -8,4 +8,3 @@ BBLAYERS += " \
 	${BSPDIR}/sources/meta-compulab-bsp/meta-devtool \
 	${BSPDIR}/sources/meta-compulab-uefi \
 "
-BBLAYERS += "${BSPDIR}/sources/imx8mp-imx219-sensor-enablement/meta-imx8mp-isp-imx219"
