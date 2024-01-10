@@ -25,7 +25,7 @@ mkdir compulab-nxp-bsp && cd compulab-nxp-bsp
 
 * NXP
 ```
-repo init -u git://github.com/nxp-imx/imx-manifest.git -b imx-linux-mickledore -m imx-6.1.55-2.2.0.xml
+repo init -u https://github.com/nxp-imx/imx-manifest.git -b imx-linux-mickledore -m imx-6.1.55-2.2.0.xml
 ```
 
 * CompuLab
