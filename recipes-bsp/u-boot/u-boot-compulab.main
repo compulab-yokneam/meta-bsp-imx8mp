@@ -12,7 +12,7 @@ require u-boot-compulab_${PV}.inc
 FILESEXTRAPATHS:prepend := "${THISDIR}/compulab/${PV}/imx8mp:"
 require compulab/${PV}/imx8mp.inc
 
-DEPENDS += "flex-native bison-native bc-native dtc-native"
+DEPENDS += "flex-native bison-native bc-native dtc-native gnutls-native"
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
