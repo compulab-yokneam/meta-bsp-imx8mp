@@ -66,4 +66,6 @@ MACHINE_FIRMWARE:append = " linux-firmware-ax200 linux-firmware-ax210 firmware-i
 MACHINE_FIRMWARE:append = " linux-firmware-iwlwifi-8000c linux-firmware-iwlwifi-8265 "
 MACHINE_FIRMWARE:append = " imx-firmware-mrvl "
 
+DISTRO_FEATURES:remove = "sysvinit"
+
 IMX_DEFAULT_BSP = "nxp"
