@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+  <manifest>
+  <remote fetch="https://github.com/compulab-yokneam" name="compulab"/>
+
+  <project name="meta-imx8mp-isp" remote="compulab" revision="6.1.55" path="sources/meta-imx8mp-isp" >
+
+  </manifest>
