@@ -62,4 +62,8 @@ PREFERRED_RROVIDER_u-boot-fw-utils = "libubootenv-bin"
 
 MACHINE_FIRMWARE:remove = " linux-firmware-ath10k "
 
+MACHINE_FIRMWARE:append = " linux-firmware-ax200 linux-firmware-ax210 firmware-imx-sdma-imx7d "
+MACHINE_FIRMWARE:append = " linux-firmware-iwlwifi-8000c linux-firmware-iwlwifi-8265 "
+MACHINE_FIRMWARE:append = " imx-firmware-mrvl "
+
 IMX_DEFAULT_BSP = "nxp"
