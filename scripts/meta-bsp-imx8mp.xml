@@ -9,4 +9,5 @@
     <linkfile src="tools/compulab-setup-env" dest="compulab-setup-env" />
   </project>
 
+  <project name="meta-imx8mp-isp" remote="compulab" revision="6.1.55" path="sources/meta-imx8mp-isp"/>
   </manifest>
