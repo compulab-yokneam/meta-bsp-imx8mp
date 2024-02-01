@@ -1,4 +1,4 @@
 # Conflicts with Chromium
 # Comment both strings out if the Chromium is addaed to the build
-IMAGE_INSTALL:append = " packagegroup-qt6-webengine "
-BBMASK += "/meta-browser/meta-chromium/recipes-browser/chromium/gn-native"
+# IMAGE_INSTALL:append = " packagegroup-qt6-webengine "
+# BBMASK += "/meta-browser/meta-chromium/recipes-browser/chromium/gn-native"
