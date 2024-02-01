@@ -69,3 +69,6 @@ MACHINE_FIRMWARE:append = " imx-firmware-mrvl "
 DISTRO_FEATURES:remove = "sysvinit"
 
 IMX_DEFAULT_BSP = "nxp"
+
+# Default dram configuration
+DRAM_CONF ?= "d2d4"
