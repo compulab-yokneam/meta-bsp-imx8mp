@@ -90,3 +90,27 @@ cd tmp/deploy/images/${MACHINE}
 zstd -dc imx-image-full-${MACHINE}.wic.zst > imx-image-full-${MACHINE}.wic
 sudo bmaptool copy --bmap imx-image-full-${MACHINE}.wic.bmap imx-image-full-${MACHINE}.wic /dev/sdX
 ```
+
+### UUU deployment
+#### Host Machine ####
+* Goto the `tmp/deploy/images/${MACHINE}` directory:
+```
+cd tmp/deploy/images/${MACHINE}
+```
+
+* Issue uuu command with the root credentials:
+```
+zstd -dc imx-image-full-${MACHINE}.wic.zst > imx-image-full-${MACHINE}.wic
+sudo uuu -v -b emmc_all imx-boot-tagged mx-image-full-${MACHINE}.wic
+```
+
+#### Target Device ####
+
+|NOTE|The target device must be in SDP or FB mode|
+|---|---|
+
+
+|MODE|Procedure to turn on|note|
+|---|---|---|
+|SDP|mmc dev 2 1; mmc erase 0x0 0x1000; reset|For advanced users only|
+|FB|fastboot 0||
