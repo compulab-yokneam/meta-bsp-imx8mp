@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-  <manifest>
-  <remote fetch="https://github.com/compulab-yokneam" name="compulab"/>
+ <manifest>
+ <remote fetch="https://github.com/compulab-yokneam" name="compulab"/>
 
-  <project name="meta-compulab" remote="compulab" revision="honister" path="sources/meta-compulab"/>
-  <project name="meta-compulab-bsp" remote="compulab" revision="honister" path="sources/meta-compulab-bsp"/>
-  <project name="meta-compulab-uefi" remote="compulab" revision="honister" path="sources/meta-compulab-uefi"/>
-  <project name="meta-bsp-imx8mp" remote="compulab" revision="mickledore-2.2.0" path="sources/meta-bsp-imx8mp" >
-    <linkfile src="tools/compulab-setup-env" dest="compulab-setup-env" />
-  </project>
+    <project name="meta-compulab" remote="compulab" revision="7c245d415ae64384231301ffcaa214fabc4f9440" path="sources/meta-compulab"/>
+    <project name="meta-compulab-bsp" remote="compulab" revision="ce589e31390af092287f553032e3cabff7346f39" path="sources/meta-compulab-bsp"/>
+    <project name="meta-compulab-uefi" remote="compulab" revision="b21ab9156d8eb851aeccf2cf51067f2afb01a5ab" path="sources/meta-compulab-uefi"/>
+    <project name="meta-imx8mp-isp" remote="compulab" revision="97f3ed95fc8e2d25cd55504419d17c0c5614ae28" path="sources/meta-imx8mp-isp"/>
+    <project name="meta-bsp-imx8mp" remote="compulab" revision="ucm-imx8m-plus-r3.0" path="sources/meta-bsp-imx8mp" >
+        <linkfile src="tools/compulab-setup-env" dest="compulab-setup-env"/>
+    </project>
 
-  <project name="meta-imx8mp-isp" remote="compulab" revision="6.1.55" path="sources/meta-imx8mp-isp"/>
-  </manifest>
+ </manifest>
