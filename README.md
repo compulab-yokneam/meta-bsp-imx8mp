@@ -1,8 +1,5 @@
 # Disclaimer
 
-| !IMPORTANT! | This is a development branch, that is not relelased by CompuLab officially yet|
-|---|---|
-
 # Configuring the build
 
 ## Setup Yocto environment
@@ -16,10 +13,6 @@ mkdir compulab-nxp-bsp && cd compulab-nxp-bsp
 | Machine | Command Line |
 |---|---|
 |ucm-imx8m-plus|```export MACHINE=ucm-imx8m-plus```|
-|~~mcm-imx8m-plus~~|~~```export MACHINE=mcm-imx8m-plus```~~|
-|~~som-imx8m-plus~~|~~```export MACHINE=som-imx8m-plus```~~|
-|~~iot-gate-imx8plus~~|~~```export MACHINE=iot-gate-imx8plus```~~|
-|~~sbc-iot-imx8plus~~|~~```export MACHINE=iot-gate-imx8plus```~~|
 
 ## Initialize repo manifests
 
@@ -31,7 +24,7 @@ repo init -u https://github.com/nxp-imx/imx-manifest.git -b imx-linux-mickledore
 * CompuLab
 ```
 mkdir -p .repo/local_manifests
-wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/mickledore-2.2.0/scripts/meta-bsp-imx8mp.xml
+wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/ucm-imx8m-plus-r3.0/scripts/meta-bsp-imx8mp.xml
 ```
 
 * Sync Them all
@@ -46,7 +39,7 @@ source compulab-setup-env -b build-${MACHINE}
 ```
 
 * Enable the required dram setting's subset:<br>
-Use [Get the product DRAM configuration ](https://github.com/compulab-yokneam/meta-bsp-imx8mp/blob/mickledore-2.2.0/Documentation/dram.md) for more details
+Use [Get the product DRAM configuration ](https://github.com/compulab-yokneam/meta-bsp-imx8mp/blob/ucm-imx8m-plus-r3.0/Documentation/dram.md) for more details
 
 ```
 sed -i '$ a DRAM_CONF = "d2d4"' ${BUILDDIR}/conf/local.conf
@@ -57,28 +50,23 @@ sed -i '$ a DRAM_CONF = "d2d4"' ${BUILDDIR}/conf/local.conf
 sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
 ```
 
-## Build targets
-
-* Building the image:
+## Get back to the build environment
+In order to use the already created build environment issue these commands:
 ```
-bitbake -k imx-image-full
-```
-
-* Building the bootloader file only:
-
-| build command | binary file location |
-|---|---|
-|```bitbake -k imx-boot```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/imx-boot-tagged```|
-
-## Get back to the already created build environment
-```
-cd compulab-nxp-bsp
+cd /path/to/compulab-nxp-bsp
 repo sync
 source setup-environment build-${MACHINE}
 ```
 
+## Build targets
+| Target | Command | The target file location |
+|--- |---|---|
+|full image|```bitbake -k imx-image-full```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/imx-image-full-${MACHINE}.wic.zst```|
+|boot loader|```bitbake -k imx-boot```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/imx-boot-tagged```|
+
 ## Deployment
-### Create a bootable sd card
+### Bootable sd card method
+#### Host Machine ####
 
 * Goto the `tmp/deploy/images/${MACHINE}` directory:
 ```
@@ -90,8 +78,12 @@ cd tmp/deploy/images/${MACHINE}
 zstd -dc imx-image-full-${MACHINE}.wic.zst > imx-image-full-${MACHINE}.wic
 sudo bmaptool copy --bmap imx-image-full-${MACHINE}.wic.bmap imx-image-full-${MACHINE}.wic /dev/sdX
 ```
+#### Target Device ####
+* Turn off the device
+* Insert the created sd-card
+* Turn on the device and issue AltBoot
 
-### UUU deployment
+### UUU method
 #### Host Machine ####
 * Goto the `tmp/deploy/images/${MACHINE}` directory:
 ```
