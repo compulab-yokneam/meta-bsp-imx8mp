@@ -3,7 +3,7 @@
 ## Prerequisites
 It is up to developers to prepare the host machine; it requires:
 
-* [Setup Cross Compiler](https://github.com/compulab-yokneam/meta-bsp-imx8mp/blob/kirkstone/Documentation/toolchain.md#linaro-toolchain-how-to)
+* [Setup Cross Compiler](https://github.com/compulab-yokneam/meta-bsp-imx8mp/blob/ucm-imx8m-plus-r3.0/Documentation/toolchain.md#linaro-toolchain-how-to)
 
 ## CompuLab Linux Kernel setup
 
@@ -20,7 +20,7 @@ mkdir -p compulab-kernel/build && cd compulab-kernel
 
 * Clone the source code:
 ```
-git clone -b linux-compulab_v5.15.32 https://github.com/compulab-yokneam/linux-compulab.git
+git clone -b linux-compulab_v6.1.55 https://github.com/compulab-yokneam/linux-compulab.git
 cd linux-compulab
 ```
 
