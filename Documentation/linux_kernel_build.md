@@ -28,7 +28,7 @@ cd linux-compulab
 
 * Apply the default CompuLab config:
 ```
-make ${MACHINE}_defconfig compulab.config
+make compulab_v8_defconfig compulab.config
 ```
 
 * Ussue menuconfig on order to change the default CompuLab configuration:
