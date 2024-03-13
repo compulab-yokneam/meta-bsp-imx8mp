@@ -45,6 +45,8 @@ IMX_BOOT_SEEK = "32"
 OPTEE_BIN_EXT = "8mp"
 TEE_LOAD_ADDR = "0x56000000"
 
+DRAM_CONF ?= "d2d4"
+
 IMAGE_INSTALL:append = " \
 	kernel-image \
 	kernel-modules \
