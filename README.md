@@ -54,10 +54,11 @@ Use the 'D' option code from the device label.
 
 * Mapping of product DRAM configuration to DRAM_CONF:
 
-|Product DRAM Option|DRAM_CONF|
-|---|---|
-|D1,D8|d1d8|
-|D2,D4|d2d4|
+|Product DRAM Option|DRAM_CONF|Supported ddr chip|
+|---|---|---|
+|D1,D8|d1d8|Samsung 1G, Micron 8G
+|D2,D4|d2d4(default)|Samsung 2G, Micron 4G
+|D4,D4|d4d4(U-Boot 2022.04 only)|Samsung 4G, Micron 4G
 
 ## Setup build environment
 
@@ -74,6 +75,11 @@ sed -i '$ a DRAM_CONF = "d2d4"' ${BUILDDIR}/conf/local.conf
 * Enable the d1d8 dram setting's subset:
 ```
 sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
+```
+
+* Enable the d4d4 dram setting's subset (U-Boot 2022.04 only):
+```
+sed -i '$ a DRAM_CONF = "d4d4"' ${BUILDDIR}/conf/local.conf
 ```
 
 ## Build targets
