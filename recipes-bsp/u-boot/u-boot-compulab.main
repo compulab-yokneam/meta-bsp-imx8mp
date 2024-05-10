@@ -23,19 +23,8 @@ LOCALVERSION = "-compulab"
 
 BOOT_TOOLS = "imx-boot-tools"
 
-do_merge_config () {
-    cd ${S}
-    cp ${S}/configs/${MACHINE}_defconfig ${S}/configs/compulab_defconfig
-    ${S}/scripts/kconfig/merge_config.sh  -O ${S}/configs/ -m ${S}/configs/${MACHINE}_defconfig ${WORKDIR}/*.cfg
-    mv ${S}/configs/.config ${S}/configs/${MACHINE}_defconfig
-    cd -
-    oe_runmake ${MACHINE}_defconfig
-    mv ${S}/configs/compulab_defconfig ${S}/configs/${MACHINE}_defconfig
-}
-
 do_compile:prepend () {
     export SOURCE_DATE_EPOCH=$(date +%s)
-    do_merge_config
 }
 
 do_deploy:append () {
