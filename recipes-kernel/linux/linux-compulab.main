@@ -51,8 +51,8 @@ do_configure:prepend() {
 }
 
 do_configure:append() {
-    if [ -z ${SKIP_MACHINE_DEFCONFIG} ];then
-        if [ -z ${KERNEL_CONFIG} ];then
+    if [ -z "${SKIP_MACHINE_DEFCONFIG}" ]; then
+        if [ -z "${KERNEL_CONFIG}" ]; then
             oe_runmake ${MACHINE}_defconfig
         else
             oe_runmake ${KERNEL_CONFIG}
