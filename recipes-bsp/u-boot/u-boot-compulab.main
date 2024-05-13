@@ -49,6 +49,7 @@ do_deploy:append () {
 
 }
 
+require u-boot-compulab-flash.inc
 require u-boot-compulab-env.inc
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
