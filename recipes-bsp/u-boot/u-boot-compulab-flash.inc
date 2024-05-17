@@ -17,12 +17,12 @@ do_configure:append () {
     for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
         ln -sf ${DEPLOY_DIR_IMAGE}/${ddr_firmware} ${B}/${config}/
     done
-    ln -sf ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME} ${B}/${config}/bl31.bin
+    ln -sf ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME} ${B}/${config}/bl31.bin
     ln -sf ${DEPLOY_DIR_IMAGE}/tee.bin ${B}/${config}/
 }
 
 do_deploy:append () {
     if [ -f "${B}/${config}/flash.bin" ];then
-        install -m 0777 ${B}/${config}/flash.bin  ${DEPLOYDIR}/flash.bin-${MACHINE}_${DRAM_CONF}
+        install -m 0777 ${B}/${config}/flash.bin  ${DEPLOYDIR}/flash.bin_${MACHINE}_${DRAM_CONF}
     fi
 }
