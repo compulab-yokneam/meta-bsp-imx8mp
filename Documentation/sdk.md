@@ -1,12 +1,16 @@
 # Yocto toolchain how to
 
-## Yocto SDK
+## Get Yocto SDK
 
-* Download a ready to install SDK from this location
-* Build the SDK
+* Option #1<br>
+  Download a ready to install SDK from this [location](https://drive.google.com/file/d/11ir2LRvftK9HAxzdwm6tvoVmv_Uz9tm_/view?usp=drive_link)
+* Option #2<br>
+  Build the SDK
 ```
 bitbake -c populate_sdk imx-image-full
 ```
+
+## Use Yocto SDK
 
 * Install the SDK
 ```
