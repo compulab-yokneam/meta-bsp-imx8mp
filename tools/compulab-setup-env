@@ -19,7 +19,12 @@ else
 for _d in ${T}/*;do
 	_file=$(basename ${_d})
 	for _f in ${_d}/*;do
-		cat ${_f} >> conf/${_file}
+cat << eof >> conf/${_file}
+
+# Included from ${_f}
+$(cat ${_f})
+
+eof
 	done;
 done
 fi
