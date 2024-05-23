@@ -23,6 +23,16 @@ do_configure:append () {
 
 do_deploy:append () {
     if [ -f "${B}/${config}/flash.bin" ];then
-        install -m 0777 ${B}/${config}/flash.bin  ${DEPLOYDIR}/flash.bin_${MACHINE}_${DRAM_CONF}
+        install -m 0644 ${B}/${config}/flash.bin  ${DEPLOYDIR}/flash.bin_${MACHINE}_${DRAM_CONF}
     fi
 }
+
+do_install:append () {
+    if [ -f "${B}/${config}/flash.bin" ];then
+        install -d ${D}/boot
+        install -m 0644 ${B}/${config}/flash.bin  ${D}/boot/flash.bin_${MACHINE}_${DRAM_CONF}
+    fi
+}
+
+FILES:${PN} = "/boot/flash.bin_${MACHINE}_${DRAM_CONF}"
+INSANE_SKIP:${PN} += "installed-vs-shipped"
