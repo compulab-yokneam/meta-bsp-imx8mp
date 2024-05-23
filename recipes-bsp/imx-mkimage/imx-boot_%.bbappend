@@ -1,7 +1,9 @@
 do_install:append () {
-        ln -fs ${BOOT_CONFIG_MACHINE}-${target} ${D}/boot/imx-boot
+	IMX_BOOT_NAME=$(ls ${D}/boot/ | head -1)
+	ln -fs ${IMX_BOOT_NAME} ${D}/boot/imx-boot
 }
 
 do_deploy:append () {
-	cp ${DEPLOYDIR}/${BOOT_CONFIG_MACHINE}-${IMAGE_IMXBOOT_TARGET} ${DEPLOYDIR}/imx-boot_${MACHINE}_${DRAM_CONF}
+	IMX_BOOT_NAME=$(basename $(readlink -e ${DEPLOYDIR}/imx-boot))
+	ln -sf ${IMX_BOOT_NAME} ${DEPLOYDIR}/${IMX_BOOT_NAME}_${DRAM_CONF}
 }
