@@ -19,6 +19,7 @@ mkdir compulab-nxp-bsp && cd compulab-nxp-bsp
 |som-imx8m-plus|```export MACHINE=som-imx8m-plus```|
 |iot-gate-imx8plus|```export MACHINE=iot-gate-imx8plus```|
 |sbc-iot-imx8plus|```export MACHINE=iot-gate-imx8plus```|
+|iotdin-imx8p|```export MACHINE=iotdin-imx8p```|
 
 ## Initialize repo manifests
 
