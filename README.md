@@ -3,6 +3,10 @@
 | !IMPORTANT! | This is a development branch, that is not relelased by CompuLab officially yet|
 |---|---|
 
+## Supported Compulab Products
+
+* [`UCM-iMX8M-Plus - NXP i.MX8M Plus System-on-Module`](https://www.compulab.com/products/computer-on-modules/ucm-imx8m-plus-nxp-i-mx-8m-plus-som-system-on-module-computer/)
+
 # Configuring the build
 
 ## Setup Yocto environment
