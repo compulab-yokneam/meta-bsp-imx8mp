@@ -1,4 +1,6 @@
-# Disclaimer
+# Supported Machines
+* https://www.compulab.com/products/iot-gateways/iot-gate-imx8plus-industrial-arm-iot-gateway/[`IOT-GATE-IMX8PLUS - Industrial IoT Edge Gateway`]
+* https://www.compulab.com/products/iot-gateways/iot-gate-imx8plus-industrial-arm-iot-gateway/[`SBC-IOT-IMX8PLUS - NXP i.MX8M Plus Single Board Computer`]
 
 # Configuring the build
 
