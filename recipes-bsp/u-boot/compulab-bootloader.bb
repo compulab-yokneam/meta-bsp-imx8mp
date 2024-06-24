@@ -72,3 +72,6 @@ FILES:${PN}-env = " \
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "${MACHINE}"
+
+EXTRA_OEMAKE += "debug=n  DEBUG=0 "
+

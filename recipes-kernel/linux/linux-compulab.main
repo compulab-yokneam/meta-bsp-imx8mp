@@ -114,3 +114,5 @@ FILES:linux-headers = "${exec_prefix}/src/linux* ${nonarch_base_libdir}/modules/
 KERNEL_SPLIT_MODULES = "0"
 
 COMPATIBLE_MACHINE = "(compulab-mx8mp)"
+
+EXTRA_OEMAKE += "debug=n  DEBUG=0 "
