@@ -1,6 +1,6 @@
 SUMMARY = "CompuLab Linux Kernel for compulab-imx8m-plus SOM"
 
-inherit kernel-yocto kernel fsl-kernel-localversion fsl-vivante-kernel-driver-handler
+inherit kernel-yocto kernel fsl-vivante-kernel-driver-handler
 
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
@@ -24,7 +24,7 @@ KCONFIG_MODE="--alldefconfig"
 # We need to pass it as param since kernel might support more then one
 # machine, with different entry points
 KERNEL_EXTRA_ARGS += "LOADADDR=${UBOOT_ENTRYPOINT}"
-KERNEL_CONFIG ?= "${MACHINE}_defconfig compulab.config"
+KBUILD_DEFCONFIG:compulab-mx8mp ?= "compulab_v8_defconfig"
 EXTRA_OEMAKE += "DTC_FLAGS=-@ "
 
 DEPENDS += "lzop-native bc-native"
@@ -40,25 +40,16 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/compulab/${PV}/imx8mp:"
 
 require compulab/${PV}/imx8mp.inc
 
-do_configure:prepend() {
-    # Configuration fragments add support
-    for cfg_frag in $(ls ${WORKDIR}/*.cfg 2>/dev/null);do
-        cat ${cfg_frag} >> ${S}/arch/arm64/configs/compulab.config
-    done
-    if [ -n ${CL_RELEASE} ];then
-        echo CONFIG_LOCALVERSION=\"-${CL_RELEASE}\" >> ${S}/arch/arm64/configs/compulab.config
-    fi
-}
+LINUX_VERSION_EXTENSION = "-compulab-${CL_RELEASE}"
 
-do_configure:append() {
-    if [ -z ${SKIP_MACHINE_DEFCONFIG} ];then
-        if [ -z ${KERNEL_CONFIG} ];then
-            oe_runmake ${MACHINE}_defconfig
-        else
-            oe_runmake ${KERNEL_CONFIG}
-        fi
-    fi
+SRC_URI:append = " \
+	file://compulab.cfg \
+"
+
+do_compulab_config() {
+    cat ${S}/arch/arm64/configs/compulab.config > ${WORKDIR}/compulab.cfg
 }
+addtask do_compulab_config before do_kernel_configme after do_patch
 
 do_compile:prepend() {
     export SOURCE_DATE_EPOCH=$(date +%s)
