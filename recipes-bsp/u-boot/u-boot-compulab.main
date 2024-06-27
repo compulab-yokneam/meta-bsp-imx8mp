@@ -57,3 +57,4 @@ UBOOT_NAME = "u-boot-${MACHINE}.bin-${UBOOT_CONFIG}"
 
 EXTRA_OEMAKE += "debug=n  DEBUG=0 "
 
+rm_work[noexec] = "1"
