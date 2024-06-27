@@ -37,7 +37,6 @@ repo init -u https://github.com/nxp-imx/imx-manifest.git -b imx-linux-scarthgap 
 
 * CompuLab
 ```
-mkdir -p .repo/local_manifests
 wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/scarthgap/scripts/meta-bsp-imx8mp.xml
 ```
 
