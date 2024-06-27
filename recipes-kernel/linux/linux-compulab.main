@@ -107,3 +107,5 @@ KERNEL_SPLIT_MODULES = "0"
 COMPATIBLE_MACHINE = "(compulab-mx8mp)"
 
 EXTRA_OEMAKE += "debug=n  DEBUG=0 "
+
+rm_work[noexec] = "1"
