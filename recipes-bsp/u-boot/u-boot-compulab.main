@@ -17,18 +17,21 @@ DEPENDS += "flex-native bison-native bc-native dtc-native gnutls-native"
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
 
-inherit fsl-u-boot-localversion
+UBOOT_VERSION_EXTENSION = "-compulab-${CL_RELEASE}"
 
-LOCALVERSION = "-compulab"
+inherit fsl-u-boot-localversion
 
 BOOT_TOOLS = "imx-boot-tools"
 
 do_compile:prepend () {
     export SOURCE_DATE_EPOCH=$(date +%s)
+    for _config in ${UBOOT_MACHINE}; do
+        echo  "CONFIG_LOCALVERSION=\"${UBOOT_VERSION_EXTENSION}\"" >> ${B}/${_config}/.config
+    done
 }
 
 do_deploy:append () {
-    # Deploy u-boot-nodtb.bin and fsl-imx8mq-XX.dtb, to be packaged in boot binary by imx-boot
+    # Deploy u-boot-nodtb.bin and ${MACHINE}.dtb, to be packaged in boot binary by imx-boot
     if [ -n "${UBOOT_CONFIG}" ]
     then
         for config in ${UBOOT_MACHINE}; do
