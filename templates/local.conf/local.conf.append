@@ -10,3 +10,5 @@ CORE_IMAGE_EXTRA_INSTALL += " networkmanager modemmanager "
 BB_SRCREV_POLICY = "clear"
 
 INHERIT += "rm_work"
+
+RM_WORK_EXCLUDE += "u-boot-compulab linux-compulab"
