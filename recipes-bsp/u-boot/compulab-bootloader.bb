@@ -29,14 +29,14 @@ do_configure () {
 do_compile_d2d4() {
 	sed -i '/CONFIG_DRAM_D2D4/d' ${B}/${BOOTLOADER_CONFIG}/.config
 	sed -i '$ a CONFIG_DRAM_D2D4=y' ${B}/${BOOTLOADER_CONFIG}/.config
-	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG} flash.bin
+	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG}
 	mv ${B}/${BOOTLOADER_CONFIG}/flash.bin ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4
 }
 
 do_compile_d1d8() {
 	sed -i '/CONFIG_DRAM_D2D4/d' ${B}/${BOOTLOADER_CONFIG}/.config
 	sed -i '$ a # CONFIG_DRAM_D2D4 is not set' ${B}/${BOOTLOADER_CONFIG}/.config
-	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG} flash.bin
+	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG}
 	mv ${B}/${BOOTLOADER_CONFIG}/flash.bin ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8
 }
 
@@ -48,15 +48,15 @@ do_compile() {
 
 do_deploy () {
 	install -d ${DEPLOYDIR}/
-	install -m 0777 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4  ${DEPLOYDIR}/flash.bin_${MACHINE}_d2d4
-	install -m 0777 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8  ${DEPLOYDIR}/flash.bin_${MACHINE}_d1d8
-	ln -sf flash.bin_${MACHINE}_${DRAM_CONF} ${DEPLOYDIR}/${MACHINE}-imx-boot
+	install -m 0777 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4  ${DEPLOYDIR}/imx-boot_${MACHINE}_d2d4
+	install -m 0777 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8  ${DEPLOYDIR}/imx-boot_${MACHINE}_d1d8
+	ln -sf imx-boot_${MACHINE}_${DRAM_CONF} ${DEPLOYDIR}/imx-boot-${MACHINE}
 }
 
 do_install () {
 	install -d ${D}/boot
-	install -m 0755 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4 ${D}/boot/flash.bin_${MACHINE}_d2d4
-	install -m 0755 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8 ${D}/boot/flash.bin_${MACHINE}_d1d8
+	install -m 0755 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4 ${D}/boot/imx-boot_${MACHINE}_d2d4
+	install -m 0755 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8 ${D}/boot/imx-boot_${MACHINE}_d1d8
 	install -d ${D}/etc
 	install -m 0755 ${B}/${BOOTLOADER_CONFIG}/u-boot-initial-env ${D}/etc/
 	install -m 0644 ${S}/tools/env/fw_env.config  ${D}/etc/fw_env.config
