@@ -18,7 +18,7 @@ DEPENDS += " python3-setuptools-native "
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
 
-LOCALVERSION = "-compulab"
+UBOOT_VERSION_EXTENSION = "-${CL_RELEASE}"
 BOOTLOADER_CONFIG = "${MACHINE}_defconfig"
 
 do_configure () {
@@ -29,6 +29,10 @@ do_configure () {
 do_compile_d2d4() {
 	sed -i '/CONFIG_DRAM_D2D4/d' ${B}/${BOOTLOADER_CONFIG}/.config
 	sed -i '$ a CONFIG_DRAM_D2D4=y' ${B}/${BOOTLOADER_CONFIG}/.config
+
+	sed -i "/CONFIG_LOCALVERSION=/d" ${B}/${BOOTLOADER_CONFIG}/.config
+	sed -i "$ a CONFIG_LOCALVERSION=\"${UBOOT_VERSION_EXTENSION}-d2d4\"" ${B}/${BOOTLOADER_CONFIG}/.config
+
 	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG}
 	mv ${B}/${BOOTLOADER_CONFIG}/flash.bin ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4
 }
@@ -36,6 +40,10 @@ do_compile_d2d4() {
 do_compile_d1d8() {
 	sed -i '/CONFIG_DRAM_D2D4/d' ${B}/${BOOTLOADER_CONFIG}/.config
 	sed -i '$ a # CONFIG_DRAM_D2D4 is not set' ${B}/${BOOTLOADER_CONFIG}/.config
+
+	sed -i "/CONFIG_LOCALVERSION=/d" ${B}/${BOOTLOADER_CONFIG}/.config
+	sed -i "$ a CONFIG_LOCALVERSION=\"${UBOOT_VERSION_EXTENSION}-d1d8\"" ${B}/${BOOTLOADER_CONFIG}/.config
+
 	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG}
 	mv ${B}/${BOOTLOADER_CONFIG}/flash.bin ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8
 }
