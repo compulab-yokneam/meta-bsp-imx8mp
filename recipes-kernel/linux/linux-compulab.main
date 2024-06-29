@@ -87,6 +87,9 @@ do_install:append() {
             file ${f} | awk -F":" '(/ELF.*x86-64/)&&($0="rm -rf "$1)' | sh -x
         done
     )
+    (
+        find  ${INSTALL_HDR_PATH} | awk '(/\.cmd$/||/devicetable-offsets.s$/)&&($0="rm -rf "$0)' | sh -x
+    )
     chown -R 0:0 ${INSTALL_HDR_PATH}
 
     install -d 0755 ${INSTALL_MOD_PATH}
