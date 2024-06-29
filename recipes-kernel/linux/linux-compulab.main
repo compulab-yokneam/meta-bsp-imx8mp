@@ -40,7 +40,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/compulab/${PV}/imx8mp:"
 
 require compulab/${PV}/imx8mp.inc
 
-LINUX_VERSION_EXTENSION = "-compulab-${CL_RELEASE}"
+LINUX_VERSION_EXTENSION = "-${CL_RELEASE}"
 
 SRC_URI:append = " \
 	file://compulab.cfg \
