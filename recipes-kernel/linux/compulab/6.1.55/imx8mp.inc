@@ -1,5 +1,4 @@
 SRC_URI:append = " \
-	file://defconfig \
 	file://linux-headers.cfg \
 	file://trace.cfg \
 "
