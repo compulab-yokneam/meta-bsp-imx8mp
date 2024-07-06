@@ -48,7 +48,7 @@ repo sync
 
 * Initialize the build environment:
 ```
-source compulab-setup-env -b build-${MACHINE}
+source compulab-setup-env build-${MACHINE}
 ```
 
 * Enable the required dram setting's subset:<br>

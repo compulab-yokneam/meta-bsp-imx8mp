@@ -19,7 +19,7 @@ echo "Back to the build environment ${BD}"
 
 else
 
-. imx-setup-release.sh $@
+. imx-setup-release.sh -b $@
 
 for _d in ${T}/*;do
 	_file=$(basename ${_d})
