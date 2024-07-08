@@ -21,6 +21,29 @@ B = "${WORKDIR}/build"
 UBOOT_VERSION_EXTENSION = "-${CL_RELEASE}"
 BOOTLOADER_CONFIG = "${MACHINE}_defconfig"
 
+DEPENDS += " \
+    ${IMX_EXTRA_FIRMWARE} \
+    imx-atf \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os', '', d)} \
+"
+
+do_configure[depends] += " \
+    ${@' '.join('%s:do_deploy' % r for r in '${IMX_EXTRA_FIRMWARE}'.split() )} \
+    imx-atf:do_deploy \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os:do_deploy', '', d)} \
+"
+
+ATF_MACHINE_NAME ?= "bl31-${ATF_PLATFORM}.bin"
+ATF_MACHINE_NAME:append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
+
+do_configure:append () {
+    for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
+        ln -sf ${DEPLOY_DIR_IMAGE}/${ddr_firmware} ${B}/${BOOTLOADER_CONFIG}/
+    done
+    ln -sf ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME} ${B}/${BOOTLOADER_CONFIG}/bl31.bin
+    ln -sf ${DEPLOY_DIR_IMAGE}/tee.bin ${B}/${BOOTLOADER_CONFIG}/
+}
+
 do_configure () {
 	mkdir -p ${B}/${BOOTLOADER_CONFIG}
 	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG} ${BOOTLOADER_CONFIG}
