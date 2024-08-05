@@ -1,5 +1,5 @@
 SRCBRANCH = "linux-compulab_v6.1.55"
 SRC_URI = "git://github.com/compulab-yokneam/linux-compulab;protocol=https;branch=${SRCBRANCH}"
-SRCREV = "${AUTOREV}"
+SRCREV = "f6df38e6ad1c308a45e03445586fc28986641a51"
 LINUX_VERSION = "6.1.55"
 KERNEL_CONFIG = "compulab_v8_defconfig compulab.config"
