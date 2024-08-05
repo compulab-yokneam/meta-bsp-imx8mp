@@ -1,8 +1,8 @@
 # Building Boot Firmware for CompuLab's i.MX8M Plus products
 
-## [External Build](https://github.com/compulab-yokneam/u-boot-compulab/edit/u-boot-compulab_v2023.04/README.md) ##
+## [External Build](https://github.com/compulab-yokneam/u-boot-compulab/blob/u-boot-compulab_v2023.04/README.md)
 
-## Internal Build ##
+## Internal Build
 Use this method in order to modify and create the imx-boot binary in the Yocto environment.<br>
 
 * Get back to the build environment:
