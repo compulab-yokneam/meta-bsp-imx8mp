@@ -59,5 +59,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 UBOOT_NAME = "u-boot-${MACHINE}.bin-${UBOOT_CONFIG}"
 
 EXTRA_OEMAKE += "debug=n  DEBUG=0 "
+FULL_OPTIMIZATION:remove = "-O2"
+FULL_OPTIMIZATION:append = "-Os"
 
 rm_work[noexec] = "1"
