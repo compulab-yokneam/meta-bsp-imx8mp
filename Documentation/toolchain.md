@@ -1,6 +1,6 @@
 # Linaro toolchain how to
 
-* Downlaod the Linaro compiler:
+* Download the Linaro compiler:
 <pre>
 cd ~/Downloads
 wget https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu.tar.xz
