@@ -2,7 +2,7 @@
   <manifest>
   <remote fetch="https://github.com/compulab-yokneam" name="compulab"/>
 
-  <project name="meta-bsp-imx8mp" remote="compulab" revision="nanbield" path="sources/meta-bsp-imx8mp" >
+  <project name="meta-bsp-imx8mp" remote="compulab" revision="be19e8f4861ca68ee0453a6764532ebb0d459e45" path="sources/meta-bsp-imx8mp" >
     <linkfile src="tools/compulab-setup-env" dest="compulab-setup-env" />
   </project>
 
