@@ -1,0 +1,13 @@
+#!/bin/bash
+
+cat << eof
+
+# wks variables for compulab uefi image
+
+PARTUUID_BOOT = "$(uuidgen)"
+UUID_BOOT = "$(uuidgen | awk -F "-" '$0=$1')"
+
+PARTUUID = "$(uuidgen)"
+UUID = "$(uuidgen)"
+
+eof
