@@ -12,7 +12,7 @@ export MACHINE=ucm-imx8m-plus
 ```
 * Initialize repo manifests
 ```
-repo init -u https://source.codeaurora.org/external/imx/imx-manifest -b imx-linux-gatesgarth -m imx-5.10.9-1.0.0.xml
+repo init -u https://github.com/nxp-imx/imx-manifest -b imx-linux-gatesgarth -m imx-5.10.9-1.0.0.xml
 wget --directory-prefix .repo/manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/gatesgarth/scripts/imx-5.10.9-1.0.0_compulab.xml
 repo init -m imx-5.10.9-1.0.0_compulab.xml
 repo sync

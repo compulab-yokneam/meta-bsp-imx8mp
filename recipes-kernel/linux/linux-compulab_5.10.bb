@@ -31,7 +31,7 @@ SRCBRANCH = "lf-5.10.y"
 LOCALVERSION = "-1.0.0"
 SRCREV = "32513c25d8c7867f07b44900368346795357b48e"
 
-SRC_URI = "git://source.codeaurora.org/external/imx/linux-imx;protocol=https;branch=${SRCBRANCH} \
+SRC_URI = "git://github.com/nxp-imx/linux-imx;protocol=https;branch=${SRCBRANCH} \
 "
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
