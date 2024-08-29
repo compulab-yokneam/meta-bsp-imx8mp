@@ -63,3 +63,7 @@ SRC_URI_append_ucm-imx8m-plus = " \
 SRC_URI_append_som-imx8m-plus = " \
 	file://som-imx8m-plus_defconfig \
 "
+
+SRC_URI_append_mx8mp = " \
+	file://0060-compulab-ddr-Update-dram-support.patch \
+"
