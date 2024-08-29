@@ -26,6 +26,7 @@ It is up to developer to setup arm64 build environment:
 <pre>
 export ARCH=arm64
 export CROSS_COMPILE=/opt/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-
+export CROSS_COMPILE64=/opt/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-
 </pre>
 * Create a folder to organize the files:
 <pre>
@@ -52,7 +53,6 @@ git -C imx-mkimage checkout ${NXP_RELEASE} -b ${CPL_BRANCH}
 <pre>
 git clone https://github.com/nxp-imx/imx-atf.git
 git -C imx-atf checkout ${NXP_RELEASE} -b ${CPL_BRANCH}
-git -C imx-atf am ${LAYER_DIR}/recipes-bsp/imx-atf/compulab/imx8mp/*.patch
 </pre>
 * Make bl31.bin
 <pre>
@@ -92,20 +92,17 @@ Download the OP-TEE from:
 <pre>
 git clone https://github.com/nxp-imx/imx-optee-os
 git -C imx-optee-os checkout ${NXP_RELEASE} -b ${CPL_BRANCH}
-git -C imx-atf am ${LAYER_DIR}/recipes-security/optee-imx/compulab/imx8mm/*.patch
 </pre>
 
 * Set environment variables:
 <pre>
 export ARCH=arm
-export CROSS_COMPILE=/usr/bin/arm-linux-gnu-
-export CROSS_COMPILE64=/usr/bin/arm-linux-gnu-
 </pre>
 
 * Make tee.bin
 <pre>
 make -C imx-optee-os PLATFORM=imx PLATFORM_FLAVOR=mx8mpevk CFG_WERROR=y CFG_TEE_CORE_LOG_LEVEL=0 CFG_TEE_TA_LOG_LEVEL=0 CFG_DDR_SIZE=0x200000000ULL
-cp -v imx-optee-os/build.mx8mpevk/core/tee.bin ${SRC_ROOT}/imx-mkimage/iMX8M/
+cp -v  imx-optee-os/out/arm-plat-imx/core/tee-raw.bin ${SRC_ROOT}/imx-mkimage/iMX8M/tee.bin
 </pre>
 
 ## Compiling the **flash.bin** imx-boot image:
