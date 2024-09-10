@@ -1,11 +1,13 @@
 # Kernel Build Manual
 
-## Prerequisites
+## External Build
+
+### Prerequisites
 It is up to developers to prepare the host machine; it requires:
 
 * [Setup Cross Compiler](https://github.com/compulab-yokneam/meta-bsp-imx8mp/blob/kirkstone/Documentation/toolchain.md#linaro-toolchain-how-to)
 
-## CompuLab Linux Kernel setup
+### CompuLab Linux Kernel setup
 
 * WorkDir:
 ```
@@ -22,11 +24,11 @@ mkdir -p compulab-kernel/build && cd compulab-kernel
 
 * Clone the source code:
 ```
-git clone -b linux-compulab_v6.1.55 https://github.com/compulab-yokneam/linux-compulab.git
+git clone -b linux-compulab_v6.6.23 https://github.com/compulab-yokneam/linux-compulab.git
 cd linux-compulab
 ```
 
-## Compile the Kernel
+### Compile the Kernel
 
 * Apply the default CompuLab config:
 ```
@@ -44,3 +46,48 @@ nice make -j`nproc`
 ```
 
 * [Deploy the CompuLab Linux Kernel to CompuLab devices](https://github.com/compulab-yokneam/Documentation/blob/master/etc/linux_kernel_deployment.md#create-deb-package)
+
+## Internal Build
+
+### Yocto devtool method
+
+Use this method in order to modify and create the linux-compulab in the Yocto environment.<br>
+
+* Get back to the build environment:<br>
+In order to use the already created build environment issue these commands:
+```
+cd /path/to/compulab-nxp-bsp
+repo sync
+source setup-environment build-${MACHINE}
+```
+
+* Get the latest linux-compulab source code:
+```
+devtool modify linux-compulab
+```
+
+* Goto the linux-compulab source tree:
+```
+cd ${BUILDDIR}/workspace/sources/linux-compulab
+```
+
+* Build the linux-compulab:
+```
+devtool build linux-compulab
+```
+
+* Make and commit the changes
+* Apply changes from external source tree to recipe:
+```
+devtool update-recipe linux-compulab
+```
+
+* Remove the workspace layer:
+```
+ bitbake-layers remove-layer  ${BUILDDIR}/workspace
+```
+
+* Issue the linux-compulab build using bitbake:
+```
+bitbake -k linux-compulab
+```
