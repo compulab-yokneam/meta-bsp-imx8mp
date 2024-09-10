@@ -51,7 +51,7 @@ nice make -j`nproc`
 
 ### Yocto devtool method
 
-Use this method in order to modify and create the linux-compulab in the Yocto environment.<br>
+Use this method in order to modify and compile the linux-compulab kernel in the Yocto environment.<br>
 
 * Get back to the build environment:<br>
 In order to use the already created build environment issue these commands:
