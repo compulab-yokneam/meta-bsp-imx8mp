@@ -4,12 +4,36 @@ MACHINE=${MACHINE:-ucm-imx8m-plus}
 DISTRO=${DISTRO:-fsl-imx-xwayland}
 EULA=1
 T="../sources/meta-bsp-imx8mp/templates"
+M="../sources/meta-bsp-imx8mp/tools/${MACHINE}"
 
 BD=$(cat <<< $@ | awk '$0=$NF')
 
 function fix_fsl_imx_base() {
     F=${BUILDDIR}/../sources/meta-imx/meta-imx-sdk/conf/distro/include/fsl-imx-base.inc
     sed -i 's/\(^DISTRO_FEATURES:remove = ".*\)\(pulseaudio\)\(.*"\)/\1\3/g' ${F}
+}
+
+function mach_function() {
+    [[ -d ${M} ]] || return 0
+    for _file in ${M}/*;do
+        source ${_file}
+    done
+}
+
+function temp_function() {
+    for _d in ${T}/*;do
+        _file=$(basename ${_d})
+        for _f in ${_d}/*;do
+        file ${_f} | grep -iq "shell" && source ${_f} >> conf/${_file} || {
+cat << eof >> conf/${_file}
+
+# Included from ${_f}
+$(cat ${_f})
+
+eof
+    }
+        done;
+    done
 }
 
 if [[ -d ${BD} ]];then
@@ -21,18 +45,7 @@ else
 
 . imx-setup-release.sh -b $@
 
-for _d in ${T}/*;do
-	_file=$(basename ${_d})
-	for _f in ${_d}/*;do
-	file ${_f} | grep -iq "shell" && source ${_f} >> conf/${_file} || {
-cat << eof >> conf/${_file}
-
-# Included from ${_f}
-$(cat ${_f})
-
-eof
-}
-	done;
-done
+    temp_function
+    mach_function
     fix_fsl_imx_base
 fi
