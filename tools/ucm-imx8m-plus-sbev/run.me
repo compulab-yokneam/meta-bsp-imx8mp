@@ -1,0 +1,48 @@
+#!/bin/bash -e
+
+unset SCRIPTS
+SCRIPTS+=" https://raw.githubusercontent.com/compulab-yokneam/meta-basler-compulab/master/scripts/meta-basler-compulab.xml"
+SCRIPTS+=" https://raw.githubusercontent.com/compulab-yokneam/meta-basler-compulab/master/scripts/meta-basler.xml"
+
+function update_conf_files() {
+    local T="${BUILDDIR}/../sources/meta-basler-compulab/templates"
+    for _d in ${T}/*;do
+        _file=$(basename ${_d})
+        for _f in ${_d}/*;do
+            cat ${_f} >> ${BUILDDIR}/conf/${_file}
+        done;
+    done
+}
+
+function update_environment() {
+    if [ -d ${BUILDDIR}/../.repo ];then
+        distro_codename=$(awk '/^DISTRO_CODENAME/&&($0=$NF)&&(gsub(/"/,""))' ${BUILDDIR}/../sources/poky/meta-poky/conf/distro/poky.conf)
+        for script in ${SCRIPTS};do
+            [[ ! -f ${BUILDDIR}/../.repo/local_manifests/$(basename ${script}) ]] || continue
+            wget --directory-prefix .repo/local_manifests ${script} || true
+        done
+        repo sync || true
+        LAYERS="meta-basler-imx8 meta-basler-tools"
+        for layer in ${LAYERS};do
+            sed -i "s/\(LAYERSERIES_COMPAT.* = \"\)/\1${distro_codename} /g" ${BUILDDIR}/../sources/${layer}/conf/layer.conf
+        done
+    fi
+    return 0
+}
+
+function update_function() {
+    pushd ${BUILDDIR}/../
+    update_environment && update_conf_files || true
+    popd
+    # Remove a conflicting layer
+    bitbake-layers remove-layer meta-imx8mp-isp || true
+}
+
+function help_function() {
+cat << eof
+    Make sure that the script issued from the Yocto environment.
+    BUILDDIR is not defined !!!
+eof
+}
+
+[[ -n "${BUILDDIR}" ]] && update_function || help_function
