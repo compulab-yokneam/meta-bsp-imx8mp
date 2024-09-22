@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-MACHINE=${MACHINE:-ucm-imx8m-plus}
+MACHINE=${MACHINE:-ucm-imx8m-plus-sbev}
 DISTRO=${DISTRO:-fsl-imx-xwayland}
 EULA=1
 T="../sources/meta-bsp-imx8mp/templates"
