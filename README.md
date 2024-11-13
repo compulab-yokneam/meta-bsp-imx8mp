@@ -29,7 +29,7 @@ repo init -u https://github.com/nxp-imx/imx-manifest.git -b imx-linux-scarthgap 
 
 * CompuLab
 ```
-wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/scarthgap/scripts/meta-bsp-imx8mp.xml
+wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/iot-din-imx8plus-r2.0/scripts/meta-bsp-imx8mp.xml
 ```
 
 * Sync Them all
@@ -44,7 +44,7 @@ source compulab-setup-env build-${MACHINE}
 ```
 
 * Enable the required dram setting's subset:<br>
-Use [Get the product DRAM configuration ](https://github.com/compulab-yokneam/meta-bsp-imx8mp/blob/scarthgap/Documentation/dram.md) for more details
+Use [Get the product DRAM configuration ](https://github.com/compulab-yokneam/meta-bsp-imx8mp/blob/iot-din-imx8plus-r2.0/Documentation/dram.md) for more details
 
 ```
 sed -i '$ a DRAM_CONF = "d2d4"' ${BUILDDIR}/conf/local.conf
