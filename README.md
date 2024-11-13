@@ -66,7 +66,7 @@ source setup-environment build-${MACHINE}
 ## Build targets
 | Target | Command | The target file location |
 |--- |---|---|
-|full image|```bitbake -k imx-image-full```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/imx-image-full-${MACHINE}.wic.zst```|
+|full image|```bitbake -k fsl-image-network-full-cmdline```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/fsl-image-network-full-cmdline-${MACHINE}.wic.zst```|
 |boot loader|```bitbake -k imx-boot```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/imx-boot-tagged```|
 
 ## Deployment
