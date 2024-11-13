@@ -80,8 +80,8 @@ cd tmp/deploy/images/${MACHINE}
 
 * Deploy the image:
 ```
-zstd -dc imx-image-full-${MACHINE}.wic.zst > imx-image-full-${MACHINE}.wic
-sudo bmaptool copy --bmap imx-image-full-${MACHINE}.wic.bmap imx-image-full-${MACHINE}.wic /dev/sdX
+zstd -dc fsl-image-network-full-cmdline-${MACHINE}.wic.zst > fsl-image-network-full-cmdline-${MACHINE}.wic
+sudo bmaptool copy --bmap fsl-image-network-full-cmdline-${MACHINE}.wic.bmap fsl-image-network-full-cmdline-${MACHINE}.wic /dev/sdX
 ```
 #### Target Device ####
 * Turn off the device
@@ -97,8 +97,8 @@ cd tmp/deploy/images/${MACHINE}
 
 * Issue uuu command with the root credentials:
 ```
-zstd -dc imx-image-full-${MACHINE}.wic.zst > imx-image-full-${MACHINE}.wic
-sudo uuu -v -b emmc_all imx-boot-tagged mx-image-full-${MACHINE}.wic
+zstd -dc fsl-image-network-full-cmdline-${MACHINE}.wic.zst > fsl-image-network-full-cmdline-${MACHINE}.wic
+sudo uuu -v -b emmc_all imx-boot-tagged fsl-image-network-full-cmdline-${MACHINE}.wic
 ```
 
 #### Target Device ####
