@@ -74,10 +74,20 @@ source setup-environment build-${MACHINE}
 ```
 
 ## Build targets
+* Main targets:
+
 | Target | Command | The target file location |
 |--- |---|---|
 |full image|```bitbake -k imx-image-full```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/imx-image-full-${MACHINE}.wic.zst```|
 |boot loader|```bitbake -k imx-boot```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/imx-boot-tagged```|
+
+* Other available targets (no desktop environment):
+
+| Target | Command | The target file location |
+|--- |---|---|
+|fsl network image|```bitbake -k fsl-image-network-full-cmdline```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/fsl-image-network-full-cmdline-${MACHINE}.wic.zst```|
+|oe core image|```bitbake -k core-image-full-cmdline```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/core-image-full-cmdline-${MACHINE}.wic.zst```|
+
 
 ## Deployment
 ### Bootable sd card method
