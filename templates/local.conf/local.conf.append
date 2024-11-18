@@ -7,6 +7,7 @@ CORE_IMAGE_EXTRA_INSTALL += " libgpiod-tools bluez5 can-utils minicom eeprom-uti
 CORE_IMAGE_EXTRA_INSTALL += " wireless-tools dhcpcd ifupdown wpa-supplicant ntp "
 CORE_IMAGE_EXTRA_INSTALL += " networkmanager modemmanager "
 CORE_IMAGE_EXTRA_INSTALL += " openssh curl"
+CORE_IMAGE_EXTRA_INSTALL += " docker-moby "
 
 BB_SRCREV_POLICY = "clear"
 
