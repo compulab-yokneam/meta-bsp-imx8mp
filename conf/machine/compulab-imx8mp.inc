@@ -55,6 +55,7 @@ PREFERRED_PROVIDER_virtual/kernel:compulab-mx8mp = "linux-compulab"
 PREFERRED_PROVIDER_virtual/bootloader:compulab-mx8mp = "u-boot-compulab"
 PREFERRED_PROVIDER_linux-imx-mfgtool:compulab-mx8mp = "linux-compulab-mfgtool"
 PREFERRED_PROVIDER_linux-compulab-mfgtool:compulab-mx8mp = "linux-compulab-mfgtool"
+PREFERRED_VERSION_libgpiod = "1.6.4"
 
 IMXBOOT_TARGETS_BASENAME = "flash_evk"
 
