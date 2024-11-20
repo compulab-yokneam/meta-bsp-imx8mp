@@ -35,6 +35,7 @@ SRC_URI_append = " \
 	file://0033-spi-Add-w25128dw-configuration-string.patch \
 	file://0034-som-imx8m-plus-dts-Fix-the-flexspi-flash0-name.patch \
 	file://0035-compulab-imx8m-plus-defconfig-Enable-CONFIG_NXP_FSPI.patch \
+	file://0100-compulab-spl-Disable-management-gpio.patch \
 "
 
 SRC_URI_append_ucm-imx8m-plus = " \

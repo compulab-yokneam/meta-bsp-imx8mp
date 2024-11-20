@@ -1,0 +1,48 @@
+From 270d460dc106832ea16843624f6194b252a9db42 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Wed, 20 Nov 2024 10:18:14 +0200
+Subject: [PATCH 100/100] compulab: spl: Disable management gpio
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/plat/imx8mp/ddr/ddr.c | 17 -----------------
+ 1 file changed, 17 deletions(-)
+
+diff --git a/board/compulab/plat/imx8mp/ddr/ddr.c b/board/compulab/plat/imx8mp/ddr/ddr.c
+index 0b0ab237164..0579f3d9f4f 100644
+--- a/board/compulab/plat/imx8mp/ddr/ddr.c
++++ b/board/compulab/plat/imx8mp/ddr/ddr.c
+@@ -143,19 +143,6 @@ static inline void lpddr4_data_set(struct lpddr4_tcm_desc *lpddr4_tcm_desc) {
+ 	cl_eeprom_buffer_write(0, (uchar *)lpddr4_tcm_desc, sizeof(struct lpddr4_tcm_desc));
+ }
+ 
+-#define MNG_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_ODE | PAD_CTL_PUE | PAD_CTL_PE)
+-#define MNG_PAD IMX_GPIO_NR(5, 11)
+-static iomux_v3_cfg_t const mng_pads[] = {
+-	MX8MP_PAD_ECSPI2_MOSI__GPIO5_IO11  | MUX_PAD_CTRL(MNG_PAD_CTRL),
+-};
+-
+-static int get_mng_gpio(void)
+-{
+-    imx_iomux_v3_setup_multiple_pads(mng_pads, ARRAY_SIZE(mng_pads));
+-    gpio_request(MNG_PAD, "mng_pad");
+-    return gpio_get_value(MNG_PAD);
+-}
+-
+ static void spl_dram_eclean(void)
+ {
+     unsigned int ddr_info = 0xffffffff;
+@@ -171,10 +158,6 @@ static void spl_dram_eclean(void)
+ 
+ void spl_dram_init(void)
+ {
+-    if (!get_mng_gpio()) {
+-        spl_dram_eclean();
+-        while (1) {};
+-    }
+ 	lpddr4_data_get(SPL_TCM_DATA);
+ 	if (_spl_dram_init()) {
+ 		lpddr4_data_set(SPL_TCM_DATA);
+-- 
+2.34.1
+
