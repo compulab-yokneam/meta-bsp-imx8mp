@@ -1,8 +1,3 @@
-# Disclaimer
-
-| !IMPORTANT! | This is a development branch, that is not relelased by CompuLab officially yet|
-|---|---|
-
 ## Supported Compulab Products
 
 * [`IOT-DIN-IMX8PLUS IoT Edge Gateway`](https://www.compulab.com/products/iot-gateways/iot-din-imx8plus-industrial-iot-gateway/)
