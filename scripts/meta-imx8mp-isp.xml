@@ -2,6 +2,6 @@
   <manifest>
   <remote fetch="https://github.com/compulab-yokneam" name="compulab"/>
 
-  <project name="meta-imx8mp-isp" remote="compulab" revision="6.1.55" path="sources/meta-imx8mp-isp" >
+  <project name="meta-imx8mp-isp" remote="compulab" revision="6.6.36" path="sources/meta-imx8mp-isp" >
 
   </manifest>
