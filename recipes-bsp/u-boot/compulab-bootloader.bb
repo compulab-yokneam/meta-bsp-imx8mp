@@ -7,7 +7,7 @@ DEPENDS:append = " dtc-native"
 LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
-SRCBRANCH = "u-boot-compulab_v2023.04"
+SRCBRANCH = "u-boot-compulab_v2024.04-2.2.0"
 SRC_URI = "git://github.com/compulab-yokneam/u-boot-compulab;protocol=https;branch=${SRCBRANCH}"
 PV = "1.0+git${SRCPV}"
 SRCREV = "${AUTOREV}"
