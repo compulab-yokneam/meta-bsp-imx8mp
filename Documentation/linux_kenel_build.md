@@ -77,10 +77,13 @@ devtool build linux-compulab
 ```
 
 * Make and commit the changes
-* Apply changes from external source tree to recipe:
-```
-devtool update-recipe linux-compulab
-```
+* Apply changes:
+
+|Method|Command|
+|---|---|
+|1. Applies changes to the recipe|```devtool update-recipe linux-compulab```
+|2. Write changes to a bbappend in the original layer instead of the recipe|```devtool update-recipe --append ${BUILDDIR}/../sources/meta-bsp-imx8mp linux-compulab```
+|3. Write changes to a bbappend in the specified layer instead of the recipe|```devtool update-recipe --append /path/to/<the-specified-meta-layer> linux-compulab```
 
 * Remove the workspace layer:
 ```
