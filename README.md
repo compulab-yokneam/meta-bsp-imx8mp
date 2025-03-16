@@ -61,11 +61,11 @@ source setup-environment build-${MACHINE}
 ## Build targets
 | Target | Command | The target file location |
 |--- |---|---|
-|full image|```bitbake -k fsl-image-network-full-cmdline```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/fsl-image-network-full-cmdline-${MACHINE}.wic.zst```|
+|full image|```bitbake -k fsl-image-network-full-cmdline```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/fsl-image-network-full-cmdline-${MACHINE}.rootfs.wic.zst```|
 |boot loader|```bitbake -k imx-boot```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/imx-boot-tagged```|
 
 ## Deployment
-### Bootable sd card method
+### Bootable USB flash drive method
 #### Host Machine ####
 
 * Goto the `tmp/deploy/images/${MACHINE}` directory:
@@ -73,15 +73,15 @@ source setup-environment build-${MACHINE}
 cd tmp/deploy/images/${MACHINE}
 ```
 
-* Deploy the image:
+* Deploy the image onto USB flash drive:
 ```
-zstd -dc fsl-image-network-full-cmdline-${MACHINE}.wic.zst > fsl-image-network-full-cmdline-${MACHINE}.wic
-sudo bmaptool copy --bmap fsl-image-network-full-cmdline-${MACHINE}.wic.bmap fsl-image-network-full-cmdline-${MACHINE}.wic /dev/sdX
+zstd -dc fsl-image-network-full-cmdline-${MACHINE}.rootfs.wic.zst > fsl-image-network-full-cmdline-${MACHINE}.rootfs.wic
+sudo bmaptool copy --bmap fsl-image-network-full-cmdline-${MACHINE}.rootfs.wic.bmap fsl-image-network-full-cmdline-${MACHINE}.rootfs.wic /dev/sdX
 ```
 #### Target Device ####
 * Turn off the device
-* Insert the created sd-card
-* Turn on the device and issue AltBoot
+* Insert the created live USB
+* Turn on the device
 
 ### UUU method
 #### Host Machine ####
@@ -92,8 +92,8 @@ cd tmp/deploy/images/${MACHINE}
 
 * Issue uuu command with the root credentials:
 ```
-zstd -dc fsl-image-network-full-cmdline-${MACHINE}.wic.zst > fsl-image-network-full-cmdline-${MACHINE}.wic
-sudo uuu -v -b emmc_all imx-boot-tagged fsl-image-network-full-cmdline-${MACHINE}.wic
+zstd -dc fsl-image-network-full-cmdline-${MACHINE}.rootfs.wic.zst > fsl-image-network-full-cmdline-${MACHINE}.rootfs.wic
+sudo uuu -v -b emmc_all imx-boot-tagged fsl-image-network-full-cmdline-${MACHINE}.rootfs.wic
 ```
 
 #### Target Device ####
