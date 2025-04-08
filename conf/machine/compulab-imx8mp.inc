@@ -11,6 +11,9 @@ MACHINE_FEATURES:append:use-nxp-bsp = " optee "
 
 IMX_DEFAULT_BOOTLOADER:use-mainline-bsp = "u-boot-compulab"
 IMX_DEFAULT_BOOTLOADER:use-nxp-bsp = "u-boot-compulab"
+IMX_DEFAULT_BOOTLOADER:mx8m-generic-bsp = "u-boot-compulab"
+# For FreeScale Communtity BSP build
+UBOOT_PROVIDES_BOOT_CONTAINER:mx8m-generic-bsp = "0"
 
 SPL_BINARY = "spl/u-boot-spl.bin"
 
