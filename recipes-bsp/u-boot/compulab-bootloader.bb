@@ -62,6 +62,9 @@ do_compile_d2d4() {
 
 	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG}
 	mv ${B}/${BOOTLOADER_CONFIG}/flash.bin ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4
+
+	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG} flash.bin-with-env
+	mv ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d2d4
 }
 
 do_compile_d1d8() {
@@ -73,12 +76,16 @@ do_compile_d1d8() {
 
 	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG}
 	mv ${B}/${BOOTLOADER_CONFIG}/flash.bin ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8
+
+	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG} flash.bin-with-env
+	mv ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d1d8
 }
 
 do_compile1() {
 	do_compile_d2d4
 	do_compile_d1d8
 	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG} u-boot-initial-env
+	mv ${B}/${BOOTLOADER_CONFIG}/u-boot-initial-env ${B}/${BOOTLOADER_CONFIG}/u-boot-initial-env-${MACH}
 }
 
 do_compile() {
@@ -89,8 +96,11 @@ do_compile() {
 
 do_deploy1() {
 	install -d ${DEPLOYDIR}/
-	install -m 0777 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4  ${DEPLOYDIR}/imx-boot_${MACH}_d2d4
-	install -m 0777 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8  ${DEPLOYDIR}/imx-boot_${MACH}_d1d8
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4  ${DEPLOYDIR}/imx-boot_${MACH}_d2d4
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8  ${DEPLOYDIR}/imx-boot_${MACH}_d1d8
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d2d4  ${DEPLOYDIR}/imx-boot_with-env_${MACH}_d2d4
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d1d8  ${DEPLOYDIR}/imx-boot_with-env_${MACH}_d1d8
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/u-boot-initial-env-${MACH}  ${DEPLOYDIR}/u-boot-initial-env-${MACH}
 	ln -sf imx-boot_${MACH}_${DRAM_CONF} ${DEPLOYDIR}/imx-boot-${MACH}
 }
 
@@ -102,10 +112,12 @@ do_deploy() {
 
 do_install1() {
 	install -d ${D}/boot
-	install -m 0755 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4 ${D}/boot/imx-boot_${MACH}_d2d4
-	install -m 0755 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8 ${D}/boot/imx-boot_${MACH}_d1d8
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4 ${D}/boot/imx-boot_${MACH}_d2d4
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8 ${D}/boot/imx-boot_${MACH}_d1d8
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d2d4  ${D}/boot/imx-boot_with-env_${MACH}_d2d4
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d1d8  ${D}/boot/imx-boot_with-env_${MACH}_d1d8
 	install -d ${D}/etc
-	install -m 0755 ${B}/${BOOTLOADER_CONFIG}/u-boot-initial-env ${D}/etc/u-boot-initial-env-${MACH}
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/u-boot-initial-env-${MACH} ${D}/etc/u-boot-initial-env-${MACH}
 	install -m 0644 ${S}/tools/env/fw_env.config  ${D}/etc/fw_env.config
 }
 
