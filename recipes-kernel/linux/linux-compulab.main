@@ -46,11 +46,6 @@ SRC_URI:append = " \
 	file://compulab.cfg \
 "
 
-do_compulab_config() {
-    cat ${S}/arch/arm64/configs/compulab.config > ${WORKDIR}/compulab.cfg
-}
-addtask do_compulab_config before do_kernel_configme after do_patch
-
 do_compile:prepend() {
     export SOURCE_DATE_EPOCH=$(date +%s)
 }
