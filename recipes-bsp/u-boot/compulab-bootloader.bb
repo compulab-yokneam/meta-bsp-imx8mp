@@ -2,7 +2,6 @@ DESCRIPTION = "CLab i.MX8 U-Boot"
 require recipes-bsp/u-boot/u-boot.inc
 
 PROVIDES = "compulab-bootloader"
-DEPENDS:append = " dtc-native"
 
 LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
@@ -13,8 +12,7 @@ SRC_URI = "git://github.com/compulab-yokneam/u-boot-compulab;protocol=https;bran
 PV = "${UBOOT_VERSION}+git${SRCPV}"
 SRCREV = "${AUTOREV}"
 
-DEPENDS += "flex-native bison-native bc-native dtc-native"
-DEPENDS += " python3-setuptools-native "
+DEPENDS += " flex-native bison-native bc-native dtc-native xz-native python3-setuptools-native "
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
@@ -94,6 +92,13 @@ do_compile() {
 	done
 }
 
+do_deploy2() {
+	D2=${DEPLOYDIR}/compulab-bootloader/${MACH}
+	install -d ${D2}
+	xz -9c ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4 > ${D2}/flash.bin.d2d4.xz
+	xz -9c ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8 > ${D2}/flash.bin.d1d8.xz
+}
+
 do_deploy1() {
 	install -d ${DEPLOYDIR}/
 	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4  ${DEPLOYDIR}/imx-boot_${MACH}_d2d4
@@ -107,6 +112,7 @@ do_deploy1() {
 do_deploy() {
 	for MACH in ${COMPULAB_BOOTLOADER_MACHINE};do
 		BOOTLOADER_CONFIG=${MACH}_defconfig do_deploy1
+		BOOTLOADER_CONFIG=${MACH}_defconfig do_deploy2
 	done
 }
 
