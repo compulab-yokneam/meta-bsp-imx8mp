@@ -22,10 +22,11 @@ mkdir -p compulab-kernel/build && cd compulab-kernel
 |mcm-imx8m-plus|```export MACHINE=mcm-imx8m-plus```|
 |som-imx8m-plus|```export MACHINE=som-imx8m-plus```|
 |iot-gate-imx8plus|```export MACHINE=iot-gate-imx8plus```|
+|iotdin-imx8p|```export MACHINE=iotdin-imx8p```|
 
 * Clone the source code:
 ```
-git clone -b linux-compulab_v6.6.23 https://github.com/compulab-yokneam/linux-compulab.git
+git clone -b linux-compulab_v6.6.52 https://github.com/compulab-yokneam/linux-compulab.git
 cd linux-compulab
 ```
 
