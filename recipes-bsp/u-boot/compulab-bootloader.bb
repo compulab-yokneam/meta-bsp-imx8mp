@@ -99,6 +99,19 @@ do_deploy2() {
 	xz -9c ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8 > ${D2}/flash.bin.d1d8.xz
 }
 
+do_deploy3() {
+	D3=${DEPLOYDIR}/compulab-bootloader/${MACH}/
+	install -d ${D3}
+	cp -L ${B}/${BOOTLOADER_CONFIG}/lpddr4_pmu_train_* ${D3}/
+	cp -L ${B}/${BOOTLOADER_CONFIG}/bl31.bin ${D3}/
+	cp -L ${B}/${BOOTLOADER_CONFIG}/tee.bin ${D3}/
+	cd ${D3}
+	for _bin in *.bin;do
+		gzip -9 ${_bin}
+	done
+	cd -
+}
+
 do_deploy1() {
 	install -d ${DEPLOYDIR}/
 	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4  ${DEPLOYDIR}/imx-boot_${MACH}_d2d4
@@ -113,6 +126,7 @@ do_deploy() {
 	for MACH in ${COMPULAB_BOOTLOADER_MACHINE};do
 		BOOTLOADER_CONFIG=${MACH}_defconfig do_deploy1
 		BOOTLOADER_CONFIG=${MACH}_defconfig do_deploy2
+		BOOTLOADER_CONFIG=${MACH}_defconfig do_deploy3
 	done
 }
 
