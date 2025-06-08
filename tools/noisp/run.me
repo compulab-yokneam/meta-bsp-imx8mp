@@ -1,0 +1,15 @@
+#!/bin/bash -e
+
+function update_function() {
+    # Remove an unused layer
+    bitbake-layers remove-layer meta-imx8mp-isp || true
+}
+
+function help_function() {
+cat << eof
+    Make sure that the script issued from the Yocto environment.
+    BUILDDIR is not defined !!!
+eof
+}
+
+[[ -n "${BUILDDIR}" ]] && update_function || help_function
