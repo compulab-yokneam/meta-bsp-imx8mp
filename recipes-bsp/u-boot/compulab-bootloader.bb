@@ -2,7 +2,6 @@ DESCRIPTION = "CLab i.MX8 U-Boot"
 require recipes-bsp/u-boot/u-boot.inc
 
 PROVIDES = "compulab-bootloader"
-DEPENDS:append = " dtc-native"
 
 LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
@@ -13,14 +12,12 @@ SRC_URI = "git://github.com/compulab-yokneam/u-boot-compulab;protocol=https;bran
 PV = "${UBOOT_VERSION}+git${SRCPV}"
 SRCREV = "${AUTOREV}"
 
-DEPENDS += "flex-native bison-native bc-native dtc-native"
-DEPENDS += " python3-setuptools-native "
+DEPENDS += " flex-native bison-native bc-native dtc-native xz-native python3-setuptools-native u-boot-tools-native"
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
 
 UBOOT_VERSION_EXTENSION = "-${CL_RELEASE}"
-BOOTLOADER_CONFIG1 = "${MACHINE}_defconfig"
 COMPULAB_BOOTLOADER_MACHINE ?= "iot-gate-imx8plus iotdin-imx8p mcm-imx8m-plus som-imx8m-plus ucm-imx8m-plus ucm-imx8m-plus-sbev"
 
 DEPENDS += " \
@@ -63,6 +60,9 @@ do_compile_d2d4() {
 
 	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG}
 	mv ${B}/${BOOTLOADER_CONFIG}/flash.bin ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4
+
+	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG} flash.bin-with-env
+	mv ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d2d4
 }
 
 do_compile_d1d8() {
@@ -74,12 +74,16 @@ do_compile_d1d8() {
 
 	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG}
 	mv ${B}/${BOOTLOADER_CONFIG}/flash.bin ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8
+
+	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG} flash.bin-with-env
+	mv ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d1d8
 }
 
 do_compile1() {
 	do_compile_d2d4
 	do_compile_d1d8
 	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG} u-boot-initial-env
+	mv ${B}/${BOOTLOADER_CONFIG}/u-boot-initial-env ${B}/${BOOTLOADER_CONFIG}/u-boot-initial-env-${MACH}
 }
 
 do_compile() {
@@ -88,25 +92,38 @@ do_compile() {
 	done
 }
 
+do_deploy2() {
+	D2=${DEPLOYDIR}/compulab-bootloader/${MACH}
+	install -d ${D2}
+	xz -9c ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4 > ${D2}/flash.bin.d2d4.xz
+	xz -9c ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8 > ${D2}/flash.bin.d1d8.xz
+}
+
 do_deploy1() {
 	install -d ${DEPLOYDIR}/
-	install -m 0777 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4  ${DEPLOYDIR}/imx-boot_${MACH}_d2d4
-	install -m 0777 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8  ${DEPLOYDIR}/imx-boot_${MACH}_d1d8
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4  ${DEPLOYDIR}/imx-boot_${MACH}_d2d4
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8  ${DEPLOYDIR}/imx-boot_${MACH}_d1d8
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d2d4  ${DEPLOYDIR}/imx-boot_with-env_${MACH}_d2d4
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d1d8  ${DEPLOYDIR}/imx-boot_with-env_${MACH}_d1d8
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/u-boot-initial-env-${MACH}  ${DEPLOYDIR}/u-boot-initial-env-${MACH}
 	ln -sf imx-boot_${MACH}_${DRAM_CONF} ${DEPLOYDIR}/imx-boot-${MACH}
 }
 
 do_deploy() {
 	for MACH in ${COMPULAB_BOOTLOADER_MACHINE};do
 		BOOTLOADER_CONFIG=${MACH}_defconfig do_deploy1
+		BOOTLOADER_CONFIG=${MACH}_defconfig do_deploy2
 	done
 }
 
 do_install1() {
 	install -d ${D}/boot
-	install -m 0755 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4 ${D}/boot/imx-boot_${MACH}_d2d4
-	install -m 0755 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8 ${D}/boot/imx-boot_${MACH}_d1d8
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4 ${D}/boot/imx-boot_${MACH}_d2d4
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8 ${D}/boot/imx-boot_${MACH}_d1d8
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d2d4  ${D}/boot/imx-boot_with-env_${MACH}_d2d4
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d1d8  ${D}/boot/imx-boot_with-env_${MACH}_d1d8
 	install -d ${D}/etc
-	install -m 0755 ${B}/${BOOTLOADER_CONFIG}/u-boot-initial-env ${D}/etc/u-boot-initial-env-${MACH}
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/u-boot-initial-env-${MACH} ${D}/etc/u-boot-initial-env-${MACH}
 	install -m 0644 ${S}/tools/env/fw_env.config  ${D}/etc/fw_env.config
 }
 
@@ -127,3 +144,6 @@ FILES:${PN}-env = " \
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
 EXTRA_OEMAKE += "debug=n  DEBUG=0 "
+
+RREPLACES:${PN} = "imx-boot"
+RREPLACES:${PN}-env = "u-boot-compulab-env"
