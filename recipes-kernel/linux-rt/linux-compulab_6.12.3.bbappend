@@ -1,1 +1,1 @@
-linux-compulab-rt.inc
+linux-compulab-rt-cfg.inc
