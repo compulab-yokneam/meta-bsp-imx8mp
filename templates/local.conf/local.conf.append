@@ -6,6 +6,7 @@ CORE_IMAGE_EXTRA_INSTALL += " memtester htop iotop tmux iperf3 "
 CORE_IMAGE_EXTRA_INSTALL += " libgpiod-tools bluez5 can-utils minicom eeprom-util usbutils i2c-tools "
 CORE_IMAGE_EXTRA_INSTALL += " wireless-tools dhcpcd ifupdown wpa-supplicant ntp "
 CORE_IMAGE_EXTRA_INSTALL += " networkmanager modemmanager "
+EXTRA_IMAGE_FEATURES:append = " ssh-server-openssh "
 
 BB_SRCREV_POLICY = "clear"
 
