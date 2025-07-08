@@ -100,7 +100,10 @@ do_deploy2() {
 }
 
 do_deploy3() {
-	D3=${DEPLOYDIR}/compulab-bootloader/${MACH}/
+	D3=${DEPLOYDIR}/compulab-bootloader/imx8mp/firmware
+	if [ -d "${D3}" ];then
+		return
+	fi
 	install -d ${D3}
 	cp -L ${B}/${BOOTLOADER_CONFIG}/lpddr4_pmu_train_* ${D3}/
 	cp -L ${B}/${BOOTLOADER_CONFIG}/bl31.bin ${D3}/
