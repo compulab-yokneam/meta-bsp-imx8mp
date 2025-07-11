@@ -8,9 +8,9 @@ SRC_URI[imx-sdma-firmware.sha256sum] = "004ad1f9cf5b1176e71765794a5bfdcffdf44b9a
 SRC_URI:append = " file://linux-firmware-sdma.cfg "
 
 do_patch:append() {
-    if [ ! -d ${WORKDIR}/imx ];then
+    if [ ! -d ${UNPACKDIR}/imx ];then
         return
     fi
     mkdir -p ${S}/lib/firmware/
-    cp -rfv ${WORKDIR}/imx ${S}/lib/firmware/
+    cp -rfv ${UNPACKDIR}/imx ${S}/lib/firmware/
 }

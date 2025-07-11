@@ -14,8 +14,8 @@ require compulab/${PV}/imx8mp.inc
 
 DEPENDS += "flex-native bison-native bc-native dtc-native gnutls-native"
 
-S = "${WORKDIR}/git"
-B = "${WORKDIR}/build"
+S = "${UNPACKDIR}/git"
+B = "${UNPACKDIR}/build"
 
 UBOOT_VERSION_EXTENSION = "-${CL_RELEASE}-${DRAM_CONF}"
 

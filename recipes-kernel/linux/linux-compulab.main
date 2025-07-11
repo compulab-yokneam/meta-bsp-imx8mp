@@ -5,7 +5,7 @@ inherit kernel-yocto kernel fsl-vivante-kernel-driver-handler
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/git"
 
 # Tell to kernel class that we would like to use our defconfig to configure the kernel.
 # Otherwise, the --allnoconfig would be used per default which leads to mis-configured
@@ -27,7 +27,7 @@ KERNEL_EXTRA_ARGS += "LOADADDR=${UBOOT_ENTRYPOINT}"
 KBUILD_DEFCONFIG:compulab-mx8mp ?= "compulab_v8_defconfig"
 EXTRA_OEMAKE += "DTC_FLAGS=-@ "
 
-DEPENDS += "lzop-native bc-native"
+DEPENDS += "lzop-native bc-native coreutils-native"
 
 require linux-compulab_${PV}.inc
 
@@ -51,7 +51,7 @@ do_compile:prepend() {
 }
 
 do_install:append() {
-    ln -s Image-${KERNEL_VERSION} ${D}/${KERNEL_IMAGEDEST}/kernel-${KERNEL_VERSION}
+    ln -fs Image-${KERNEL_VERSION} ${D}/${KERNEL_IMAGEDEST}/kernel-${KERNEL_VERSION}
     install -m 0644 ${B}/.config ${D}/${KERNEL_IMAGEDEST}/config-${KERNEL_VERSION}
 
     INSTALL_HDR_PATH=${D}${exec_prefix}/src/linux-headers-${KERNEL_VERSION}
@@ -66,16 +66,16 @@ do_install:append() {
         find include scripts -type f -o -type l
         find arch/$ARCH -name Kbuild.platforms -o -name Platform
         find $(find arch/$ARCH -name include -o -name scripts -type d) -type f
-    ) > ${WORKDIR}/temp/hdrsrcfiles
+    ) > ${UNPACKDIR}/../temp/hdrsrcfiles
 
     (
         cd ${B}
         echo tools/objtool/objtool
         find arch/$ARCH/include Module.symvers include scripts -type f
-    ) > ${WORKDIR}/temp/hdrobjfiles
+    ) > ${UNPACKDIR}/../temp/hdrobjfiles
 
-	tar -c -f - -C ${S} -T ${WORKDIR}/temp/hdrsrcfiles | tar -xf - -C ${INSTALL_HDR_PATH}
-	tar -c -f - -C ${B} -T ${WORKDIR}/temp/hdrobjfiles | tar -xf - -C ${INSTALL_HDR_PATH}
+	tar -c -f - -C ${S} -T ${UNPACKDIR}/../temp/hdrsrcfiles | tar -xf - -C ${INSTALL_HDR_PATH}
+	tar -c -f - -C ${B} -T ${UNPACKDIR}/../temp/hdrobjfiles | tar -xf - -C ${INSTALL_HDR_PATH}
 
     (
         for f in $(find ${INSTALL_HDR_PATH});do
@@ -94,7 +94,7 @@ do_install:append() {
 FILES:${KERNEL_PACKAGE_NAME}-image:append = " /boot/kernel-${KERNEL_VERSION} /boot/config-${KERNEL_VERSION} "
 
 do_kernel_localversion:prepend() {
-    touch ${WORKDIR}/defconfig
+    touch ${UNPACKDIR}/defconfig
 }
 
 PACKAGES =+ "linux-headers"

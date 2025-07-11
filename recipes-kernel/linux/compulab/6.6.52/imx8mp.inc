@@ -4,7 +4,7 @@ SRC_URI:append = " \
 	file://sdma.cfg \
 "
 
-FIRMWARE_DIR_SOURCE = "${WORKDIR}/recipe-sysroot"
+FIRMWARE_DIR_SOURCE = "${UNPACKDIR}/recipe-sysroot"
 FIRMWARE_FILE_NAME = "sdma-imx7d.bin"
 
 do_patch[depends] += " \

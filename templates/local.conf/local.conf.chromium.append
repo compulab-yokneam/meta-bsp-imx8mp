@@ -1,5 +1,2 @@
 # Conflicts with Qt6
-# IMAGE_INSTALL:append = \
-#    "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', ' chromium-ozone-wayland', \
-#        bb.utils.contains('DISTRO_FEATURES',     'x11', ' chromium-x11', \
-#                                                        '', d), d)}"
+# IMAGE_INSTALL:append = " chromium-ozone-wayland"

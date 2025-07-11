@@ -4,7 +4,7 @@ CORE_IMAGE_EXTRA_INSTALL += " cl-uboot cl-deploy cl-stest cl-camera cl-audio cl-
 CORE_IMAGE_EXTRA_INSTALL += " libubootenv-bin u-boot-compulab-env "
 CORE_IMAGE_EXTRA_INSTALL += " memtester htop iotop tmux iperf3 "
 CORE_IMAGE_EXTRA_INSTALL += " libgpiod-tools bluez5 can-utils minicom eeprom-util usbutils i2c-tools "
-CORE_IMAGE_EXTRA_INSTALL += " wireless-tools dhcpcd ifupdown wpa-supplicant ntp "
+CORE_IMAGE_EXTRA_INSTALL += " iw dhcpcd ifupdown wpa-supplicant ntp "
 CORE_IMAGE_EXTRA_INSTALL += " networkmanager modemmanager "
 EXTRA_IMAGE_FEATURES:append = " ssh-server-openssh "
 
@@ -13,3 +13,6 @@ BB_SRCREV_POLICY = "clear"
 INHERIT += "rm_work"
 
 RM_WORK_EXCLUDE += "u-boot-compulab linux-compulab"
+
+ERROR_QA:remove = "patch-status"
+WARN_QA:append = " patch-status"

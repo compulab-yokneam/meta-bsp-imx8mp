@@ -14,8 +14,8 @@ SRCREV = "${AUTOREV}"
 
 DEPENDS += " flex-native bison-native bc-native dtc-native xz-native python3-setuptools-native u-boot-tools-native"
 
-S = "${WORKDIR}/git"
-B = "${WORKDIR}/build"
+S = "${UNPACKDIR}/git"
+B = "${UNPACKDIR}/build"
 
 UBOOT_VERSION_EXTENSION = "-${CL_RELEASE}"
 COMPULAB_BOOTLOADER_MACHINE ?= "iot-gate-imx8plus iotdin-imx8p mcm-imx8m-plus som-imx8m-plus ucm-imx8m-plus ucm-imx8m-plus-sbev"

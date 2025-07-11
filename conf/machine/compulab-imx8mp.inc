@@ -63,6 +63,7 @@ PREFERRED_VERSION_libgpiod = "1.6.4"
 IMXBOOT_TARGETS_BASENAME = "flash_evk"
 
 PREFERRED_RROVIDER_u-boot-fw-utils = "libubootenv-bin"
+PREFERRED_VERSION_u-boot-compulab ??= "2023.04"
 
 MACHINE_FIRMWARE:remove = " linux-firmware-ath10k "
 
