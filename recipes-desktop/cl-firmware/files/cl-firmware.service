@@ -1,0 +1,10 @@
+[Unit]
+Description=CompuLab service to update the U-Boot firmware
+
+[Service]
+Type=oneshot
+RemainAfterExit=no
+ExecStart=/usr/bin/cl-firmware.sh
+
+[Install]
+WantedBy=multi-user.target
