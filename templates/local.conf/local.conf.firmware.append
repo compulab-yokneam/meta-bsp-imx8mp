@@ -1,0 +1,2 @@
+CORE_IMAGE_EXTRA_INSTALL += " compulab-bootloader "
+CORE_IMAGE_EXTRA_INSTALL += " cl-firmware "
