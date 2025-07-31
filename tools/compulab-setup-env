@@ -36,7 +36,7 @@ eof
     done
 }
 
-if [[ -d ${BD} ]];then
+if [[ -d ${BD} && -n "$(ls -A ${BD})" ]];then
 
 echo "Back to the build environment ${BD}"
 . setup-environment ${BD}
