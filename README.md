@@ -31,6 +31,7 @@ mkdir compulab-nxp-bsp && cd compulab-nxp-bsp
 |iot-gate-imx8plus|```export MACHINE=iot-gate-imx8plus```|
 |sbc-iot-imx8plus|```export MACHINE=iot-gate-imx8plus```|
 |iotdin-imx8p|```export MACHINE=iotdin-imx8p```|
+|compulab-imx8mp|```export MACHINE=compulab-imx8mp```|
 
 ## Initialize repo manifests
 
@@ -117,11 +118,19 @@ sudo bmaptool copy --bmap imx-image-full-${MACHINE}.wic.bmap imx-image-full-${MA
 cd tmp/deploy/images/${MACHINE}
 ```
 
-* Issue uuu command with the root credentials:
+* Issue uuu command with the root credentials for a ``non compulab-imx8mp``:
 ```
 zstd -dc imx-image-full-${MACHINE}.wic.zst > imx-image-full-${MACHINE}.wic
 sudo uuu -v -b emmc_all imx-boot-tagged mx-image-full-${MACHINE}.wic
 ```
+
+* Issue uuu command with the root credentials for the ``compulab-imx8mp``:
+
+|Target device|UUU Command|
+|---|---|
+|som-imx8m-plus|```sudo uuu -d -v -b emmc_all compulab-bootloader/mfg/som-imx8m-plus/imx-boot_with-env_som-imx8m-plus_d2d4 imx-image-full-compulab-imx8mp.rootfs.wic.zst/*```
+|ucm-imx8m-plus-sbev|```sudo uuu -d -v -b emmc_all compulab-bootloader/mfg/ucm-imx8m-plus-sbev/imx-boot_with-env_ucm-imx8m-plus-sbev_d2d4 imx-image-full-compulab-imx8mp.rootfs.wic.zst/*```
+
 
 #### Target Device ####
 
