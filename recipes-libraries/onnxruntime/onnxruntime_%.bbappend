@@ -1,0 +1,6 @@
+SRCBRANCH = "lf-6.6.52_2.2.0"
+SRCREV = "0e7ab1185a82947147b814b9a4d20a7452cc61f8"
+
+PYTHON_DEPENDS += "\
+    ${PYTHON_PN}-numpy \
+"
