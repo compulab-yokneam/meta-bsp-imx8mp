@@ -1,9 +1,9 @@
 DESCRIPTION = "CLab i.MX8 U-Boot"
 require recipes-bsp/u-boot/u-boot.inc
 
-PROVIDES = "compulab-bootloader"
+PROVIDES = "${PN}"
 
-LICENSE = "GPLv2+"
+LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 UBOOT_VERSION = "2023.04"
@@ -19,6 +19,8 @@ B = "${WORKDIR}/build"
 
 UBOOT_VERSION_EXTENSION = "-${CL_RELEASE}"
 COMPULAB_BOOTLOADER_MACHINE ?= "iot-gate-imx8plus iotdin-imx8p mcm-imx8m-plus som-imx8m-plus ucm-imx8m-plus ucm-imx8m-plus-sbev"
+
+inherit fsl-u-boot-localversion
 
 DEPENDS += " \
     ${IMX_EXTRA_FIRMWARE} \
@@ -80,6 +82,10 @@ do_compile_d1d8() {
 }
 
 do_compile1() {
+	sed -i '/CONFIG_SPL_MAX_SIZE/d' ${B}/${BOOTLOADER_CONFIG}/.config
+	sed -i '$ a CONFIG_SPL_MAX_SIZE=0x2C000' ${B}/${BOOTLOADER_CONFIG}/.config
+	sed -i '/CONFIG_SPL_PAD_TO/d' ${B}/${BOOTLOADER_CONFIG}/.config
+	sed -i '$ a CONFIG_SPL_PAD_TO=0x2C000' ${B}/${BOOTLOADER_CONFIG}/.config
 	do_compile_d2d4
 	do_compile_d1d8
 	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG} u-boot-initial-env
@@ -93,14 +99,14 @@ do_compile() {
 }
 
 do_deploy2() {
-	D2=${DEPLOYDIR}/compulab-bootloader/${MACH}
+	D2=${DEPLOYDIR}/${PN}/${MACH}
 	install -d ${D2}
 	xz -9c ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4 > ${D2}/flash.bin.d2d4.xz
 	xz -9c ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8 > ${D2}/flash.bin.d1d8.xz
 }
 
 do_deploy3() {
-	D3=${DEPLOYDIR}/compulab-bootloader/imx8mp/firmware
+	D3=${DEPLOYDIR}/${PN}/imx8mp/firmware
 	if [ -d "${D3}" ];then
 		return
 	fi
@@ -116,13 +122,13 @@ do_deploy3() {
 }
 
 do_deploy1() {
-	install -d ${DEPLOYDIR}/
-	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4  ${DEPLOYDIR}/imx-boot_${MACH}_d2d4
-	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8  ${DEPLOYDIR}/imx-boot_${MACH}_d1d8
-	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d2d4  ${DEPLOYDIR}/imx-boot_with-env_${MACH}_d2d4
-	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d1d8  ${DEPLOYDIR}/imx-boot_with-env_${MACH}_d1d8
-	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/u-boot-initial-env-${MACH}  ${DEPLOYDIR}/u-boot-initial-env-${MACH}
-	ln -sf imx-boot_${MACH}_${DRAM_CONF} ${DEPLOYDIR}/imx-boot-${MACH}
+	D1=${DEPLOYDIR}/${PN}/mfg/${MACH}
+	install -d ${D1}/
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4  ${D1}/imx-boot_${MACH}_d2d4
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8  ${D1}/imx-boot_${MACH}_d1d8
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d2d4  ${D1}/imx-boot_with-env_${MACH}_d2d4
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d1d8  ${D1}/imx-boot_with-env_${MACH}_d1d8
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/u-boot-initial-env-${MACH}  ${D1}/u-boot-initial-env-${MACH}
 }
 
 do_deploy() {
@@ -134,11 +140,12 @@ do_deploy() {
 }
 
 do_install1() {
-	install -d ${D}/boot
-	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4 ${D}/boot/imx-boot_${MACH}_d2d4
-	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8 ${D}/boot/imx-boot_${MACH}_d1d8
-	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d2d4  ${D}/boot/imx-boot_with-env_${MACH}_d2d4
-	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d1d8  ${D}/boot/imx-boot_with-env_${MACH}_d1d8
+	I1=${D}/boot/${PN}
+	install -d ${I1}
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4 ${I1}/imx-boot_${MACH}_d2d4
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8 ${I1}/imx-boot_${MACH}_d1d8
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d2d4  ${I1}/imx-boot_with-env_${MACH}_d2d4
+	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d1d8  ${I1}/imx-boot_with-env_${MACH}_d1d8
 	install -d ${D}/etc
 	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/u-boot-initial-env-${MACH} ${D}/etc/u-boot-initial-env-${MACH}
 	install -m 0644 ${S}/tools/env/fw_env.config  ${D}/etc/fw_env.config
@@ -164,3 +171,5 @@ EXTRA_OEMAKE += "debug=n  DEBUG=0 "
 
 RREPLACES:${PN} = "imx-boot"
 RREPLACES:${PN}-env = "u-boot-compulab-env"
+
+RDEPENDS:${PN}:remove = "${PN}-env"
