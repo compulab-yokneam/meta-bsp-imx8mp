@@ -1,0 +1,37 @@
+From f4d2d4159638b5bbd45b7c730e7924e44d5e52f7 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Wed, 29 Oct 2025 07:45:22 +0200
+Subject: [PATCH] Fix build issue
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ .../optimizer/selectors_actions/selector_action_transformer.cc  | 2 +-
+ onnxruntime/core/session/inference_session.cc                   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/onnxruntime/core/optimizer/selectors_actions/selector_action_transformer.cc b/onnxruntime/core/optimizer/selectors_actions/selector_action_transformer.cc
+index c1a0fbd80..e5839c8fe 100644
+--- a/onnxruntime/core/optimizer/selectors_actions/selector_action_transformer.cc
++++ b/onnxruntime/core/optimizer/selectors_actions/selector_action_transformer.cc
+@@ -150,7 +150,7 @@ static Status MatchAndProcess(
+       RuntimeOptimizationRecord::ProducedOpIdVector produced_op_ids{};
+       produced_op_ids.reserve(action_saved_state.produced_node_op_schemas.size());
+ 
+-      for (const auto op_schema : action_saved_state.produced_node_op_schemas) {
++      for (const auto& op_schema : action_saved_state.produced_node_op_schemas) {
+         produced_op_ids.push_back(utils::MakeOpId(*op_schema));
+         if (save_context->record_produced_node_op_schema) {
+           status = save_context->record_produced_node_op_schema(*op_schema);
+diff --git a/onnxruntime/core/session/inference_session.cc b/onnxruntime/core/session/inference_session.cc
+index c8fc812fe..71fa8f35c 100644
+--- a/onnxruntime/core/session/inference_session.cc
++++ b/onnxruntime/core/session/inference_session.cc
+@@ -830,7 +830,7 @@ common::Status InferenceSession::SaveToOrtFormat(const PathString& filepath) con
+   ORT_RETURN_IF_ERROR(kernel_type_str_resolver.RegisterGraphNodeOpSchemas(model_->MainGraph()));
+   ORT_RETURN_IF_ERROR(standalone::RegisterCustomOpNodeSchemas(kernel_type_str_resolver, model_->MainGraph()));
+ 
+-  for (const auto op_schema : saved_runtime_optimization_produced_node_op_schemas_) {
++  for (const auto& op_schema : saved_runtime_optimization_produced_node_op_schemas_) {
+     ORT_RETURN_IF_ERROR(kernel_type_str_resolver.RegisterOpSchema(*op_schema));
+   }
+ 
