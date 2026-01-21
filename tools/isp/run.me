@@ -30,13 +30,40 @@ function update_environment() {
     return 0
 }
 
-function update_function() {
+function basler_isp() {
     pushd ${BUILDDIR}/../
     update_environment && update_conf_files || true
     popd
     # Remove a conflicting layer
     bitbake-layers remove-layer meta-imx8mp-isp || true
 }
+
+function nxp_isp() {
+    # Already instaleld, nothing to do
+    :
+}
+
+function no_isp() {
+    bitbake-layers remove-layer meta-imx8mp-isp || true
+}
+
+function choose_isp() {
+    declare -A isps=( ['NXP-ISP']="nxp_isp" ['BASLER-ISP']="basler_isp" ['NO-ISP']="no_isp" )
+    local select_string=$(echo -n ${!isps[@]}" << ")
+    PS3="ISP > "
+    select j in ${select_string}; do
+        case ${j} in
+            "<<")
+            break
+            ;;
+            *)
+            ${isps[${j}]}
+            break
+            ;;
+            esac
+    done
+}
+
 
 function help_function() {
 cat << eof
@@ -45,4 +72,4 @@ cat << eof
 eof
 }
 
-[[ -n "${BUILDDIR}" ]] && update_function || help_function
+[[ -n "${BUILDDIR}" ]] && choose_isp || help_function
