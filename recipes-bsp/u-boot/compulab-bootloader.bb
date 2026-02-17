@@ -7,7 +7,7 @@ LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 UBOOT_VERSION = "2023.04"
-SRCBRANCH = "u-boot-compulab_v${UBOOT_VERSION}"
+SRCBRANCH = "u-boot-compulab_v${UBOOT_VERSION}-dram"
 SRC_URI = "git://github.com/compulab-yokneam/u-boot-compulab;protocol=https;branch=${SRCBRANCH}"
 PV = "${UBOOT_VERSION}+git${SRCPV}"
 SRCREV = "${AUTOREV}"
@@ -53,41 +53,26 @@ do_configure() {
 	done
 }
 
-do_compile_d2d4() {
-	sed -i '/CONFIG_DRAM_D2D4/d' ${B}/${BOOTLOADER_CONFIG}/.config
-	sed -i '$ a CONFIG_DRAM_D2D4=y' ${B}/${BOOTLOADER_CONFIG}/.config
+do_compile_dram_cfg() {
+	DRAM_CFG=${1}
+
+	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG} ${BOOTLOADER_CONFIG} ${DRAM_CFG}.config spl_size.config
 
 	sed -i "/CONFIG_LOCALVERSION=/d" ${B}/${BOOTLOADER_CONFIG}/.config
-	sed -i "$ a CONFIG_LOCALVERSION=\"${UBOOT_VERSION_EXTENSION}-d2d4\"" ${B}/${BOOTLOADER_CONFIG}/.config
+	sed -i "$ a CONFIG_LOCALVERSION=\"${UBOOT_VERSION_EXTENSION}-${DRAM_CFG}\"" ${B}/${BOOTLOADER_CONFIG}/.config
 
-	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG}
-	mv ${B}/${BOOTLOADER_CONFIG}/flash.bin ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4
-
-	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG} flash.bin-with-env
-	mv ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d2d4
-}
-
-do_compile_d1d8() {
-	sed -i '/CONFIG_DRAM_D2D4/d' ${B}/${BOOTLOADER_CONFIG}/.config
-	sed -i '$ a # CONFIG_DRAM_D2D4 is not set' ${B}/${BOOTLOADER_CONFIG}/.config
-
-	sed -i "/CONFIG_LOCALVERSION=/d" ${B}/${BOOTLOADER_CONFIG}/.config
-	sed -i "$ a CONFIG_LOCALVERSION=\"${UBOOT_VERSION_EXTENSION}-d1d8\"" ${B}/${BOOTLOADER_CONFIG}/.config
-
-	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG}
-	mv ${B}/${BOOTLOADER_CONFIG}/flash.bin ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8
+	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG} flash.bin
+	mv ${B}/${BOOTLOADER_CONFIG}/flash.bin ${B}/${BOOTLOADER_CONFIG}/flash.bin_${DRAM_CFG}
 
 	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG} flash.bin-with-env
-	mv ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d1d8
+	mv ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_${DRAM_CFG}
 }
 
 do_compile1() {
-	sed -i '/CONFIG_SPL_MAX_SIZE/d' ${B}/${BOOTLOADER_CONFIG}/.config
-	sed -i '$ a CONFIG_SPL_MAX_SIZE=0x2C000' ${B}/${BOOTLOADER_CONFIG}/.config
-	sed -i '/CONFIG_SPL_PAD_TO/d' ${B}/${BOOTLOADER_CONFIG}/.config
-	sed -i '$ a CONFIG_SPL_PAD_TO=0x2C000' ${B}/${BOOTLOADER_CONFIG}/.config
-	do_compile_d2d4
-	do_compile_d1d8
+	for dram_cfg in d2 d4 d1d8;do
+	    do_compile_dram_cfg ${dram_cfg}
+	done
+
 	oe_runmake -C ${S} O=${B}/${BOOTLOADER_CONFIG} u-boot-initial-env
 	mv ${B}/${BOOTLOADER_CONFIG}/u-boot-initial-env ${B}/${BOOTLOADER_CONFIG}/u-boot-initial-env-${MACH}
 }
@@ -101,8 +86,9 @@ do_compile() {
 do_deploy2() {
 	D2=${DEPLOYDIR}/${PN}/${MACH}
 	install -d ${D2}
-	xz -9c ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4 > ${D2}/flash.bin.d2d4.xz
-	xz -9c ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8 > ${D2}/flash.bin.d1d8.xz
+	for dram_cfg in d2 d4 d1d8;do
+        xz -9c ${B}/${BOOTLOADER_CONFIG}/flash.bin_${dram_cfg} > ${D2}/flash.bin.${dram_cfg}.xz
+    done
 }
 
 do_deploy3() {
@@ -124,10 +110,10 @@ do_deploy3() {
 do_deploy1() {
 	D1=${DEPLOYDIR}/${PN}/mfg/${MACH}
 	install -d ${D1}/
-	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4  ${D1}/imx-boot_${MACH}_d2d4
-	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8  ${D1}/imx-boot_${MACH}_d1d8
-	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d2d4  ${D1}/imx-boot_with-env_${MACH}_d2d4
-	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d1d8  ${D1}/imx-boot_with-env_${MACH}_d1d8
+	for dram_cfg in d2 d4 d1d8;do
+        install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_${dram_cfg}  ${D1}/imx-boot_${MACH}_${dram_cfg}
+        install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_${dram_cfg}  ${D1}/imx-boot_with-env_${MACH}_${dram_cfg}
+    done
 	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/u-boot-initial-env-${MACH}  ${D1}/u-boot-initial-env-${MACH}
 }
 
@@ -142,10 +128,10 @@ do_deploy() {
 do_install1() {
 	I1=${D}/boot/${PN}
 	install -d ${I1}
-	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d2d4 ${I1}/imx-boot_${MACH}_d2d4
-	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_d1d8 ${I1}/imx-boot_${MACH}_d1d8
-	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d2d4  ${I1}/imx-boot_with-env_${MACH}_d2d4
-	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_d1d8  ${I1}/imx-boot_with-env_${MACH}_d1d8
+	for dram_cfg in d2 d4 d1d8;do
+        install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin_${dram_cfg} ${I1}/imx-boot_${MACH}_${dram_cfg}
+        install -m 0644 ${B}/${BOOTLOADER_CONFIG}/flash.bin-with-env_${dram_cfg}  ${I1}/imx-boot_with-env_${MACH}_${dram_cfg}
+    done
 	install -d ${D}/etc
 	install -m 0644 ${B}/${BOOTLOADER_CONFIG}/u-boot-initial-env-${MACH} ${D}/etc/u-boot-initial-env-${MACH}
 	install -m 0644 ${S}/tools/env/fw_env.config  ${D}/etc/fw_env.config
