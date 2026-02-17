@@ -75,7 +75,7 @@ DISTRO_FEATURES:remove = "sysvinit"
 IMX_DEFAULT_BSP = "nxp"
 
 # Default dram configuration
-DRAM_CONF ?= "d2d4"
+DRAM_CONF ?= "d2"
 
 # Preferred versions for the entire family
 PREFERRED_VERSION_linux-compulab = "6.6.52"
