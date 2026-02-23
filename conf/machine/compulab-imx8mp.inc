@@ -76,3 +76,4 @@ IMX_DEFAULT_BSP = "nxp"
 
 # Default dram configuration
 DRAM_CONF ?= "d2d4"
+PREFERRED_VERSION_u-boot-compulab = "2023.04"
