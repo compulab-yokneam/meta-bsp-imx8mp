@@ -1,6 +1,11 @@
 # Disclaimer
 
-| !IMPORTANT! | This is a development branch, that is not relelased by CompuLab officially yet|
+This is the two-dram-subset branch.<br>
+Supported dram configs:
+* d1d8
+* d2d4 (default)
+
+| !IMPORTANT! |This is a development branch, that is not relelased by CompuLab officially yet|
 |---|---|
 
 ## Supported Compulab Products
@@ -59,12 +64,12 @@ source compulab-setup-env build-${MACHINE}
 Use [Get the product DRAM configuration ](https://github.com/compulab-yokneam/meta-bsp-imx8mp/blob/scarthgap/Documentation/dram.md) for more details
 
 ```
-sed -i '$ a DRAM_CONF = "d2d4"' ${BUILDDIR}/conf/local.conf
+sed -i '/DRAM_CONF/d;$iDRAM_CONF = "d2d4"' ${BUILDDIR}/conf/local.conf
 ```
 
 * Enable the d1d8 dram setting's subset:
 ```
-sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
+sed -i '/DRAM_CONF/d;$iDRAM_CONF = "d1d8"' ${BUILDDIR}/conf/local.conf
 ```
 
 ## Get back to the build environment
