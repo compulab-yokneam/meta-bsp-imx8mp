@@ -4,7 +4,7 @@ LIC_FILES_CHKSUM = ""
 inherit deploy
 
 ALLOW_EMPTY:${PN} = "1"
-PROVIDES += "${PN}"
+PROVIDES += "imx-boot"
 
 DEPENDS += " \
     compulab-bootloader \
