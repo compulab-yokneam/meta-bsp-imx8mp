@@ -55,17 +55,27 @@ repo sync
 source compulab-setup-env build-${MACHINE}
 ```
 
-* Enable the required dram setting's subset:<br>
-Use [Get the product DRAM configuration ](https://github.com/compulab-yokneam/meta-bsp-imx8mp/blob/scarthgap/Documentation/dram.md) for more details
-
-```
-sed -i '$ a DRAM_CONF = "d2d4"' ${BUILDDIR}/conf/local.conf
-```
-
-* Enable the d1d8 dram setting's subset:
-```
-sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
-```
+* Enable the required dram setting's subset [1](https://github.com/compulab-yokneam/meta-bsp-imx8mp/blob/scarthgap/Documentation/dram.md)
+  * D1
+  ```
+  sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
+  sed -i '$ a DRAM_CONF = "d1d8"' ${BUILDDIR}/conf/local.conf
+  ```
+  * D2
+  ```
+  sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
+  sed -i '$ a DRAM_CONF = "d2"' ${BUILDDIR}/conf/local.conf
+  ```
+  * D4
+  ```
+  sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
+  sed -i '$ a DRAM_CONF = "d4"' ${BUILDDIR}/conf/local.conf
+  ```
+  * D8
+  ```
+  sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
+  sed -i '$ a DRAM_CONF = "d1d8"' ${BUILDDIR}/conf/local.conf
+  ```
 
 ## Get back to the build environment
 In order to use the already created build environment issue these commands:
