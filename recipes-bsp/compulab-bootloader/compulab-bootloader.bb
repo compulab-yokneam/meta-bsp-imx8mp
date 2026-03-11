@@ -21,7 +21,8 @@ B = "${WORKDIR}/build"
 
 UBOOT_VERSION_EXTENSION = "-${CL_RELEASE}"
 COMPULAB_BOOTLOADER_FAMILY_MEMBERS = "iot-gate-imx8plus iotdin-imx8p mcm-imx8m-plus som-imx8m-plus ucm-imx8m-plus ucm-imx8m-plus-sbev"
-COMPULAB_BOOTLOADER_MACHINE ?= "${@bb.utils.contains('COMPULAB_BOOTLOADER_FAMILY', '1', '${COMPULAB_BOOTLOADER_FAMILY_MEMBERS}', '${MACHINE}', d)}"
+COMPULAB_BOOTLOADER_MACHINE = "${@bb.utils.contains('MACHINE', 'compulab-imx8mp', 'ucm-imx8m-plus-sbev', '${MACHINE}', d)}"
+COMPULAB_BOOTLOADER_MACHINES ?= "${@bb.utils.contains('COMPULAB_BOOTLOADER_FAMILY', '1', '${COMPULAB_BOOTLOADER_FAMILY_MEMBERS}', '${COMPULAB_BOOTLOADER_MACHINE}', d)}"
 
 inherit fsl-u-boot-localversion
 
@@ -51,7 +52,7 @@ do_configure1() {
 }
 
 do_configure() {
-    for MACH in ${COMPULAB_BOOTLOADER_MACHINE};do
+    for MACH in ${COMPULAB_BOOTLOADER_MACHINES};do
         BOOTLOADER_CONFIG=${MACH}_defconfig do_configure1
     done
 }
@@ -81,7 +82,7 @@ do_compile1() {
 }
 
 do_compile() {
-    for MACH in ${COMPULAB_BOOTLOADER_MACHINE};do
+    for MACH in ${COMPULAB_BOOTLOADER_MACHINES};do
         BOOTLOADER_CONFIG=${MACH}_defconfig do_compile1
     done
 }
@@ -135,8 +136,8 @@ do_deploy0() {
 }
 
 do_deploy() {
-    BOOTLOADER_CONFIG=${MACHINE}_defconfig MACH=${MACHINE} dram_cfg=${DRAM_CONF} do_deploy0
-    for MACH in ${COMPULAB_BOOTLOADER_MACHINE};do
+    BOOTLOADER_CONFIG=${COMPULAB_BOOTLOADER_MACHINE}_defconfig MACH=${COMPULAB_BOOTLOADER_MACHINE} dram_cfg=${DRAM_CONF} do_deploy0
+    for MACH in ${COMPULAB_BOOTLOADER_MACHINES};do
         BOOTLOADER_CONFIG=${MACH}_defconfig do_deploy1
         BOOTLOADER_CONFIG=${MACH}_defconfig do_deploy2
         BOOTLOADER_CONFIG=${MACH}_defconfig do_deploy3
@@ -164,10 +165,10 @@ do_install0() {
 }
 
 do_install() {
-    for MACH in ${COMPULAB_BOOTLOADER_MACHINE};do
+    for MACH in ${COMPULAB_BOOTLOADER_MACHINES};do
         MACH=${MACH} BOOTLOADER_CONFIG=${MACH}_defconfig do_install1
     done
-    BOOTLOADER_CONFIG=${MACHINE}_defconfig MACH=${MACHINE} dram_cfg=${DRAM_CONF} do_install0
+    BOOTLOADER_CONFIG=${COMPULAB_BOOTLOADER_MACHINE}_defconfig MACH=${COMPULAB_BOOTLOADER_MACHINE} dram_cfg=${DRAM_CONF} do_install0
 }
 
 FILES:${PN} = " \
