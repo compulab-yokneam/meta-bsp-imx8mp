@@ -4,6 +4,7 @@ require recipes-bsp/u-boot/u-boot.inc
 PROVIDES += " ${PN} "
 PROVIDES += " u-boot-initial-env "
 PROVIDES += " u-boot-compulab-env "
+PROVIDES:remove = "virtual/bootloader"
 
 LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
@@ -136,7 +137,7 @@ do_deploy0() {
 }
 
 do_deploy() {
-    BOOTLOADER_CONFIG=${COMPULAB_BOOTLOADER_MACHINE}_defconfig MACH=${COMPULAB_BOOTLOADER_MACHINE} dram_cfg=${DRAM_CONF} do_deploy0
+    # BOOTLOADER_CONFIG=${COMPULAB_BOOTLOADER_MACHINE}_defconfig MACH=${COMPULAB_BOOTLOADER_MACHINE} dram_cfg=${DRAM_CONF} do_deploy0
     for MACH in ${COMPULAB_BOOTLOADER_MACHINES};do
         BOOTLOADER_CONFIG=${MACH}_defconfig do_deploy1
         BOOTLOADER_CONFIG=${MACH}_defconfig do_deploy2
@@ -168,7 +169,7 @@ do_install() {
     for MACH in ${COMPULAB_BOOTLOADER_MACHINES};do
         MACH=${MACH} BOOTLOADER_CONFIG=${MACH}_defconfig do_install1
     done
-    BOOTLOADER_CONFIG=${COMPULAB_BOOTLOADER_MACHINE}_defconfig MACH=${COMPULAB_BOOTLOADER_MACHINE} dram_cfg=${DRAM_CONF} do_install0
+    # BOOTLOADER_CONFIG=${COMPULAB_BOOTLOADER_MACHINE}_defconfig MACH=${COMPULAB_BOOTLOADER_MACHINE} dram_cfg=${DRAM_CONF} do_install0
 }
 
 FILES:${PN} = " \
@@ -183,7 +184,7 @@ PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
 EXTRA_OEMAKE += "debug=n  DEBUG=0 "
 
-RREPLACES:${PN} = "imx-boot"
-RREPLACES:${PN}-env = "u-boot-compulab-env"
+# RREPLACES:${PN} = "imx-boot"
+# RREPLACES:${PN}-env = "u-boot-compulab-env"
 
 RDEPENDS:${PN}:remove = "${PN}-env"
