@@ -180,7 +180,7 @@ FILES:${PN}-env = " \
     /etc/ \
 "
 
-PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 EXTRA_OEMAKE += "debug=n  DEBUG=0 "
 
