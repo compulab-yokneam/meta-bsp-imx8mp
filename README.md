@@ -10,7 +10,6 @@
 * [`CL-SOM-iMX8Plus - NXP i.MX8M-Plus System-on-Module`](https://www.compulab.com/products/computer-on-modules/cl-som-imx8plus-nxp-i-mx-8m-plus-system-on-module-computer/)
 * [`IOT-GATE-IMX8PLUS - Industrial IoT Gateway`](https://www.compulab.com/products/iot-gateways/iot-gate-imx8plus-industrial-arm-iot-gateway/)
 * [`IOT-DIN-IMX8PLUS IoT Edge Gateway`](https://www.compulab.com/products/iot-gateways/iot-din-imx8plus-industrial-iot-gateway/)
-* [`CL-SOM-iMX8Plus - NXP i.MX8M-Plus System-on-Module`](https://www.compulab.com/products/computer-on-modules/cl-som-imx8plus-nxp-i-mx-8m-plus-system-on-module-computer/)
 
 # Configuring the build
 
@@ -24,12 +23,11 @@ mkdir compulab-nxp-bsp && cd compulab-nxp-bsp
 
 | Machine | Command Line |
 |---|---|
-|ucm-imx8m-plus|```export MACHINE=ucm-imx8m-plus```|
-|ucm-imx8m-plus-sbev|```export MACHINE=ucm-imx8m-plus-sbev```|
-|~~mcm-imx8m-plus~~|~~```export MACHINE=mcm-imx8m-plus```~~|
+|ucm-imx8m-plus on SB-UCMIMX8PLUS|```export MACHINE=ucm-imx8m-plus```|
+|ucm-imx8m-plus on SBEV-UCMIMX8PLUS|```export MACHINE=ucm-imx8m-plus-sbev```|
+|mcm-imx8m-plus|```export MACHINE=mcm-imx8m-plus```|
 |som-imx8m-plus|```export MACHINE=som-imx8m-plus```|
 |iot-gate-imx8plus|```export MACHINE=iot-gate-imx8plus```|
-|sbc-iot-imx8plus|```export MACHINE=iot-gate-imx8plus```|
 |iotdin-imx8p|```export MACHINE=iotdin-imx8p```|
 
 ## Initialize repo manifests
@@ -90,7 +88,7 @@ source setup-environment build-${MACHINE}
 
 | Target | Command | The target file location |
 |--- |---|---|
-|full image|```bitbake -k imx-image-full```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/imx-image-full-${MACHINE}.wic.zst```|
+|full image|```bitbake -k imx-image-full```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/imx-image-full-${MACHINE}.rootfs.wic.zst```|
 |boot loader|```bitbake -k imx-boot```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/imx-boot-tagged```|
 
 * Other available targets (no desktop environment):
@@ -112,8 +110,7 @@ cd tmp/deploy/images/${MACHINE}
 
 * Deploy the image:
 ```
-zstd -dc imx-image-full-${MACHINE}.wic.zst > imx-image-full-${MACHINE}.wic
-sudo bmaptool copy --bmap imx-image-full-${MACHINE}.wic.bmap imx-image-full-${MACHINE}.wic /dev/sdX
+sudo bmaptool copy --bmap imx-image-full-${MACHINE}.rootfs.wic.bmap imx-image-full-${MACHINE}.rootfs.wic.zst /dev/sdX
 ```
 #### Target Device ####
 * Turn off the device
@@ -129,8 +126,7 @@ cd tmp/deploy/images/${MACHINE}
 
 * Issue uuu command with the root credentials:
 ```
-zstd -dc imx-image-full-${MACHINE}.wic.zst > imx-image-full-${MACHINE}.wic
-sudo uuu -v -b emmc_all imx-boot-tagged mx-image-full-${MACHINE}.wic
+sudo uuu -v -b emmc_all imx-boot-tagged imx-image-full-${MACHINE}.rootfs.wic.zst
 ```
 
 #### Target Device ####
