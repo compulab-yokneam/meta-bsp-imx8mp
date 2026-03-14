@@ -13,12 +13,42 @@
 
 # Configuring the build
 
+* CompuLab Yocto configuration mapping
+  * CompuLab Product To Yocto MACHINE:
+
+    |CompuLab Product|Yocto MACHINE|local.conf entry|
+    |:---|:---|:---|
+    |ucm-imx8m-plus on SB-UCMIMX8PLUS|ucm-imx8m-plus|MACHINE = "ucm-imx8m-plus"|
+    |ucm-imx8m-plus on SBEV-UCMIMX8PLUS|ucm-imx8m-plus-sbev|MACHINE = "ucm-imx8m-plus-sbev"|
+    |mcm-imx8m-plus|mcm-imx8m-plus|MACHINE = "mcm-imx8m-plus"|
+    |som-imx8m-plus|som-imx8m-plus|MACHINE = "som-imx8m-plus"|
+    |iot-gate-imx8plus|iot-gate-imx8plus|MACHINE = "iot-gate-imx8plus"|
+    |iotdin-imx8p|iotdin-imx8p|MACHINE = "iotdin-imx8p"|
+
+  * CompuLab D[X] option to Yocto DRAM_CONF:
+
+    |CompuLab D[X]|Yocto DRAM_CONF|local.conf entry|
+    |:---|:---|:---|
+    |D1|d1d8|DRAM_CONF = "d1d8"|
+    |D2|d2|DRAM_CONF = "d2"|
+    |D4|d4|DRAM_CONF = "d4"|
+    |D8|d1d8|DRAM_CONF = "d1d8"|
+
 ## Setup Yocto environment
 
 * WorkDir:
 ```
 mkdir compulab-nxp-bsp && cd compulab-nxp-bsp
 ```
+* Download NXP and CompuLab source
+```
+source <(curl -L https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/refs/heads/scarthgap/tools/run.me)
+```
+* Issue this command to init Yocto build environment:
+```
+source compulab-setup-env build-imx8mp
+```
+
 * Set a CompuLab machine:
 
 | Machine | Command Line |
