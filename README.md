@@ -40,77 +40,13 @@
 ```
 mkdir compulab-nxp-bsp && cd compulab-nxp-bsp
 ```
-* Download NXP and CompuLab source
+* Download NXP and CompuLab source:
 ```
 source <(curl -L https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/refs/heads/scarthgap/tools/run.me)
 ```
 * Issue this command to init Yocto build environment:
 ```
 source compulab-setup-env build-imx8mp
-```
-
-* Set a CompuLab machine:
-
-| Machine | Command Line |
-|---|---|
-|ucm-imx8m-plus on SB-UCMIMX8PLUS|```export MACHINE=ucm-imx8m-plus```|
-|ucm-imx8m-plus on SBEV-UCMIMX8PLUS|```export MACHINE=ucm-imx8m-plus-sbev```|
-|mcm-imx8m-plus|```export MACHINE=mcm-imx8m-plus```|
-|som-imx8m-plus|```export MACHINE=som-imx8m-plus```|
-|iot-gate-imx8plus|```export MACHINE=iot-gate-imx8plus```|
-|iotdin-imx8p|```export MACHINE=iotdin-imx8p```|
-
-## Initialize repo manifests
-
-* NXP
-```
-repo init -u https://github.com/nxp-imx/imx-manifest.git -b imx-linux-scarthgap -m imx-6.6.52-2.2.0.xml
-```
-
-* CompuLab
-```
-wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/scarthgap/scripts/meta-bsp-imx8mp.xml
-```
-
-* Sync Them all
-```
-repo sync
-```
-## Setup build environment
-
-* Initialize the build environment:
-```
-source compulab-setup-env build-${MACHINE}
-```
-
-* Enable the required dram setting's subset [1](https://github.com/compulab-yokneam/meta-bsp-imx8mp/blob/scarthgap/Documentation/dram.md)
-  * D1
-  ```
-  sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
-  sed -i '$ a DRAM_CONF = "d1d8"' ${BUILDDIR}/conf/local.conf
-  ```
-  * D2
-  ```
-  sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
-  sed -i '$ a DRAM_CONF = "d2"' ${BUILDDIR}/conf/local.conf
-  ```
-  * D4
-  ```
-  sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
-  sed -i '$ a DRAM_CONF = "d4"' ${BUILDDIR}/conf/local.conf
-  ```
-  * D8
-  ```
-  sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
-  sed -i '$ a DRAM_CONF = "d1d8"' ${BUILDDIR}/conf/local.conf
-  ```
-
-## Get back to the build environment
-In order to use the already created build environment issue these commands:
-```
-cd /path/to/compulab-nxp-bsp
-repo sync
-source setup-environment build-${MACHINE}
 ```
 
 ## Build targets
@@ -127,7 +63,6 @@ source setup-environment build-${MACHINE}
 |--- |---|---|
 |fsl network image|```bitbake -k fsl-image-network-full-cmdline```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/fsl-image-network-full-cmdline-${MACHINE}.wic.zst```|
 |oe core image|```bitbake -k core-image-full-cmdline```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/core-image-full-cmdline-${MACHINE}.wic.zst```|
-
 
 ## Deployment
 ### Bootable sd card method
