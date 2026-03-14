@@ -1,0 +1,25 @@
+export COMPULAB_MACHINE=ucm-imx8m-plus-sbev
+export SOC=imx8mp
+export BSP=$(pwd)/compulab-${SOC}-bsp
+mkdir ${BSP} && cd ${BSP}
+repo init -u https://github.com/nxp-imx/imx-manifest.git -b imx-linux-scarthgap -m imx-6.6.52-2.2.0.xml
+wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/scarthgap/scripts/meta-bsp-imx8mp.xml
+repo sync
+
+cat << eof > .env.${COMPULAB_MACHINE}
+MACHINE=${COMPULAB_MACHINE} source compulab-setup-env build-${COMPULAB_MACHINE}
+eof
+
+cat << eof > .env.${SOC}
+source compulab-setup-env build-${SOC}
+eof
+
+cat << eom
+▄▖         ▖   ▌   ▘▖  ▖▖▖▄▖▖  ▖▄▖  ▄ ▄▖▄▖
+▌ ▛▌▛▛▌▛▌▌▌▌ ▀▌▛▌  ▌▛▖▞▌▚▘▙▌▛▖▞▌▙▌  ▙▘▚ ▙▌
+▙▖▙▌▌▌▌▙▌▙▌▙▖█▌▙▌  ▌▌▝ ▌▌▌▙▌▌▝ ▌▌   ▙▘▄▌▌ 
+       ▌                                  
+# Issue this command to init Yocto build environment:
+$(cat .env.${SOC})
+
+eom
