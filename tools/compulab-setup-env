@@ -1,6 +1,46 @@
 #!/bin/bash -e
 
-MACHINE=${MACHINE:-ucm-imx8m-plus}
+unset MACHINE DRAM COMPULAB_MACHINE
+
+declare supported_machines=( ucm-imx8m-plus ucm-imx8m-plus-sbev mcm-imx8m-plus som-imx8m-plus iot-gate-imx8plus iotdin-imx8p )
+_get_machine() {
+    local select_string=${supported_machines[@]}" <<"
+    PS3="MACHINE ? # > "
+    select j in ${select_string}; do
+        case ${j} in
+            "<<")
+            break
+            ;;
+            *)
+            echo ${j}
+            break
+            ;;
+            esac
+    done
+}
+
+declare dram_configs=( D1 D2 D4 D8 )
+_get_dram() {
+    local select_string=${dram_configs[@]}" <<"
+    PS3="DRAM Options ? # > "
+    select j in ${select_string}; do
+        case ${j} in
+            "<<")
+            break
+            ;;
+            *)
+            echo ${j}
+            break
+            ;;
+            esac
+    done
+}
+
+MACHINE=${MACHINE:-$(_get_machine)}
+if [[ -n ${MACHINE:-""} ]];then
+DRAM=${DRAM:-$(_get_dram)}
+if [[ -n ${DRAM:-""} ]];then
+COMPULAB_MACHINE=${MACHINE}
 DISTRO=${DISTRO:-fsl-imx-xwayland}
 EULA=1
 T="../sources/meta-bsp-imx8mp/templates"
@@ -48,4 +88,16 @@ else
     temp_function
     mach_function
     fix_fsl_imx_base
+    MACHINE=${COMPULAB_MACHINE}
+    unset COMPULAB_MACHINE
+fi
+else
+cat << eof
+DRAM: Declined setup ...
+eof
+fi
+else
+cat << eof
+MACHINE: Declined setup ...
+eof
 fi
