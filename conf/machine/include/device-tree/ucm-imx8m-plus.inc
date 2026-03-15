@@ -1,1 +1,29 @@
-KERNEL_DEVICETREE += " 	compulab/ucm-imx8m-plus-headless.dtb 	compulab/ucm-imx8m-plus.dtb 	compulab/ucm-imx8m-plus-mipi.dtb 	compulab/ucm-imx8m-plus-hdmi.dtb 	compulab/ucm-imx8m-plus-lvds.dtb 	compulab/ucm-imx8m-plus_mipi-csi1-ar1335-af.dtb 	compulab/ucm-imx8m-plus_mipi-csi1-ar1335-mcu.dtb 	compulab/ucm-imx8m-plus_mipi-csi1-imx219.dtb 	compulab/ucm-imx8m-plus_mipi-csi1-ov5647.dtb 	compulab/ucm-imx8m-plus_mipi-csi2-ar1335-af.dtb 	compulab/ucm-imx8m-plus-rpmsg.dtb 	compulab/ucm-imx8m-plus-usbdev.dtb 	compulab/ucm-imx8m-plus-wm8731.dtb 	compulab/ucm-imx8m-plus-thermal.dtb 	compulab/ucm-imx8m-plus-ldo4.dtb   	compulab/ucm-imx8m-plus-mipi.dtbo 	compulab/ucm-imx8m-plus-hdmi.dtbo 	compulab/ucm-imx8m-plus-lvds.dtbo 	compulab/ucm-imx8m-plus-rtc.dtbo 	compulab/ucm-imx8m-plus-wm8731.dtbo 	compulab/ucm-imx8m-plus-thermal.dtbo 	compulab/ucm-imx8m-plus_mipi-csi1-ar1335-af.dtbo 	compulab/ucm-imx8m-plus_mipi-csi1-ar1335-mcu.dtbo 	compulab/ucm-imx8m-plus_mipi-csi1-imx219.dtbo 	compulab/ucm-imx8m-plus_mipi-csi1-ov5647.dtbo 	compulab/ucm-imx8m-plus_mipi-csi2-ar1335-af.dtbo "
+KERNEL_DEVICETREE += " \
+    compulab/ucm-imx8m-plus-headless.dtb \
+    compulab/ucm-imx8m-plus.dtb \
+    compulab/ucm-imx8m-plus-mipi.dtb \
+    compulab/ucm-imx8m-plus-hdmi.dtb \
+    compulab/ucm-imx8m-plus-lvds.dtb \
+    compulab/ucm-imx8m-plus_mipi-csi1-ar1335-af.dtb \
+    compulab/ucm-imx8m-plus_mipi-csi1-ar1335-mcu.dtb \
+    compulab/ucm-imx8m-plus_mipi-csi1-imx219.dtb \
+    compulab/ucm-imx8m-plus_mipi-csi1-ov5647.dtb \
+    compulab/ucm-imx8m-plus_mipi-csi2-ar1335-af.dtb \
+    compulab/ucm-imx8m-plus-rpmsg.dtb \
+    compulab/ucm-imx8m-plus-usbdev.dtb \
+    compulab/ucm-imx8m-plus-wm8731.dtb \
+    compulab/ucm-imx8m-plus-thermal.dtb \
+    compulab/ucm-imx8m-plus-ldo4.dtb \
+    compulab/ucm-imx8m-plus-mipi.dtbo \
+    compulab/ucm-imx8m-plus-hdmi.dtbo \
+    compulab/ucm-imx8m-plus-lvds.dtbo \
+    compulab/ucm-imx8m-plus-rtc.dtbo \
+    compulab/ucm-imx8m-plus-wm8731.dtbo \
+    compulab/ucm-imx8m-plus-thermal.dtbo \
+    compulab/ucm-imx8m-plus_mipi-csi1-ar1335-af.dtbo \
+    compulab/ucm-imx8m-plus_mipi-csi1-ar1335-mcu.dtbo \
+    compulab/ucm-imx8m-plus_mipi-csi1-imx219.dtbo \
+    compulab/ucm-imx8m-plus_mipi-csi1-ov5647.dtbo \
+    compulab/ucm-imx8m-plus_mipi-csi2-ar1335-af.dtbo \
+    compulab/compulab-imx8m-plus-rpmsg.dtbo \
+"
