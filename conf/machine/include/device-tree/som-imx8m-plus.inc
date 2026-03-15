@@ -1,1 +1,41 @@
-KERNEL_DEVICETREE += "  	compulab/som-imx8m-plus.dtb 	compulab/som-imx8m-plus-hdmi.dtb 	compulab/som-imx8m-plus-headless.dtb 	compulab/som-imx8m-plus-lvds.dtb 	compulab/som-imx8m-plus_mipi-csi1-ar0234.dtb 	compulab/som-imx8m-plus_mipi-csi1-ar0521.dtb 	compulab/som-imx8m-plus_mipi-csi1-ar1335-af.dtb 	compulab/som-imx8m-plus_mipi-csi1-ar1335-mcu.dtb 	compulab/som-imx8m-plus_mipi-csi1-csi2.dtb 	compulab/som-imx8m-plus_mipi-csi1-imx219.dtb 	compulab/som-imx8m-plus_mipi-csi1-ov5647.dtb 	compulab/som-imx8m-plus_mipi-csi2-ar0234.dtb 	compulab/som-imx8m-plus_mipi-csi2-ar0521.dtb 	compulab/som-imx8m-plus_mipi-csi2-ar1335-af.dtb 	compulab/som-imx8m-plus_mipi-csi2-ar1335-mcu.dtb 	compulab/som-imx8m-plus_mipi-csi2-imx219.dtb 	compulab/som-imx8m-plus_mipi-csi2-ov5647.dtb 	compulab/som-imx8m-plus-mipi.dtb 	compulab/som-imx8m-plus-rpmsg.dtb 	compulab/som-imx8m-plus-thermal.dtb 	compulab/som-imx8m-plus-usbdev.dtb   	compulab/som-imx8m-plus-hdmi.dtbo 	compulab/som-imx8m-plus-lvds.dtbo 	compulab/som-imx8m-plus_mipi-csi1-ar0234.dtbo 	compulab/som-imx8m-plus_mipi-csi1-ar0521.dtbo 	compulab/som-imx8m-plus_mipi-csi1-ar1335-af.dtbo 	compulab/som-imx8m-plus_mipi-csi1-ar1335-mcu.dtbo 	compulab/som-imx8m-plus_mipi-csi1-imx219.dtbo 	compulab/som-imx8m-plus_mipi-csi1-ov5647.dtbo 	compulab/som-imx8m-plus_mipi-csi2-ar0234.dtbo 	compulab/som-imx8m-plus_mipi-csi2-ar0521.dtbo 	compulab/som-imx8m-plus_mipi-csi2-ar1335-af.dtbo 	compulab/som-imx8m-plus_mipi-csi2-ar1335-mcu.dtbo 	compulab/som-imx8m-plus_mipi-csi2-imx219.dtbo 	compulab/som-imx8m-plus_mipi-csi2-ov5647.dtbo 	compulab/som-imx8m-plus-mipi.dtbo 	compulab/som-imx8m-plus-rpmsg.dtbo 	compulab/som-imx8m-plus-thermal.dtbo 	compulab/som-imx8m-plus-usbdev.dtbo "
+KERNEL_DEVICETREE += " \
+    compulab/som-imx8m-plus.dtb \
+    compulab/som-imx8m-plus-hdmi.dtb \
+    compulab/som-imx8m-plus-headless.dtb \
+    compulab/som-imx8m-plus-lvds.dtb \
+    compulab/som-imx8m-plus_mipi-csi1-ar0234.dtb \
+    compulab/som-imx8m-plus_mipi-csi1-ar0521.dtb \
+    compulab/som-imx8m-plus_mipi-csi1-ar1335-af.dtb \
+    compulab/som-imx8m-plus_mipi-csi1-ar1335-mcu.dtb \
+    compulab/som-imx8m-plus_mipi-csi1-csi2.dtb \
+    compulab/som-imx8m-plus_mipi-csi1-imx219.dtb \
+    compulab/som-imx8m-plus_mipi-csi1-ov5647.dtb \
+    compulab/som-imx8m-plus_mipi-csi2-ar0234.dtb \
+    compulab/som-imx8m-plus_mipi-csi2-ar0521.dtb \
+    compulab/som-imx8m-plus_mipi-csi2-ar1335-af.dtb \
+    compulab/som-imx8m-plus_mipi-csi2-ar1335-mcu.dtb \
+    compulab/som-imx8m-plus_mipi-csi2-imx219.dtb \
+    compulab/som-imx8m-plus_mipi-csi2-ov5647.dtb \
+    compulab/som-imx8m-plus-mipi.dtb \
+    compulab/som-imx8m-plus-rpmsg.dtb \
+    compulab/som-imx8m-plus-thermal.dtb \
+    compulab/som-imx8m-plus-usbdev.dtb \
+    compulab/som-imx8m-plus-hdmi.dtbo \
+    compulab/som-imx8m-plus-lvds.dtbo \
+    compulab/som-imx8m-plus_mipi-csi1-ar0234.dtbo \
+    compulab/som-imx8m-plus_mipi-csi1-ar0521.dtbo \
+    compulab/som-imx8m-plus_mipi-csi1-ar1335-af.dtbo \
+    compulab/som-imx8m-plus_mipi-csi1-ar1335-mcu.dtbo \
+    compulab/som-imx8m-plus_mipi-csi1-imx219.dtbo \
+    compulab/som-imx8m-plus_mipi-csi1-ov5647.dtbo \
+    compulab/som-imx8m-plus_mipi-csi2-ar0234.dtbo \
+    compulab/som-imx8m-plus_mipi-csi2-ar0521.dtbo \
+    compulab/som-imx8m-plus_mipi-csi2-ar1335-af.dtbo \
+    compulab/som-imx8m-plus_mipi-csi2-ar1335-mcu.dtbo \
+    compulab/som-imx8m-plus_mipi-csi2-imx219.dtbo \
+    compulab/som-imx8m-plus_mipi-csi2-ov5647.dtbo \
+    compulab/som-imx8m-plus-mipi.dtbo \
+    compulab/som-imx8m-plus-thermal.dtbo \
+    compulab/som-imx8m-plus-usbdev.dtbo \
+    compulab/compulab-imx8m-plus-rpmsg.dtbo \
+"
