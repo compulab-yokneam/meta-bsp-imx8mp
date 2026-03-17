@@ -2,10 +2,10 @@
   <manifest>
   <remote fetch="https://github.com/compulab-yokneam" name="compulab"/>
 
-  <project name="meta-compulab" remote="compulab" revision="scarthgap" path="sources/meta-compulab"/>
-  <project name="meta-compulab-bsp" remote="compulab" revision="scarthgap" path="sources/meta-compulab-bsp"/>
-  <project name="meta-compulab-uefi" remote="compulab" revision="scarthgap" path="sources/meta-compulab-uefi"/>
-  <project name="meta-bsp-imx8mp" remote="compulab" revision="scarthgap" path="sources/meta-bsp-imx8mp" >
+  <project name="meta-compulab" remote="compulab" revision="11b5b58c16d6fc658b09f0561368f42b93d223ee" path="sources/meta-compulab"/>
+  <project name="meta-compulab-bsp" remote="compulab" revision="8ec6e9fcd7d1043d78d47ee2f8a37c0f0c36d242" path="sources/meta-compulab-bsp"/>
+  <project name="meta-compulab-uefi" remote="compulab" revision="5fe64b3634380f46bb60562ba747d793f11c2c64" path="sources/meta-compulab-uefi"/>
+  <project name="meta-bsp-imx8mp" remote="compulab" revision="refs/tags/iot-din-imx8plus_r2.1" path="sources/meta-bsp-imx8mp" >
     <linkfile src="tools/compulab-setup-env" dest="compulab-setup-env" />
   </project>
 
