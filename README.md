@@ -1,8 +1,5 @@
 # Disclaimer
 
-| !IMPORTANT! | This is a development branch, that is not relelased by CompuLab officially yet|
-|---|---|
-
 ## Supported Compulab Products
 
 * [`UCM-iMX8M-Plus - NXP i.MX8M Plus System-on-Module`](https://www.compulab.com/products/computer-on-modules/ucm-imx8m-plus-nxp-i-mx-8m-plus-som-system-on-module-computer/)
@@ -42,7 +39,7 @@ mkdir compulab-nxp-bsp && cd compulab-nxp-bsp
 ```
 * Download NXP and CompuLab source:
 ```
-source <(curl -L https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/refs/heads/scarthgap/tools/run.me)
+source <(curl -L https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/refs/tags/som-imx8m-plus_r3.1/tools/run.me)
 ```
 * Issue this command to init Yocto build environment:
 ```

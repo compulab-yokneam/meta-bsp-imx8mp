@@ -3,7 +3,7 @@ export SOC=imx8mp
 export BSP=$(pwd)/compulab-${SOC}-bsp
 mkdir ${BSP} && cd ${BSP}
 repo init -u https://github.com/nxp-imx/imx-manifest.git -b imx-linux-scarthgap -m imx-6.6.52-2.2.0.xml
-wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/scarthgap/scripts/meta-bsp-imx8mp.xml
+wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/refs/tags/som-imx8m-plus_r3.1/scripts/meta-bsp-imx8mp.xml
 repo sync
 
 cat << eof > .env.${COMPULAB_MACHINE}
