@@ -54,6 +54,13 @@ SRC_URI_append_mx8mp = " \
 	file://0053-compulab-Add-som-imx8m-plus-support.patch \
 	file://0054-compulab-imx8m-plus-Kconfig-Add-Fix-SYS_I2C_EEPROM_B.patch \
 	file://0055-som-imx8m-plus-Move-setup_fec-to-the-SOM-specific-bo.patch \
+	file://0060-compulab-ddr-Update-dram-support.patch \
+"
+
+SRC_URI_append = " \
+	file://dram/0070-plat-imx8mp-ddr-Update-dram-support.patch \
+	file://dram/0071-compulab-imx8mp-spl-Update-due-to-dram-code-update.patch \
+	file://dram/0072-compulab-imx8mp-Increase-the-SPL-size-in-order-to-fi.patch \
 "
 
 SRC_URI_append_ucm-imx8m-plus = " \
@@ -62,8 +69,4 @@ SRC_URI_append_ucm-imx8m-plus = " \
 
 SRC_URI_append_som-imx8m-plus = " \
 	file://som-imx8m-plus_defconfig \
-"
-
-SRC_URI_append_mx8mp = " \
-	file://0060-compulab-ddr-Update-dram-support.patch \
 "

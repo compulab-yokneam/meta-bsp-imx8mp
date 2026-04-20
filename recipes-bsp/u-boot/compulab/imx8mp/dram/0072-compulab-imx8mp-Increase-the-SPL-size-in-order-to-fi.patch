@@ -1,0 +1,27 @@
+From dfb0d95061582f42310d272ea966432e56b00092 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Fri, 17 Apr 2026 20:11:12 +0000
+Subject: [PATCH] compulab: imx8mp: Increase the SPL size in order to fit all
+ dram timings
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ include/configs/compulab-imx8m-plus.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/configs/compulab-imx8m-plus.h b/include/configs/compulab-imx8m-plus.h
+index 8aa7d2e7f0a..4d96b910ce1 100644
+--- a/include/configs/compulab-imx8m-plus.h
++++ b/include/configs/compulab-imx8m-plus.h
+@@ -12,7 +12,7 @@
+ #include "imx_env.h"
+ 
+ 
+-#define CONFIG_SPL_MAX_SIZE		(152 * 1024)
++#define CONFIG_SPL_MAX_SIZE		(176 * 1024)
+ #define CONFIG_SYS_MONITOR_LEN		(512 * 1024)
+ #define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_USE_SECTOR
+ #define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR	0x300
+-- 
+2.43.0
+

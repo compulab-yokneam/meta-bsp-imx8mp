@@ -1,0 +1,40 @@
+From a46614cd0b5cbcfa0da6dfdbcf897640e3118c67 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Fri, 17 Apr 2026 20:09:46 +0000
+Subject: [PATCH] compulab: imx8mp: spl: Update due to dram code update
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ board/compulab/plat/imx8mp/spl/spl.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/board/compulab/plat/imx8mp/spl/spl.c b/board/compulab/plat/imx8mp/spl/spl.c
+index ffbfe27fcb9..089278ff158 100644
+--- a/board/compulab/plat/imx8mp/spl/spl.c
++++ b/board/compulab/plat/imx8mp/spl/spl.c
+@@ -27,11 +27,12 @@
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+ 
+-int spl_board_boot_device(enum boot_device boot_dev_spl)
++int spl_board_boot_device(u32 _boot_dev_spl)
+ {
+ #ifdef CONFIG_SPL_BOOTROM_SUPPORT
+ 	return BOOT_DEVICE_BOOTROM;
+ #else
++	enum boot_device boot_dev_spl = (enum boot_device) _boot_dev_spl;
+ 	switch (boot_dev_spl) {
+ 	case SD1_BOOT:
+ 	case MMC1_BOOT:
+@@ -274,3 +275,8 @@ int do_reset(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+ 
+ 	return 0;
+ }
++
++void reset_misc(void) {
++	puts("resetting ...\n");
++	reset_cpu(WDOG1_BASE_ADDR);
++}
+-- 
+2.43.0
+
