@@ -1,0 +1,67 @@
+setenv nload ${loadaddr}
+setenv oload ${fdt_addr}
+setenv mmcdev 2
+setenv mmcpart 1
+setenv mmcoff0 0x40
+setenv mmcoff1 0x0
+setenv bsize 0xBCD
+setenv bootloader @@BOOTLOADER@@
+setenv bootloader_dram_subset @@DRAM_CONF@@
+
+if test ${bootloader_dram_subset} != ${dram_subset}
+then
+    echo Invalid board configuration ${dram_subset} != ${bootloader_dram_subset}
+    echo Stop the script and validate the environment
+    sleep 3600
+fi
+
+# Load the new booloader from the file system
+# 1) iface/dev/part defined by the default u-boot environment
+# 2) the boot media 1-st partition must have the device bootloader
+# in the partition:/ directory
+if env exist boot_targets
+then
+    setenv iface ${devtype}
+    setenv dev ${devnum}
+fi
+
+if env exists iface
+then
+    echo U-Boot update iface ${devtype}
+else
+    setenv iface mmc
+fi
+
+if env exists dev
+then
+    echo U-Boot update dev ${dev}
+else
+   setenv dev 1
+fi
+
+if load ${iface} ${dev} ${nload} ${bootloader}
+then
+
+    # Read the current booloader from the boot device
+    setexpr bsize ${filesize} / 200
+    setexpr bsize ${bsize} + 1
+    mmc dev ${mmcdev} ${mmcpart}
+    mmc read ${oload} ${mmcoff1} ${bsize}
+
+    # Compare the old & the new one.
+    if cmp.b ${nload} ${oload} ${filesize}
+    then
+        echo Nothing to update, remove the media and reset the board.
+        sleep 3600
+    else
+        echo Updating the bootloader on mmc [${mmcdev}:${mmcpart}]
+        mmc write ${nload} ${mmcoff1} ${bsize}
+        mmc partconf ${mmcdev} 0 ${mmcpart} 0
+        reset
+    fi
+
+else
+    echo ${bootloader} file not found
+    echo Stop the script and validate the environment
+    sleep 3600
+fi
