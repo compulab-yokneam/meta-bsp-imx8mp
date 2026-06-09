@@ -64,6 +64,12 @@ source compulab-setup-env build-imx8mp
 |fsl network image|```bitbake -k fsl-image-network-full-cmdline```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/fsl-image-network-full-cmdline-${MACHINE}.wic.zst```|
 |oe core image|```bitbake -k core-image-full-cmdline```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/core-image-full-cmdline-${MACHINE}.wic.zst```|
 
+* Special purpose targets (for alt-boot only):
+
+| Target | Command | The target file location |
+|--- |---|---|
+|U-Boot update image|```bitbake -k uboot-update-image```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/uboot-update-image-${MACHINE}-${DRAM_CONF}.wic```|
+
 ## Deployment
 ### Bootable sd card method
 #### Host Machine ####
