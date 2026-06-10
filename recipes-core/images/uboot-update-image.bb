@@ -15,7 +15,7 @@ IMAGE_FEATURES = ""
 IMAGE_LINGUAS = ""
 IMAGE_INSTALL = ""
 
-IMAGE_BOOT_FILES = "imx-boot.tagged;imx-boot-${MACHINE}-${DRAM_CONF} boot.update.scr;boot.scr"
+IMAGE_BOOT_FILES = "flash.bin.tagged;flash.bin-${MACHINE}-${DRAM_CONF} boot.update.scr;boot.scr"
 
 DEPENDS:append = " u-boot-update-script "
 

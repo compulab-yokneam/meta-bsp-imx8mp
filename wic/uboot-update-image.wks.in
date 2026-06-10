@@ -1,4 +1,4 @@
-part u-boot --source rawcopy --sourceparams="file=imx-boot.tagged" --ondisk mmcblk --no-table --align ${IMX_BOOT_SEEK}
+part u-boot --source rawcopy --sourceparams="file=flash.bin.tagged" --ondisk mmcblk --no-table --align ${IMX_BOOT_SEEK}
 part /boot --source bootimg-partition --ondisk mmcblk --fstype=ext4 --label boot-${DRAM_CONF} --align 8192 --size 32
 
 bootloader --ptable gpt
