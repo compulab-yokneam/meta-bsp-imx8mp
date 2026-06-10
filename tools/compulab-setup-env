@@ -1,7 +1,5 @@
 #!/bin/bash -e
 
-unset MACHINE DRAM COMPULAB_MACHINE
-
 declare supported_machines=( ucm-imx8m-plus ucm-imx8m-plus-sbev mcm-imx8m-plus som-imx8m-plus iot-gate-imx8plus iotdin-imx8p )
 _get_machine() {
     local select_string=${supported_machines[@]}" <<"
@@ -21,6 +19,7 @@ _get_machine() {
 
 declare dram_configs=( D1 D2 D4 D8 )
 _get_dram() {
+    echo ${BB_ENV_PASSTHROUGH_ADDITIONS:-"EMPTY"} | grep -q DRAM_CONF && return 0 || true
     local select_string=${dram_configs[@]}" <<"
     PS3="DRAM Options ? # > "
     select j in ${select_string}; do
@@ -91,6 +90,7 @@ else
     MACHINE=${COMPULAB_MACHINE}
     unset COMPULAB_MACHINE
 fi
+export BB_ENV_PASSTHROUGH_ADDITIONS="$BB_ENV_PASSTHROUGH_ADDITIONS DRAM_CONF"
 else
 cat << eof
 DRAM: Declined setup ...
