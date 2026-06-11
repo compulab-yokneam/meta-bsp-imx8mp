@@ -39,7 +39,7 @@ mkdir compulab-nxp-bsp && cd compulab-nxp-bsp
 ```
 * Download NXP and CompuLab source:
 ```
-source <(curl -L https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/refs/tags/iot-gate-imx8plus_r3.1/tools/run.me)
+source <(curl -L https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/refs/tags/iot-gate-imx8plus_r3.2/tools/run.me)
 ```
 * Issue this command to init Yocto build environment:
 ```
