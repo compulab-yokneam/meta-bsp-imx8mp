@@ -27,12 +27,12 @@
 
   * CompuLab D[X] option to Yocto DRAM_CONF:
 
-    |CompuLab D[X]|Yocto DRAM_CONF|local.conf entry|
-    |:---|:---|:---|
-    |D1|d1d8|DRAM_CONF = "d1d8"|
-    |D2|d2|DRAM_CONF = "d2"|
-    |D4|d4|DRAM_CONF = "d4"|
-    |D8|d1d8|DRAM_CONF = "d1d8"|
+    |CompuLab D[X]|D1|D2|D4|D8
+    |:---|:---|:---|:---|---|
+    |D1|DRAM_CONF = "d1"|_|_|_
+    |D2|DRAM_CONF = "d1d2"|DRAM_CONF = "d2"|_|_
+    |D4|DRAM_CONF = "d1d4"|DRAM_CONF = "d2d4"|DRAM_CONF = "d4"|_
+    |D8|DRAM_CONF = "d1d8"|DRAM_CONF = "d1d8"|DRAM_CONF = "d2d8"|DRAM_CONF = "d8"
 
 ## Setup Yocto environment
 
