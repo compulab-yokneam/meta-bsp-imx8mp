@@ -32,7 +32,7 @@
     |D1|DRAM_CONF = "d1"|_|_|_
     |D2|DRAM_CONF = "d1d2"|DRAM_CONF = "d2"|_|_
     |D4|DRAM_CONF = "d1d4"|DRAM_CONF = "d2d4"|DRAM_CONF = "d4"|_
-    |D8|DRAM_CONF = "d1d8"|DRAM_CONF = "d1d8"|DRAM_CONF = "d2d8"|DRAM_CONF = "d8"
+    |D8|DRAM_CONF = "d1d8"|DRAM_CONF = "d2d8"|DRAM_CONF = "d4d8"|DRAM_CONF = "d8"
 
 ## Setup Yocto environment
 
