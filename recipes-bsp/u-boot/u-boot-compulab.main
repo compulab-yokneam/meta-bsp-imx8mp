@@ -1,66 +1,49 @@
 DESCRIPTION = "CompuLab i.MX8 U-Boot"
 require recipes-bsp/u-boot/u-boot.inc
+require u-boot-compulab-env.inc
+require u-boot-compulab_${PV}.inc
+require u-boot-compulab/imx8mp.inc
 
 PROVIDES += "u-boot"
-DEPENDS:append = " dtc-native"
 
-LICENSE = "GPLv2+"
+LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
-require u-boot-compulab_${PV}.inc
+DEPENDS += " flex-native bison-native bc-native dtc-native gnutls-native python3-setuptools-native "
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/compulab/${PV}/imx8mp:"
-require compulab/${PV}/imx8mp.inc
-
-DEPENDS += "flex-native bison-native bc-native dtc-native gnutls-native"
-
-S = "${UNPACKDIR}/git"
-B = "${UNPACKDIR}/build"
-
+SPL_BINARY = ""
+UUU_BOOTLOADER = "1"
 UBOOT_VERSION_EXTENSION = "-${CL_RELEASE}-${DRAM_CONF}"
 
-inherit fsl-u-boot-localversion
-
-BOOT_TOOLS = "imx-boot-tools"
-
-do_compile:prepend () {
-    export SOURCE_DATE_EPOCH=$(date +%s)
-    for _config in ${UBOOT_MACHINE}; do
-        echo  "CONFIG_LOCALVERSION=\"${UBOOT_VERSION_EXTENSION}\"" >> ${B}/${_config}/.config
-    done
-}
+inherit fsl-u-boot-localversion imx-boot-container uuu_bootloader_tag
 
 do_deploy:append () {
-    # Deploy u-boot-nodtb.bin and ${MACHINE}.dtb, to be packaged in boot binary by imx-boot
-    if [ -n "${UBOOT_CONFIG}" ]
-    then
-        for config in ${UBOOT_MACHINE}; do
-            i=$(expr $i + 1);
-            for type in ${UBOOT_CONFIG}; do
-                j=$(expr $j + 1);
-                if [ $j -eq $i ]
-                then
-                    install -d ${DEPLOYDIR}/${BOOT_TOOLS}
-                    install -m 0644 ${B}/${config}/arch/arm/dts/${UBOOT_DTB_NAME}  ${DEPLOYDIR}/${BOOT_TOOLS}/${UBOOT_DTB_NAME}
-                    install -m 0644 ${B}/${config}/arch/arm/dts/${UBOOT_DTB_NAME}  ${DEPLOYDIR}/${BOOT_TOOLS}/${UBOOT_DTB_NAME}-${type}
-                    install -m 0644 ${B}/${config}/u-boot-nodtb.bin  ${DEPLOYDIR}/${BOOT_TOOLS}/u-boot-nodtb.bin-${MACHINE}-${type}
-                fi
-            done
-            unset  j
-        done
-        unset  i
+    for file in flash.bin.tagged flash.bin;do
+    if [ -f "${DEPLOYDIR}/${file}" ]; then
+        ln -sf ${file} ${DEPLOYDIR}/${file}.${DRAM_CONF}
     fi
-
+    done
+    if [ -f "${DEPLOYDIR}/flash.bin" ]; then
+        ln -sf flash.bin ${DEPLOYDIR}/imx-boot
+    fi
 }
 
-require u-boot-compulab-flash.inc
-require u-boot-compulab-env.inc
+do_install() {
+    uboot_machine="${@d.getVar('UBOOT_MACHINE').replace(' ', '')}"
+    install -d ${D}/boot
+    install -m 0644 ${KCONFIG_CONFIG_ROOTDIR}/flash.bin ${D}/boot/
+    ln -sf flash.bin ${D}/boot/flash.bin-${MACHINE}-${DRAM_CONF}
+}
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
-UBOOT_NAME = "u-boot-${MACHINE}.bin-${UBOOT_CONFIG}"
+FILES:${PN} = " \
+    /boot/flash* \
+"
 
-EXTRA_OEMAKE += "debug=n  DEBUG=0 "
-FULL_OPTIMIZATION:remove = "-O2"
-FULL_OPTIMIZATION:append = "-Os"
+EXTRA_OEMAKE += 'HOSTCC="${BUILD_CC} ${BUILD_CPPFLAGS}" \
+                 HOSTLDFLAGS="${BUILD_LDFLAGS}" \
+                 HOSTSTRIP=true'
 
 rm_work[noexec] = "1"
+
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+COMPATIBLE_MACHINE = "(compulab-mx8mp)"
