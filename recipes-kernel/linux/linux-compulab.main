@@ -1,11 +1,9 @@
 SUMMARY = "CompuLab Linux Kernel for compulab-imx8m-plus SOM"
 
-inherit kernel-yocto kernel fsl-vivante-kernel-driver-handler
+inherit kernel-yocto kernel
 
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
-
-S = "${UNPACKDIR}/git"
 
 # Tell to kernel class that we would like to use our defconfig to configure the kernel.
 # Otherwise, the --allnoconfig would be used per default which leads to mis-configured
@@ -19,7 +17,7 @@ S = "${UNPACKDIR}/git"
 # specified, and should be restored with their defaults, not set to 'n'.
 # To properly expand a defconfig like this, we need to specify: KCONFIG_MODE="--alldefconfig"
 # in the kernel recipe include.
-KCONFIG_MODE="--alldefconfig"
+KCONFIG_MODE = "--alldefconfig"
 
 # We need to pass it as param since kernel might support more then one
 # machine, with different entry points
@@ -33,7 +31,7 @@ require linux-compulab_${PV}.inc
 
 DEFAULT_PREFERENCE = "1"
 
-KERNEL_VERSION_SANITY_SKIP="1"
+KERNEL_VERSION_SANITY_SKIP = "1"
 
 # Merged from the bbappend
 FILESEXTRAPATHS:prepend := "${THISDIR}/compulab/${PV}/imx8mp:"
@@ -41,10 +39,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/compulab/${PV}/imx8mp:"
 require compulab/${PV}/imx8mp.inc
 
 LINUX_VERSION_EXTENSION = "-${CL_RELEASE}"
-
-SRC_URI:append = " \
-	file://compulab.cfg \
-"
 
 do_compile:prepend() {
     export SOURCE_DATE_EPOCH=$(date +%s)
