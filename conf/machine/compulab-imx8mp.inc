@@ -74,3 +74,10 @@ IMX_DEFAULT_BSP = "nxp"
 
 # Default dram configuration
 DRAM_CONF ??= "d2d4"
+
+# U-Boot defconfig; the machine specific file
+# can have its own variables
+UBOOT_CONFIG ??= "sd"
+UBOOT_CONFIG_BASENAME = "${MACHINE}"
+UBOOT_CONFIG[sd] = "${UBOOT_CONFIG_BASENAME}_defconfig"
+UBOOT_CONFIG[mfgtool] = "${UBOOT_CONFIG_BASENAME}_defconfig"
