@@ -24,6 +24,8 @@ do_configure:append () {
 do_deploy:append () {
     if [ -f "${B}/${config}/flash.bin" ];then
         install -m 0644 ${B}/${config}/flash.bin  ${DEPLOYDIR}/flash.bin_${MACHINE}_${DRAM_CONF}
+        ln -s flash.bin_${MACHINE}_${DRAM_CONF} ${DEPLOYDIR}/imx-boot_${MACHINE}_${DRAM_CONF}
+        ln -s flash.bin_${MACHINE}_${DRAM_CONF} ${DEPLOYDIR}/imx-boot
     fi
 }
 

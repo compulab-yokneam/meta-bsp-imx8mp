@@ -13,9 +13,7 @@ IMX_DEFAULT_BOOTLOADER:use-mainline-bsp = "u-boot-compulab"
 IMX_DEFAULT_BOOTLOADER:use-nxp-bsp = "u-boot-compulab"
 IMX_DEFAULT_BOOTLOADER:mx8m-generic-bsp = "u-boot-compulab"
 # For FreeScale Communtity BSP build
-UBOOT_PROVIDES_BOOT_CONTAINER:mx8m-generic-bsp = "0"
-
-SPL_BINARY = "spl/u-boot-spl.bin"
+UBOOT_PROVIDES_BOOT_CONTAINER = "1"
 
 ATF_PLATFORM = "imx8mp"
 ATF_LOAD_ADDR = "0x970000"
