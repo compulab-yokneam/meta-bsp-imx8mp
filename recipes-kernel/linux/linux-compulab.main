@@ -107,3 +107,5 @@ COMPATIBLE_MACHINE = "(compulab-mx8mp)"
 EXTRA_OEMAKE += "debug=n  DEBUG=0 "
 
 rm_work[noexec] = "1"
+
+do_configure[noexec] = "1"
