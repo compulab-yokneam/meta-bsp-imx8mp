@@ -2,6 +2,7 @@ SRC_URI:append = " \
 	file://linux-headers.cfg \
 	file://linux-firmware-sdma.cfg \
 	file://sdma.cfg \
+	file://0100-compulab-dts-iotdin-imx8p-Remove-unused-reserved-reg.patch \
 "
 
 FIRMWARE_DIR_SOURCE = "${WORKDIR}/recipe-sysroot"
