@@ -42,15 +42,11 @@ require compulab/${PV}/imx8mp.inc
 
 LINUX_VERSION_EXTENSION = "-${CL_RELEASE}"
 
-SRC_URI:append = " \
-	file://compulab.cfg \
-"
-
 do_compile:prepend() {
     export SOURCE_DATE_EPOCH=$(date +%s)
 }
 
-do_install:append() {
+do_install:append:linux-compulab() {
     ln -s Image-${KERNEL_VERSION} ${D}/${KERNEL_IMAGEDEST}/kernel-${KERNEL_VERSION}
     install -m 0644 ${B}/.config ${D}/${KERNEL_IMAGEDEST}/config-${KERNEL_VERSION}
 
@@ -97,7 +93,7 @@ do_kernel_localversion:prepend() {
     touch ${WORKDIR}/defconfig
 }
 
-PACKAGES =+ "linux-headers"
+PACKAGES:append:linux-compulab = "linux-headers"
 FILES:linux-headers = "${exec_prefix}/src/linux* ${nonarch_base_libdir}/modules/${KERNEL_VERSION}/build"
 
 KERNEL_SPLIT_MODULES = "0"
