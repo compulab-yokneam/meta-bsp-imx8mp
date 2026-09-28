@@ -17,6 +17,9 @@ UBOOT_PROVIDES_BOOT_CONTAINER:mx8m-generic-bsp = "1"
 ATF_PLATFORM = "imx8mp"
 ATF_LOAD_ADDR = "0x970000"
 
+# Use one kernel configuration for the entire CompuLab i.MX8MP family.
+KERNEL_CONFIG = "compulab_v8_defconfig"
+
 # Extra firmware package name, that is required to build boot container for fslc bsp
 IMX_EXTRA_FIRMWARE = "firmware-imx-8m"
 
