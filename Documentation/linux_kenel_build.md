@@ -26,7 +26,7 @@ mkdir -p compulab-kernel/build && cd compulab-kernel
 
 * Clone the source code:
 ```
-git clone -b linux-compulab_v6.6.52 https://github.com/compulab-yokneam/linux-compulab.git
+git clone -b linux-compulab_v6.18.20 https://github.com/compulab-yokneam/linux-compulab.git
 cd linux-compulab
 ```
 
