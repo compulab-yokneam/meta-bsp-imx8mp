@@ -12,7 +12,7 @@ MACHINE_FEATURES:append:use-nxp-bsp = " optee "
 IMX_DEFAULT_BOOTLOADER:use-mainline-bsp = "u-boot-compulab"
 IMX_DEFAULT_BOOTLOADER:use-nxp-bsp = "u-boot-compulab"
 IMX_DEFAULT_BOOTLOADER:mx8m-generic-bsp = "u-boot-compulab"
-UBOOT_PROVIDES_BOOT_CONTAINER = "1"
+UBOOT_PROVIDES_BOOT_CONTAINER:mx8m-generic-bsp = "1"
 
 ATF_PLATFORM = "imx8mp"
 ATF_LOAD_ADDR = "0x970000"
@@ -53,6 +53,7 @@ IMAGE_INSTALL:append = " \
 
 PREFERRED_PROVIDER_virtual/kernel:compulab-mx8mp = "linux-compulab"
 PREFERRED_PROVIDER_virtual/bootloader:compulab-mx8mp = "u-boot-compulab"
+PREFERRED_PROVIDER_imx-boot:compulab-mx8mp = "u-boot-compulab"
 PREFERRED_PROVIDER_linux-imx-mfgtool:compulab-mx8mp = "linux-compulab-mfgtool"
 PREFERRED_PROVIDER_linux-compulab-mfgtool:compulab-mx8mp = "linux-compulab-mfgtool"
 PREFERRED_VERSION_libgpiod = "1.6.4"
@@ -81,3 +82,6 @@ UBOOT_CONFIG ??= "sd"
 UBOOT_CONFIG_BASENAME = "${MACHINE}"
 UBOOT_CONFIG[sd] = "${UBOOT_CONFIG_BASENAME}_defconfig"
 UBOOT_CONFIG[mfgtool] = "${UBOOT_CONFIG_BASENAME}_defconfig"
+
+# i.MX8MP does not use System Manager firmware.
+SYSTEM_MANAGER_FIRMWARE_NAME:compulab-mx8mp = ""

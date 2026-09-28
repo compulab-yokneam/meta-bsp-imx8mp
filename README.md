@@ -82,7 +82,7 @@ source setup-environment build-${MACHINE}
 | Target | Command | The target file location |
 |--- |---|---|
 |full image|```bitbake -k imx-image-full```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/imx-image-full-${MACHINE}.wic.zst```|
-|boot loader|```bitbake -k imx-boot```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/imx-boot-tagged```|
+|boot loader|```bitbake -k u-boot-compulab```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/flash.bin.tagged```|
 
 * Other available targets (no desktop environment):
 
@@ -120,7 +120,7 @@ cd tmp/deploy/images/${MACHINE}
 
 * Issue uuu command with the root credentials for a ``non compulab-imx8mp``:
 ```
-sudo uuu -bmap -v -b emmc_all imx-boot-tagged mx-image-full-${MACHINE}.wic.zst/*
+sudo uuu -bmap -v -b emmc_all flash.bin.tagged mx-image-full-${MACHINE}.wic.zst/*
 ```
 
 * Issue uuu command with the root credentials for the ``compulab-imx8mp``:
@@ -141,4 +141,3 @@ sudo uuu -bmap -v -b emmc_all imx-boot-tagged mx-image-full-${MACHINE}.wic.zst/*
 |---|---|---|
 |SDP|mmc dev 2 1; mmc erase 0x0 0x1000; reset|For advanced users only|
 |FB|fastboot 0||
-
