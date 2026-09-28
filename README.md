@@ -66,7 +66,25 @@ sed -i '$ a DRAM_CONF = "d2d4"' ${BUILDDIR}/conf/local.conf
 * Enable the d1d8 dram setting's subset:
 ```
 sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
+sed -i '$ a DRAM_CONF = "d1d8"' ${BUILDDIR}/conf/local.conf
 ```
+
+* Enable the multiconfig U-Boot target once in `${BUILDDIR}/conf/local.conf`:
+```
+require ${TOPDIR}/../sources/meta-bsp-imx8mp/conf/dram-multiconfig.conf
+```
+
+* Build both supported DRAM variants in one invocation:
+```
+bitbake u-boot-compulab-multi
+```
+
+The resulting `u-boot-compulab` package contains tagged and untagged versions
+of both boot containers under `/boot`. The base `d2d4` container provides the
+default `imx-boot.tagged` used by WKS, while the additional `d1d8` artifact is
+deployed below `${BUILDDIR}/tmp-d1d8`. See
+[`Documentation/imx_boot_image_build.md`](Documentation/imx_boot_image_build.md)
+for the exact artifact paths.
 
 ## Get back to the build environment
 In order to use the already created build environment issue these commands:

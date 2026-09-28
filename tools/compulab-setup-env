@@ -23,6 +23,7 @@ function mach_function() {
 function temp_function() {
     for _d in ${T}/*;do
         _file=$(basename ${_d})
+        [[ "${_file}" == "multiconfig" ]] && continue
         for _f in ${_d}/*;do
         file ${_f} | grep -iq "shell" && source ${_f} >> conf/${_file} || {
 cat << eof >> conf/${_file}
@@ -36,16 +37,34 @@ eof
     done
 }
 
+function multiconfig_function() {
+    local source_dir="${T}/multiconfig"
+    local destination_dir="${BUILDDIR}/conf/multiconfig"
+    local destination_file
+
+    [[ -d "${source_dir}" ]] || return 0
+
+    install -d "${destination_dir}"
+    for _file in "${source_dir}"/*.conf;do
+        [[ -e "${_file}" ]] || continue
+        destination_file="${destination_dir}/$(basename "${_file}")"
+        [[ -e "${destination_file}" ]] && continue
+        install -m 0644 "${_file}" "${destination_file}"
+    done
+}
+
 if [[ -d ${BD} ]];then
 
 echo "Back to the build environment ${BD}"
 . setup-environment ${BD}
+multiconfig_function
 
 else
 
 . imx-setup-release.sh -b $@
 
     temp_function
+    multiconfig_function
     mach_function
     fix_fsl_imx_base
 fi
