@@ -8,6 +8,4 @@
   <project name="meta-bsp-imx8mp" remote="compulab" revision="wrynose-6.18.20-2.0.0" path="sources/meta-bsp-imx8mp" >
     <linkfile src="tools/compulab-setup-env" dest="compulab-setup-env" />
   </project>
-
-  <project name="meta-imx8mp-isp" remote="compulab" revision="6.6.36" path="sources/meta-imx8mp-isp"/>
   </manifest>
