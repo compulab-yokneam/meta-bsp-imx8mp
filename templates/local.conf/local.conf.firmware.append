@@ -1,2 +1,7 @@
-CORE_IMAGE_EXTRA_INSTALL += " compulab-bootloader "
-CORE_IMAGE_EXTRA_INSTALL += " cl-firmware "
+# Optional experimental firmware updater for the generic compulab-imx8mp machine.
+# It detects the device and DRAM configuration from EEPROM, then may replace
+# the bootloader in eMMC boot0 during Linux startup. It is not recommended for
+# general or production use yet. Leave both packages disabled unless explicitly
+# evaluating this workflow.
+# CORE_IMAGE_EXTRA_INSTALL += " compulab-bootloader "
+# CORE_IMAGE_EXTRA_INSTALL += " cl-firmware "
