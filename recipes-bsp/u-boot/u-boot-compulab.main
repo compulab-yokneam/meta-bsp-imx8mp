@@ -26,7 +26,14 @@ COMPULAB_DRAM_MULTICONFIG_DEFAULT ??= "d2d4"
 COMPULAB_DRAM_MULTICONFIG_ENABLED = "${@'1' if not d.getVar('BB_CURRENT_MC') and bb.utils.contains('BBMULTICONFIG', 'd1d8 d2d4', True, False, d) else '0'}"
 COMPULAB_DRAM_MULTICONFIG_DEPENDS = "${@' '.join('mc::%s:u-boot-compulab:do_deploy' % mc for mc in (d.getVar('COMPULAB_DRAM_MULTICONFIGS') or '').split() if mc != d.getVar('DRAM_CONF')) if d.getVar('COMPULAB_DRAM_MULTICONFIG_ENABLED') == '1' else ''}"
 
+UBOOT_COMPULAB_FIRMWARE_DEPLOY = "${DEPLOYDIR}/u-boot-compulab-firmware"
+
 do_install[mcdepends] += "${COMPULAB_DRAM_MULTICONFIG_DEPENDS}"
+do_deploy[depends] += " \
+    ${@' '.join('%s:do_deploy' % recipe for recipe in (d.getVar('IMX_EXTRA_FIRMWARE') or '').split())} \
+    ${IMX_DEFAULT_ATF_PROVIDER}:do_deploy \
+    optee-os:do_deploy \
+"
 
 python __anonymous() {
     if (not d.getVar("BB_CURRENT_MC") and
@@ -43,6 +50,18 @@ do_deploy:append () {
     if [ -f "${DEPLOYDIR}/flash.bin" ]; then
         ln -sf flash.bin ${DEPLOYDIR}/imx-boot
     fi
+
+    install -d "${UBOOT_COMPULAB_FIRMWARE_DEPLOY}"
+
+    gzip -9n -c "${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME}" \
+        > "${UBOOT_COMPULAB_FIRMWARE_DEPLOY}/bl31.bin.gz"
+    gzip -9n -c "${DEPLOY_DIR_IMAGE}/tee.bin" \
+        > "${UBOOT_COMPULAB_FIRMWARE_DEPLOY}/tee.bin.gz"
+
+    for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
+        gzip -9n -c "${DEPLOY_DIR_IMAGE}/${ddr_firmware}" \
+            > "${UBOOT_COMPULAB_FIRMWARE_DEPLOY}/${ddr_firmware}.gz"
+    done
 }
 
 do_install() {
