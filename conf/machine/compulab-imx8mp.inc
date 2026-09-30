@@ -1,3 +1,5 @@
+CL_RELEASE ?= "compulab-5.0"
+
 MACHINEOVERRIDES =. "imx-boot-container:mx8:mx8m:mx8mp:compulab-mx8mp:"
 
 require conf/machine/include/imx-base.inc

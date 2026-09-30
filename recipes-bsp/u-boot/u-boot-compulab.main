@@ -16,6 +16,7 @@ DEPENDS += " flex-native bison-native bc-native dtc-native gnutls-native python3
 SPL_BINARY = ""
 UUU_BOOTLOADER = "1"
 UBOOT_VERSION_EXTENSION = "-${CL_RELEASE}-${DRAM_CONF}"
+LOCALVERSION = "${UBOOT_VERSION_EXTENSION}"
 
 inherit fsl-u-boot-localversion imx-boot-container uuu_bootloader_tag
 
