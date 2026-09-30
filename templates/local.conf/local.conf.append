@@ -13,6 +13,3 @@ BB_SRCREV_POLICY = "clear"
 INHERIT += "rm_work"
 
 RM_WORK_EXCLUDE += "u-boot-compulab linux-compulab"
-
-ERROR_QA:remove = "patch-status"
-WARN_QA:append = " patch-status"
