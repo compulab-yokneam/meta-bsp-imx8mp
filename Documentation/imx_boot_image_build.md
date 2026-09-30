@@ -91,3 +91,65 @@ ${BUILDDIR}/tmp-d1d8/deploy/images/${MACHINE}/flash.bin.tagged.d1d8
 
 Do not use `DRAM_CONF = "d1d8 d2d4"`: that combines configuration fragments
 in one U-Boot build instead of creating two independent boot containers.
+
+### Build the complete CompuLab i.MX8MP family
+
+The family build covers these six U-Boot machines:
+
+```
+iot-gate-imx8plus
+iotdin-imx8p
+mcm-imx8m-plus
+som-imx8m-plus
+ucm-imx8m-plus
+ucm-imx8m-plus-sbev
+```
+
+Each machine is built independently for `d1d8` and `d2d4`, producing 12 boot
+containers. Re-enter an existing build through the CompuLab setup helper so
+the family multiconfig files are installed:
+
+```
+source compulab-setup-env <build-directory>
+```
+
+Use the family configuration instead of `dram-multiconfig.conf` in
+`${BUILDDIR}/conf/local.conf`:
+
+```
+require ${TOPDIR}/../sources/meta-bsp-imx8mp/conf/u-boot-family-multiconfig.conf
+```
+
+Then issue one build command:
+
+```
+bitbake u-boot-compulab-multi
+```
+
+Every machine and DRAM pair has a separate work and deploy directory. For
+example:
+
+```
+${BUILDDIR}/tmp-ucm-imx8m-plus-d1d8/deploy/images/ucm-imx8m-plus/flash.bin.d1d8
+${BUILDDIR}/tmp-ucm-imx8m-plus-d2d4/deploy/images/ucm-imx8m-plus/flash.bin.d2d4
+```
+
+The aggregate target copies tagged and untagged images into its package:
+
+```
+/boot/u-boot-compulab-multi/<machine>/flash.bin-d1d8
+/boot/u-boot-compulab-multi/<machine>/flash.bin-d1d8.tagged
+/boot/u-boot-compulab-multi/<machine>/flash.bin-d2d4
+/boot/u-boot-compulab-multi/<machine>/flash.bin-d2d4.tagged
+```
+
+The same tree is deployed under:
+
+```
+${BUILDDIR}/tmp/deploy/images/${MACHINE}/u-boot-compulab-multi/
+```
+
+The generic `compulab-imx8mp` machine is not part of the matrix because it
+does not have a `compulab-imx8mp_defconfig`. It can still be the base machine
+running the aggregate recipe because all U-Boot builds execute in their own
+multiconfig contexts.

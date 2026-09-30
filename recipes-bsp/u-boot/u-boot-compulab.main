@@ -7,8 +7,6 @@ require u-boot-compulab/imx8mp.inc
 PROVIDES += "u-boot imx-boot"
 
 COMPULAB_DRAM_MULTICONFIG ??= "0"
-OVERRIDES:append = "${@':multi' if d.getVar('COMPULAB_DRAM_MULTICONFIG') == '1' else ''}"
-PROVIDES:append:multi = " u-boot-compulab-multi"
 
 LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
