@@ -1,0 +1,2871 @@
+From b7734fecf20ac0d6a0615565f5332632c682a62a Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Thu, 1 Oct 2026 10:32:40 +0000
+Subject: [PATCH] isp-imx: add OV5647 camera support
+
+Add the OV5647 ISP driver and calibration data. Provide a 1080p30
+runtime configuration with automatic device-tree detection.
+
+Upstream-Status: Inappropriate [CompuLab BSP integration]
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ imx/run.sh                                    |   18 +-
+ imx/start_isp.sh                              |   11 +-
+ units/isi/CMakeLists.txt                      |    2 +
+ units/isi/drv/OV5647/CMakeLists.txt           |  122 ++
+ units/isi/drv/OV5647/Sensor0_Entry_ov5647.cfg |    7 +
+ units/isi/drv/OV5647/Sensor1_Entry_ov5647.cfg |    7 +
+ units/isi/drv/OV5647/calib/CMakeLists.txt     |   42 +
+ .../OV5647/OV5647_8M_02_1080p_linear.xml      | 1287 +++++++++++++++++
+ units/isi/drv/OV5647/source/OV5647.c          | 1237 ++++++++++++++++
+ 9 files changed, 2731 insertions(+), 2 deletions(-)
+ create mode 100644 units/isi/drv/OV5647/CMakeLists.txt
+ create mode 100644 units/isi/drv/OV5647/Sensor0_Entry_ov5647.cfg
+ create mode 100644 units/isi/drv/OV5647/Sensor1_Entry_ov5647.cfg
+ create mode 100644 units/isi/drv/OV5647/calib/CMakeLists.txt
+ create mode 100644 units/isi/drv/OV5647/calib/OV5647/OV5647_8M_02_1080p_linear.xml
+ create mode 100644 units/isi/drv/OV5647/source/OV5647.c
+
+diff --git a/imx/run.sh b/imx/run.sh
+index 615b6c4..9f46573 100755
+--- a/imx/run.sh
++++ b/imx/run.sh
+@@ -35,6 +35,7 @@ USAGE+="\tdual_os08a20_1080p30hdr - dual os08a20 cameras on MIPI-CSI1/2, 1920x10
+ USAGE+="\tos08a20_4khdr           - single os08a20 camera on MIPI-CSI1, 3840x2160, 15 fps, HDR configuration\n"
+ 
+ USAGE+="\timx219_1080p30         - single imx219 camera on MIPI-CSI1, 1920x1080, 30 fps\n"
++USAGE+="\tov5647_1080p30         - single ov5647 camera on MIPI-CSI1, 1920x1080, 30 fps\n"
+ 
+ # parse command line arguments
+ while [ "$1" != "" ]; do
+@@ -95,6 +96,12 @@ write_default_mode_files () {
+ 	echo "[mode.0]" >> IMX219_MODES.txt
+ 	echo "xml = \"IMX219_8M_02_1080p_linear.xml\"" >> IMX219_MODES.txt
+ 	echo "dwe = \"dewarp_config/sensor_dwe_imx219_1080P_config.json\"" >> IMX219_MODES.txt
++
++	# OV5647 modes file
++	echo -n "" > OV5647_MODES.txt
++	echo "[mode.0]" >> OV5647_MODES.txt
++	echo "xml = \"OV5647_8M_02_1080p_linear.xml\"" >> OV5647_MODES.txt
++	echo "dwe = \"dewarp_config/sensor_dwe_bypass_1080P_config.json\"" >> OV5647_MODES.txt
+ }
+ 
+ # write the sensonr config file
+@@ -202,7 +209,7 @@ load_modules () {
+ write_default_mode_files
+ 
+ echo "Trying configuration \"$ISP_CONFIG\"..."
+-MODULES_TO_REMOVE=("basler-camera-driver-vvcam" "os08a20" "ov2775" "imx219" "${MODULES[@]}")
++MODULES_TO_REMOVE=("basler-camera-driver-vvcam" "os08a20" "ov2775" "imx219" "ov5647" "${MODULES[@]}")
+ case "$ISP_CONFIG" in
+ 		basler_4k )
+ 			MODULES=("basler-camera-driver-vvcam" "${MODULES[@]}")
+@@ -325,6 +332,15 @@ case "$ISP_CONFIG" in
+ 			 MODE="0"
+ 			 write_sensor_cfg_file "Sensor0_Entry.cfg" $CAM_NAME $DRV_FILE $MODE_FILE $MODE
+ 			 ;;
++		 ov5647_1080p30 )
++			 MODULES=("ov5647" "${MODULES[@]}")
++			 RUN_OPTION="CAMERA0"
++			 CAM_NAME="ov5647"
++			 DRV_FILE="ov5647.drv"
++			 MODE_FILE="OV5647_MODES.txt"
++			 MODE="0"
++			 write_sensor_cfg_file "Sensor0_Entry.cfg" $CAM_NAME $DRV_FILE $MODE_FILE $MODE
++			 ;;
+ 		 *)
+ 			echo "ISP configuration \"$ISP_CONFIG\" unsupported."
+ 			echo -e "$USAGE" >&2
+diff --git a/imx/start_isp.sh b/imx/start_isp.sh
+index 7c43489..1905a34 100755
+--- a/imx/start_isp.sh
++++ b/imx/start_isp.sh
+@@ -11,6 +11,7 @@ NR_DEVICE_TREE_BASLER=$(grep basler-camera-vvcam `find /sys/firmware/devicetree/
+ NR_DEVICE_TREE_OV5640=$(grep ov5640 `find /sys/firmware/devicetree/base/soc@0/ -name compatible | grep i2c` -l | wc -l 2> /dev/null)
+ NR_DEVICE_TREE_OS08A20=$(grep os08a20 `find /sys/firmware/devicetree/base/soc@0/ -name compatible | grep i2c` -l | wc -l 2> /dev/null)
+ NR_DEVICE_TREE_IMX219=$(grep imx219 `find /sys/firmware/devicetree/base/soc@0/ -name compatible | grep i2c` -l | wc -l 2> /dev/null)
++NR_DEVICE_TREE_OV5647=$(grep ov5647 `find /sys/firmware/devicetree/base/soc@0/ -name compatible | grep i2c` -l | wc -l 2> /dev/null)
+ 
+ 
+ # check if the basler device has been enabled in the device tree
+@@ -78,8 +79,16 @@ elif [ $NR_DEVICE_TREE_IMX219 -eq 1 ]; then
+ 	# Default and available configuration: imx219_1080p30
+ 	exec ./run.sh -c imx219_1080p30 -lm
+ 
++elif [ $NR_DEVICE_TREE_OV5647 -eq 1 ]; then
++
++	echo "Starting isp_media_server for Single ov5647"
++
++	cd $RUNTIME_DIR
++	# Default and available configuration: ov5647_1080p30
++	exec ./run.sh -c ov5647_1080p30 -lm
++
+ else
+ 	# no device tree found exit with code no device or address
+-	echo "No device tree found for Basler, os08a20, or imx219, check dtb file!" >&2
++	echo "No device tree found for Basler, os08a20, imx219, or ov5647, check dtb file!" >&2
+ 	exit 6
+ fi
+diff --git a/units/isi/CMakeLists.txt b/units/isi/CMakeLists.txt
+index e9fc457..5c3c143 100755
+--- a/units/isi/CMakeLists.txt
++++ b/units/isi/CMakeLists.txt
+@@ -70,6 +70,7 @@ add_subdirectory( drv/OV2775 )
+ add_subdirectory( drv/OS08a20 )
+ add_subdirectory( drv/AR1335 )
+ add_subdirectory( drv/IMX219 )
++add_subdirectory( drv/OV5647 )
+ #add_subdirectory( drv/OV5630 )
+ ###add_subdirectory( drv/OV8810 )
+ #add_subdirectory( drv/OV14825 )
+@@ -89,6 +90,7 @@ include_directories(
+ 
+ add_subdirectory( drv/OS08a20 )
+ add_subdirectory( drv/IMX219 )
++add_subdirectory( drv/OV5647 )
+ 
+ add_custom_target(copy_shell_libs_${module} ALL
+        COMMENT "##Copy isi drv cfg to shell libs"
+diff --git a/units/isi/drv/OV5647/CMakeLists.txt b/units/isi/drv/OV5647/CMakeLists.txt
+new file mode 100644
+index 0000000..4d59959
+--- /dev/null
++++ b/units/isi/drv/OV5647/CMakeLists.txt
+@@ -0,0 +1,122 @@
++cmake_minimum_required(VERSION 2.6)
++
++# define module name & interface version
++set (module ov5647)
++
++# define interface version
++set (${module}_INTERFACE_CURRENT  1)
++set (${module}_INTERFACE_REVISION 0)
++set (${module}_INTERFACE_AGE      0)
++
++# we want to compile all .c files as default
++file(GLOB libsources source/OV5647.c )
++
++# set public headers, these get installed
++file(GLOB pub_headers include/*.h)
++
++# define include paths
++include_directories(
++    include
++    include_priv
++    ${LIB_ROOT}/${CMAKE_BUILD_TYPE}/include
++    )
++
++# module specific defines
++###add_definitions(-Wno-error=unused-function)
++
++# add lib to build env
++#add_library(${module}_static STATIC ${libsources})
++add_library(${module}_shared SHARED ${libsources})
++
++#SET_TARGET_PROPERTIES(${module}_static PROPERTIES OUTPUT_NAME     ${module})
++#SET_TARGET_PROPERTIES(${module}_static PROPERTIES LINK_FLAGS      -static)
++#SET_TARGET_PROPERTIES(${module}_static PROPERTIES FRAMEWORK       TRUE PUBLIC_HEADER "${pub_headers}")
++
++SET_TARGET_PROPERTIES(${module}_shared PROPERTIES OUTPUT_NAME     ${module})
++SET_TARGET_PROPERTIES(${module}_shared PROPERTIES LINK_FLAGS      -shared)
++SET_TARGET_PROPERTIES(${module}_shared PROPERTIES SOVERSION       ${${module}_INTERFACE_CURRENT})
++SET_TARGET_PROPERTIES(${module}_shared PROPERTIES VERSION         ${${module}_INTERFACE_CURRENT}.${${module}_INTERFACE_REVISION}.${${module}_INTERFACE_AGE})
++SET_TARGET_PROPERTIES(${module}_shared PROPERTIES FRAMEWORK       TRUE PUBLIC_HEADER "${pub_headers}")
++
++# add convenience target: put sensor driver into the 'bin' output dir as well
++if ( NOT ANDROID )
++add_custom_target(${module}.drv
++                  ALL
++                  COMMAND ${CMAKE_COMMAND} -E copy ${LIB_ROOT}/${CMAKE_BUILD_TYPE}/lib/lib${module}.so.${${module}_INTERFACE_CURRENT} ${LIB_ROOT}/${CMAKE_BUILD_TYPE}/bin/${module}.drv
++                  DEPENDS ${module}_shared
++                  COMMENT "Copying ${module} driver module"
++                  )
++endif()
++
++# define lib dependencies
++#target_link_libraries(${module}_static
++#                      ${platform_libs}
++#                      ${base_libs}
++#                      ${drv_libs}
++#                      isi_shared
++#                      )
++
++# add link libs, or dlopen failed on Android
++if (ANDROID)
++if (GENERATE_PARTITION_BUILD)
++target_link_libraries(${module}_shared
++                      ${platform_libs}
++                      ${base_libs}
++                      ${drv_libs}
++                      isi_shared
++                      )
++else (GENERATE_PARTITION_BUILD)
++target_link_libraries(${module}_shared
++                      ${android_partial_platform_libs}
++                      ${android_partial_base_libs}
++                      ${android_partial_drv_libs}
++                      isi_shared
++                      )
++add_library(PrebuiltLibs SHARED IMPORTED)
++set_target_properties(PrebuiltLibs PROPERTIES IMPORTED_LOCATION ${LIB_ROOT}/${CMAKE_BUILD_TYPE}/lib/libhal.so)
++set_target_properties(PrebuiltLibs PROPERTIES IMPORTED_LOCATION ${LIB_ROOT}/${CMAKE_BUILD_TYPE}/lib/libbufferpool.so)
++set_target_properties(PrebuiltLibs PROPERTIES IMPORTED_LOCATION ${LIB_ROOT}/${CMAKE_BUILD_TYPE}/lib/libcameric_drv.so)
++target_link_libraries(${module}_shared PRIVATE PrebuiltLibs)
++endif (GENERATE_PARTITION_BUILD)
++endif (ANDROID)
++
++# define stuff to install
++#install(TARGETS ${module}_static
++#        PUBLIC_HEADER   DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${module}
++#        ARCHIVE         DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
++#        )
++
++install(TARGETS ${module}_shared
++        PUBLIC_HEADER   DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${module}
++        ARCHIVE         DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/${module}
++        LIBRARY         DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/${module}
++        )
++
++# install the sensor driver as well, but to 'bin' location!
++install(FILES       ${LIB_ROOT}/${CMAKE_BUILD_TYPE}/lib/lib${module}.so.${${module}_INTERFACE_CURRENT}
++        DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
++        RENAME      ${module}.drv
++        )
++
++if( DEFINED APPSHELL_TOP_COMPILE)
++add_custom_target(copy_shell_libs_${module} ALL
++       COMMENT "##Copy libs to shell libs"
++       COMMAND ${CMAKE_COMMAND} -E copy ${LIB_ROOT}/${CMAKE_BUILD_TYPE}/lib/lib${module}.so ${CMAKE_HOME_DIRECTORY}/shell_libs/ispcore/${PLATFORM}/lib${module}.so
++       #COMMAND ${CMAKE_COMMAND} -E copy_directory ${LIB_ROOT}/${CMAKE_BUILD_TYPE}/include/${module} ${CMAKE_HOME_DIRECTORY}/shell_libs/include/units_headers/${module}
++)
++add_dependencies(copy_shell_libs_${module} ${module}_shared)
++endif( DEFINED APPSHELL_TOP_COMPILE)
++
++if (NOT GENERATE_PARTITION_BUILD)
++add_custom_target(${module}_create_isi_dir
++                  COMMAND ${CMAKE_COMMAND} -E make_directory ${LIB_ROOT}/${CMAKE_BUILD_TYPE}/include/isi
++                  COMMENT "Create isi dir for ${module}")
++add_dependencies(${module}_create_isi_dir ${module}_shared)
++endif (NOT GENERATE_PARTITION_BUILD)
++
++unset(HEADER_CP_VAR)
++# create common targets for this module
++include(${UNITS_TOP_DIRECTORY}/targets.cmake)
++
++# create calib data targets
++add_subdirectory(calib)
+diff --git a/units/isi/drv/OV5647/Sensor0_Entry_ov5647.cfg b/units/isi/drv/OV5647/Sensor0_Entry_ov5647.cfg
+new file mode 100644
+index 0000000..1b4a804
+--- /dev/null
++++ b/units/isi/drv/OV5647/Sensor0_Entry_ov5647.cfg
+@@ -0,0 +1,7 @@
++name="ov5647"
++drv = "ov5647.drv"
++mode= 0
++
++[mode.0]
++xml = "OV5647_8M_02_1080p_linear.xml"
++dwe = "dewarp_config/sensor_dwe_bypass_1080P_config.json"
+\ No newline at end of file
+diff --git a/units/isi/drv/OV5647/Sensor1_Entry_ov5647.cfg b/units/isi/drv/OV5647/Sensor1_Entry_ov5647.cfg
+new file mode 100644
+index 0000000..1b4a804
+--- /dev/null
++++ b/units/isi/drv/OV5647/Sensor1_Entry_ov5647.cfg
+@@ -0,0 +1,7 @@
++name="ov5647"
++drv = "ov5647.drv"
++mode= 0
++
++[mode.0]
++xml = "OV5647_8M_02_1080p_linear.xml"
++dwe = "dewarp_config/sensor_dwe_bypass_1080P_config.json"
+\ No newline at end of file
+diff --git a/units/isi/drv/OV5647/calib/CMakeLists.txt b/units/isi/drv/OV5647/calib/CMakeLists.txt
+new file mode 100644
+index 0000000..a7cb685
+--- /dev/null
++++ b/units/isi/drv/OV5647/calib/CMakeLists.txt
+@@ -0,0 +1,42 @@
++cmake_minimum_required(VERSION 2.6)
++
++# use upper level module name
++
++# get calib data filenames
++file(GLOB_RECURSE calib_files *.xml)
++list(SORT calib_files)
++
++# a nice helper function
++function(add_calib_target ${calib_file})
++    # get calib data file's base name
++    get_filename_component(base_name ${calib_file} NAME_WE)
++
++    # add target to put sensor driver calibration data file into the 'bin' output and create a similar named symlink to the driver as well
++    add_custom_target(${base_name}_calib
++                      ALL
++                      COMMAND ${CMAKE_COMMAND} -E copy ${calib_file} ${LIB_ROOT}/${CMAKE_BUILD_TYPE}/bin/${base_name}.xml
++                      #COMMAND ${CMAKE_COMMAND} -E create_symlink ${module}.drv ${LIB_ROOT}/${CMAKE_BUILD_TYPE}/bin/${base_name}.drv
++                      DEPENDS ${calib_file}
++                      COMMENT "Configuring ${base_name} calibration database"
++                      )
++
++#    add_dependencies(${module}_static
++#                     ${base_name}_calib
++#                     )
++
++    add_dependencies(${module}_shared
++                     ${base_name}_calib
++                     )
++
++    # install the sensor driver config & similar named driver symlink as well, but to 'bin' location!
++    install(FILES       ${calib_file}
++            DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
++            RENAME      ${base_name}.xml
++            )
++    install(CODE "${CMAKE_COMMAND} -E create_symlink ${module}.drv ${CMAKE_INSTALL_PREFIX}/bin/${base_name}.drv")
++endfunction(add_calib_target)
++
++# loop over all calib data files
++foreach(calib_file ${calib_files})
++    add_calib_target(calib_file)
++endforeach(calib_file)
+diff --git a/units/isi/drv/OV5647/calib/OV5647/OV5647_8M_02_1080p_linear.xml b/units/isi/drv/OV5647/calib/OV5647/OV5647_8M_02_1080p_linear.xml
+new file mode 100644
+index 0000000..00bdcd3
+--- /dev/null
++++ b/units/isi/drv/OV5647/calib/OV5647/OV5647_8M_02_1080p_linear.xml
+@@ -0,0 +1,1287 @@
++<?xml version="1.0" ?>
++<matfile>
++   <header type="struct" size="[1 1]">
++      <creation_date index="1" type="char" size="[1 11]">
++         05-Jul-2023
++      </creation_date>
++      <creator index="1" type="char" size="[1 4]">
++         Alan
++      </creator>
++      <sensor_name index="1" type="char" size="[1 6]">
++         OV5647
++      </sensor_name>
++      <sample_name index="1" type="char" size="[1 32]">
++         8Mlens_OV5647_8M_02_1080p_linear
++      </sample_name>
++      <generator_version index="1" type="char" size="[1 6]">
++         v2.1.1
++      </generator_version>
++      <resolution index="1" type="cell" size="[1 1]">
++         <cell index="1" type="struct" size="[1 1]">
++            <name index="1" type="char" size="[1 9]">
++               1920x1080
++            </name>
++            <id index="1" type="char" size="[1 10]">
++               0x00000001
++            </id>
++            <width index="1" type="double" size="[1 1]">
++               [ 1920]
++            </width>
++            <height index="1" type="double" size="[1 1]">
++               [ 1080]
++            </height>
++            <framerate index="1" type="cell" size="[1 3]">
++               <cell index="1" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 6]">
++                     FPS_15
++                  </name>
++                  <fps index="1" type="double" size="[1 1]">
++                     [ 14.9916]
++                  </fps>
++               </cell>
++               <cell index="2" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 6]">
++                     FPS_10
++                  </name>
++                  <fps index="1" type="double" size="[1 1]">
++                     [ 9.9944]
++                  </fps>
++               </cell>
++               <cell index="3" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 6]">
++                     FPS_05
++                  </name>
++                  <fps index="1" type="double" size="[1 1]">
++                     [ 4.9972]
++                  </fps>
++               </cell>
++            </framerate>
++         </cell>
++      </resolution>
++   </header>
++   <sensor type="struct" size="[1 1]">
++      <AWB index="1" type="struct" size="[1 1]">
++         <globals index="1" type="cell" size="[1 1]">
++            <cell index="1" type="struct" size="[1 1]">
++               <name index="1" type="char" size="[1 9]">
++                  1920x1080
++               </name>
++               <resolution index="1" type="char" size="[1 9]">
++                  1920x1080
++               </resolution>
++               <SVDMeanValue index="1" type="double" size="[1 3]">
++                  [0.352348 0.406669 0.24098]
++               </SVDMeanValue>
++               <PCAMatrix index="1" type="double" size="[3 2]">
++                  [-0.664788 -0.0781455 0.742934 0.47405 -0.812748 0.3387]
++               </PCAMatrix>
++               <CenterLine index="1" type="double" size="[1 3]">
++                  [-0.655048 -0.755587 -1.4483]
++               </CenterLine>
++               <afRg2 index="1" type="double" size="[1 16]">
++                  [0.989794 0.99678 1.00002 1.00265 1.0058 1.00861 1.01507 1.02387 1.02805 1.03042 1.03373 1.03881 1.04144 1.04441 1.0483 1.0602]
++               </afRg2>
++               <afMaxDist2 index="1" type="double" size="[1 16]">
++                  [0.0293325 0.0260016 0.0246346 0.0233484 0.0210956 0.0203987 0.0207692 0.0202981 0.020401 0.0188221 0.0187107 0.0143666 0.0130805 0.0117905 0.0096032 0.0072512]
++               </afMaxDist2>
++               <afRg1 index="1" type="double" size="[1 16]">
++                  [0.989928 1.00194 1.00596 1.00894 1.01271 1.01648 1.02314 1.02972 1.03233 1.03509 1.03737 1.04155 1.04464 1.04782 1.05291 1.0602]
++               </afRg1>
++               <afMaxDist1 index="1" type="double" size="[1 16]">
++                  [0.00924971 0.0158154 0.0178564 0.0195161 0.0218498 0.0224678 0.0133942 0.00467323 0.00558963 0.00672941 0.00764199 0.00754137 0.00868496 0.0101251 0.0121043 0.012778]
++               </afMaxDist1>
++               <afGlobalFade2 index="1" type="double" size="[1 16]">
++                  [0.976351 0.982452 0.98919 0.997227 1.00473 1.01229 1.01849 1.02435 1.03115 1.03659 1.04192 1.04808 1.05355 1.05962 1.0638 1.0701]
++               </afGlobalFade2>
++               <afGlobalGainDistance2 index="1" type="double" size="[1 16]">
++                  [0.0422489 0.0390758 0.0366346 0.0325528 0.0309899 0.0310523 0.0311301 0.0300292 0.0292134 0.0284129 0.0243615 0.0228139 0.0212738 0.0188402 0.0189409 0.0168]
++               </afGlobalGainDistance2>
++               <afGlobalFade1 index="1" type="double" size="[1 16]">
++                  [0.977295 0.983741 0.98723 0.991778 0.99607 0.999942 1.00394 1.01058 1.01887 1.02621 1.0313 1.03769 1.0434 1.05322 1.05916 1.0706]
++               </afGlobalFade1>
++               <afGlobalGainDistance1 index="1" type="double" size="[1 16]">
++                  [0.00831575 0.0103102 0.0125669 0.014392 0.01651 0.0183275 0.0199987 0.0256907 0.0294798 0.0226153 0.0191251 0.0172755 0.0154184 0.0174509 0.0200309 0.026516]
++               </afGlobalGainDistance1>
++               <fRgProjIndoorMin index="1" type="double" size="[1 1]">
++                  [ 0.99]
++               </fRgProjIndoorMin>
++               <fRgProjMax index="1" type="double" size="[1 1]">
++                  [ 1.06]
++               </fRgProjMax>
++               <fRgProjMaxSky index="1" type="double" size="[1 1]">
++                  [ 1.07]
++               </fRgProjMaxSky>
++               <fRgProjOutdoorMin index="1" type="double" size="[1 1]">
++                  [ 1.0313]
++               </fRgProjOutdoorMin>
++               <awb_clip_outdoor index="1" type="char" size="[1 3]">
++                  D50
++               </awb_clip_outdoor>
++               <K_Factor index="1" type="double" size="[1 1]">
++                  [ 4.5676]
++               </K_Factor>
++               <afFade2 index="1" type="double" size="[1 6]">
++                  [0.75 1.28836 1.77672 2.164 2.6 3.0618]
++               </afFade2>
++               <afCbMinRegionMax index="1" type="double" size="[1 6]">
++                  [114 114 105 95 95 90]
++               </afCbMinRegionMax>
++               <afCrMinRegionMax index="1" type="double" size="[1 6]">
++                  [83 83 110 120 122 128]
++               </afCrMinRegionMax>
++               <afMaxCSumRegionMax index="1" type="double" size="[1 6]">
++                  [28 27 18 16 9 9]
++               </afMaxCSumRegionMax>
++               <afCbMinRegionMin index="1" type="double" size="[1 6]">
++                  [123 123 123 123 123 120]
++               </afCbMinRegionMin>
++               <afCrMinRegionMin index="1" type="double" size="[1 6]">
++                  [123 123 123 123 123 126]
++               </afCrMinRegionMin>
++               <afMaxCSumRegionMin index="1" type="double" size="[1 6]">
++                  [5 5 5 5 5 5]
++               </afMaxCSumRegionMin>
++               <RegionSize index="1" type="double" size="[1 1]">
++                  [ 1]
++               </RegionSize>
++               <RegionSizeInc index="1" type="double" size="[1 1]">
++                  [ 0.8]
++               </RegionSizeInc>
++               <RegionSizeDec index="1" type="double" size="[1 1]">
++                  [ 0.05]
++               </RegionSizeDec>
++               <IIR index="1" type="struct" size="[1 1]">
++                  <DampCoefAdd index="1" type="double" size="[1 1]">
++                     [ 0.05]
++                  </DampCoefAdd>
++                  <DampCoefSub index="1" type="double" size="[1 1]">
++                     [ 0.05]
++                  </DampCoefSub>
++                  <DampFilterThreshold index="1" type="double" size="[1 1]">
++                     [ 0.4]
++                  </DampFilterThreshold>
++                  <DampingCoefMin index="1" type="double" size="[1 1]">
++                     [ 0.5]
++                  </DampingCoefMin>
++                  <DampingCoefMax index="1" type="double" size="[1 1]">
++                     [ 0.9]
++                  </DampingCoefMax>
++                  <DampingCoefInit index="1" type="double" size="[1 1]">
++                     [ 0.5]
++                  </DampingCoefInit>
++                  <ExpPriorFilterSizeMax index="1" type="double" size="[1 1]">
++                     [ 50]
++                  </ExpPriorFilterSizeMax>
++                  <ExpPriorFilterSizeMin index="1" type="double" size="[1 1]">
++                     [ 1]
++                  </ExpPriorFilterSizeMin>
++                  <ExpPriorMiddle index="1" type="double" size="[1 1]">
++                     [ 0.5]
++                  </ExpPriorMiddle>
++               </IIR>
++            </cell>
++         </globals>
++         <illumination index="1" type="cell" size="[1 5]">
++            <cell index="1" type="struct" size="[1 1]">
++               <name index="1" type="char" size="[1 1]">
++                  A
++               </name>
++               <doorType index="1" type="char" size="[1 6]">
++                  Indoor
++               </doorType>
++               <GMM index="1" type="struct" size="[1 1]">
++                  <invCovMatrix index="1" type="double" size="[2 2]">
++                     [1726.18 1906.88 1906.88 3924.9475]
++                  </invCovMatrix>
++                  <GaussianScalingFactor index="1" type="double" size="[1 1]">
++                     [ 281.9782]
++                  </GaussianScalingFactor>
++                  <tau index="1" type="double" size="[1 2]">
++                     [1 1]
++                  </tau>
++                  <GaussianMeanValue index="1" type="double" size="[1 2]">
++                     [0.0901503 0.062841]
++                  </GaussianMeanValue>
++               </GMM>
++               <aLSC index="1" type="cell" size="[1 1]">
++                  <cell index="1" type="struct" size="[1 1]">
++                     <resolution index="1" type="char" size="[1 9]">
++                        1920x1080
++                     </resolution>
++                     <LSC_PROFILE_LIST index="1" type="char" size="[1 15]">
++                        1920x1080_A_100
++                     </LSC_PROFILE_LIST>
++                  </cell>
++               </aLSC>
++               <manualWB index="1" type="double" size="[1 4]">
++                  [1.08176 1 1 1.0586]
++               </manualWB>
++               <manualccMatrix index="1" type="double" size="[3 3]">
++                  [2.05502 -0.214214 -0.872075 -0.325244 1.22854 0.203488 0.130251 -1.12547 2.1143]
++               </manualccMatrix>
++               <manualccOffsets index="1" type="double" size="[1 3]">
++                  [127.942 130.472 141.6764]
++               </manualccOffsets>
++               <awbType index="1" type="char" size="[1 4]">
++                  AUTO
++               </awbType>
++               <sat_CT index="1" type="struct" size="[1 1]">
++                  <gains index="1" type="double" size="[1 4]">
++                     [1 15 30 45]
++                  </gains>
++                  <sat index="1" type="double" size="[1 4]">
++                     [100 95 90 74]
++                  </sat>
++               </sat_CT>
++               <vig_CT index="1" type="struct" size="[1 1]">
++                  <gains index="1" type="double" size="[1 4]">
++                     [1 15 30 45]
++                  </gains>
++                  <vig index="1" type="double" size="[1 4]">
++                     [100 95 90 70]
++                  </vig>
++               </vig_CT>
++               <aCC index="1" type="struct" size="[1 1]">
++                  <CC_PROFILE_LIST index="1" type="char" size="[1 5]">
++                     A_100
++                  </CC_PROFILE_LIST>
++               </aCC>
++            </cell>
++            <cell index="2" type="struct" size="[1 1]">
++               <name index="1" type="char" size="[1 3]">
++                  D50
++               </name>
++               <doorType index="1" type="char" size="[1 7]">
++                  Outdoor
++               </doorType>
++               <GMM index="1" type="struct" size="[1 1]">
++                  <invCovMatrix index="1" type="double" size="[2 2]">
++                     [367.892 191.769 191.769 1910.4232]
++                  </invCovMatrix>
++                  <GaussianScalingFactor index="1" type="double" size="[1 1]">
++                     [ 129.8898]
++                  </GaussianScalingFactor>
++                  <tau index="1" type="double" size="[1 2]">
++                     [1 1]
++                  </tau>
++                  <GaussianMeanValue index="1" type="double" size="[1 2]">
++                     [0.0818302 0.070586]
++                  </GaussianMeanValue>
++               </GMM>
++               <aLSC index="1" type="cell" size="[1 1]">
++                  <cell index="1" type="struct" size="[1 1]">
++                     <resolution index="1" type="char" size="[1 9]">
++                        1920x1080
++                     </resolution>
++                     <LSC_PROFILE_LIST index="1" type="char" size="[1 17]">
++                        1920x1080_D50_100
++                     </LSC_PROFILE_LIST>
++                  </cell>
++               </aLSC>
++               <manualWB index="1" type="double" size="[1 4]">
++                  [1.03469 1 1 1.0529]
++               </manualWB>
++               <manualccMatrix index="1" type="double" size="[3 3]">
++                  [1.84804 -0.742727 -0.136448 -0.258582 1.48073 -0.152505 0.0146423 -0.632875 1.6076]
++               </manualccMatrix>
++               <manualccOffsets index="1" type="double" size="[1 3]">
++                  [127.389 128.702 133.3601]
++               </manualccOffsets>
++               <awbType index="1" type="char" size="[1 4]">
++                  AUTO
++               </awbType>
++               <sat_CT index="1" type="struct" size="[1 1]">
++                  <gains index="1" type="double" size="[1 4]">
++                     [1 15 30 45]
++                  </gains>
++                  <sat index="1" type="double" size="[1 4]">
++                     [100 95 90 74]
++                  </sat>
++               </sat_CT>
++               <vig_CT index="1" type="struct" size="[1 1]">
++                  <gains index="1" type="double" size="[1 4]">
++                     [1 15 30 45]
++                  </gains>
++                  <vig index="1" type="double" size="[1 4]">
++                     [100 95 90 70]
++                  </vig>
++               </vig_CT>
++               <aCC index="1" type="struct" size="[1 1]">
++                  <CC_PROFILE_LIST index="1" type="char" size="[1 7]">
++                     D50_100
++                  </CC_PROFILE_LIST>
++               </aCC>
++            </cell>
++            <cell index="3" type="struct" size="[1 1]">
++               <name index="1" type="char" size="[1 3]">
++                  D65
++               </name>
++               <doorType index="1" type="char" size="[1 7]">
++                  Outdoor
++               </doorType>
++               <GMM index="1" type="struct" size="[1 1]">
++                  <invCovMatrix index="1" type="double" size="[2 2]">
++                     [302.073 -61.5739 -61.5739 1688.2776]
++                  </invCovMatrix>
++                  <GaussianScalingFactor index="1" type="double" size="[1 1]">
++                     [ 113.2343]
++                  </GaussianScalingFactor>
++                  <tau index="1" type="double" size="[1 2]">
++                     [1 1]
++                  </tau>
++                  <GaussianMeanValue index="1" type="double" size="[1 2]">
++                     [0.173399 0.062841]
++                  </GaussianMeanValue>
++               </GMM>
++               <aLSC index="1" type="cell" size="[1 1]">
++                  <cell index="1" type="struct" size="[1 1]">
++                     <resolution index="1" type="char" size="[1 9]">
++                        1920x1080
++                     </resolution>
++                     <LSC_PROFILE_LIST index="1" type="char" size="[1 17]">
++                        1920x1080_D65_100
++                     </LSC_PROFILE_LIST>
++                  </cell>
++               </aLSC>
++               <manualWB index="1" type="double" size="[1 4]">
++                  [1.46551 1.14339 1.14339 1]
++               </manualWB>
++               <manualccMatrix index="1" type="double" size="[3 3]">
++                  [1.55773 -0.481516 -0.0987445 -0.227694 1.30012 -0.0870893 0.0333118 -0.624873 1.5592]
++               </manualccMatrix>
++               <manualccOffsets index="1" type="double" size="[1 3]">
++                  [148.351 131.784 132.5602]
++               </manualccOffsets>
++               <awbType index="1" type="char" size="[1 4]">
++                  AUTO
++               </awbType>
++               <sat_CT index="1" type="struct" size="[1 1]">
++                  <gains index="1" type="double" size="[1 4]">
++                     [1 15 30 45]
++                  </gains>
++                  <sat index="1" type="double" size="[1 4]">
++                     [100 95 90 74]
++                  </sat>
++               </sat_CT>
++               <vig_CT index="1" type="struct" size="[1 1]">
++                  <gains index="1" type="double" size="[1 4]">
++                     [1 15 30 45]
++                  </gains>
++                  <vig index="1" type="double" size="[1 4]">
++                     [100 95 90 70]
++                  </vig>
++               </vig_CT>
++               <aCC index="1" type="struct" size="[1 1]">
++                  <CC_PROFILE_LIST index="1" type="char" size="[1 7]">
++                     D65_100
++                  </CC_PROFILE_LIST>
++               </aCC>
++            </cell>
++            <cell index="4" type="struct" size="[1 1]">
++               <name index="1" type="char" size="[1 8]">
++                  F2 (CWF)
++               </name>
++               <doorType index="1" type="char" size="[1 6]">
++                  Indoor
++               </doorType>
++               <GMM index="1" type="struct" size="[1 1]">
++                  <invCovMatrix index="1" type="double" size="[2 2]">
++                     [459.03 -238.124 -238.124 1645.3572]
++                  </invCovMatrix>
++                  <GaussianScalingFactor index="1" type="double" size="[1 1]">
++                     [ 133.022]
++                  </GaussianScalingFactor>
++                  <tau index="1" type="double" size="[1 2]">
++                     [1 1]
++                  </tau>
++                  <GaussianMeanValue index="1" type="double" size="[1 2]">
++                     [0.0998711 0.073915]
++                  </GaussianMeanValue>
++               </GMM>
++               <aLSC index="1" type="cell" size="[1 1]">
++                  <cell index="1" type="struct" size="[1 1]">
++                     <resolution index="1" type="char" size="[1 9]">
++                        1920x1080
++                     </resolution>
++                     <LSC_PROFILE_LIST index="1" type="char" size="[1 16]">
++                        1920x1080_F2_100
++                     </LSC_PROFILE_LIST>
++                  </cell>
++               </aLSC>
++               <manualWB index="1" type="double" size="[1 4]">
++                  [1.05988 1.00421 1.00421 1]
++               </manualWB>
++               <manualccMatrix index="1" type="double" size="[3 3]">
++                  [1.79652 -0.647267 -0.139731 -0.232795 1.30864 -0.106237 0.0372739 -0.737702 1.6859]
++               </manualccMatrix>
++               <manualccOffsets index="1" type="double" size="[1 3]">
++                  [125.852 124.356 127.019]
++               </manualccOffsets>
++               <awbType index="1" type="char" size="[1 4]">
++                  AUTO
++               </awbType>
++               <sat_CT index="1" type="struct" size="[1 1]">
++                  <gains index="1" type="double" size="[1 4]">
++                     [1 15 30 45]
++                  </gains>
++                  <sat index="1" type="double" size="[1 4]">
++                     [100 95 90 74]
++                  </sat>
++               </sat_CT>
++               <vig_CT index="1" type="struct" size="[1 1]">
++                  <gains index="1" type="double" size="[1 4]">
++                     [1 15 30 45]
++                  </gains>
++                  <vig index="1" type="double" size="[1 4]">
++                     [100 95 90 70]
++                  </vig>
++               </vig_CT>
++               <aCC index="1" type="struct" size="[1 1]">
++                  <CC_PROFILE_LIST index="1" type="char" size="[1 6]">
++                     F2_100
++                  </CC_PROFILE_LIST>
++               </aCC>
++            </cell>
++            <cell index="5" type="struct" size="[1 1]">
++               <name index="1" type="char" size="[1 10]">
++                  F11 (TL84)
++               </name>
++               <doorType index="1" type="char" size="[1 6]">
++                  Indoor
++               </doorType>
++               <GMM index="1" type="struct" size="[1 1]">
++                  <invCovMatrix index="1" type="double" size="[2 2]">
++                     [423.246 59.3888 59.3888 1497.9612]
++                  </invCovMatrix>
++                  <GaussianScalingFactor index="1" type="double" size="[1 1]">
++                     [ 126.3734]
++                  </GaussianScalingFactor>
++                  <tau index="1" type="double" size="[1 2]">
++                     [1 1]
++                  </tau>
++                  <GaussianMeanValue index="1" type="double" size="[1 2]">
++                     [0.146978 0.062669]
++                  </GaussianMeanValue>
++               </GMM>
++               <aLSC index="1" type="cell" size="[1 1]">
++                  <cell index="1" type="struct" size="[1 1]">
++                     <resolution index="1" type="char" size="[1 9]">
++                        1920x1080
++                     </resolution>
++                     <LSC_PROFILE_LIST index="1" type="char" size="[1 17]">
++                        1920x1080_F11_100
++                     </LSC_PROFILE_LIST>
++                  </cell>
++               </aLSC>
++               <manualWB index="1" type="double" size="[1 4]">
++                  [1.30616 1.07888 1.07888 1]
++               </manualWB>
++               <manualccMatrix index="1" type="double" size="[3 3]">
++                  [1.54103 -0.514551 -0.0590008 -0.307721 1.47183 -0.118799 0.0447289 -0.865046 1.835]
++               </manualccMatrix>
++               <manualccOffsets index="1" type="double" size="[1 3]">
++                  [133.058 128.339 131.132]
++               </manualccOffsets>
++               <awbType index="1" type="char" size="[1 4]">
++                  AUTO
++               </awbType>
++               <sat_CT index="1" type="struct" size="[1 1]">
++                  <gains index="1" type="double" size="[1 4]">
++                     [1 15 30 45]
++                  </gains>
++                  <sat index="1" type="double" size="[1 4]">
++                     [100 95 90 74]
++                  </sat>
++               </sat_CT>
++               <vig_CT index="1" type="struct" size="[1 1]">
++                  <gains index="1" type="double" size="[1 4]">
++                     [1 15 30 45]
++                  </gains>
++                  <vig index="1" type="double" size="[1 4]">
++                     [100 95 90 70]
++                  </vig>
++               </vig_CT>
++               <aCC index="1" type="struct" size="[1 1]">
++                  <CC_PROFILE_LIST index="1" type="char" size="[1 7]">
++                     F11_100
++                  </CC_PROFILE_LIST>
++               </aCC>
++            </cell>
++         </illumination>
++      </AWB>
++      <LSC index="1" type="cell" size="[1 5]">
++         <cell index="1" type="struct" size="[1 1]">
++            <name index="1" type="char" size="[1 15]">
++               1920x1080_A_100
++            </name>
++            <resolution index="1" type="char" size="[1 9]">
++               1920x1080
++            </resolution>
++            <illumination index="1" type="char" size="[1 1]">
++               A
++            </illumination>
++            <LSC_sectors index="1" type="double" size="[1 1]">
++               [ 16]
++            </LSC_sectors>
++            <LSC_No index="1" type="double" size="[1 1]">
++               [ 10]
++            </LSC_No>
++            <LSC_Xo index="1" type="double" size="[1 1]">
++               [ 15]
++            </LSC_Xo>
++            <LSC_Yo index="1" type="double" size="[1 1]">
++               [ 15]
++            </LSC_Yo>
++            <LSC_SECT_SIZE_X index="1" type="double" size="[1 8]">
++               [91 101 112 119 124 132 142 139]
++            </LSC_SECT_SIZE_X>
++            <LSC_SECT_SIZE_Y index="1" type="double" size="[1 8]">
++               [61 63 66 69 69 70 71 71]
++            </LSC_SECT_SIZE_Y>
++            <vignetting index="1" type="double" size="[1 1]">
++               [ 100]
++            </vignetting>
++            <LSC_SAMPLES_red index="1" type="double" size="[17 17]">
++               [1571 1521 1399 1336 1258 1209 1165 1140 1138 1142 1173 1210 1265 1330 1411 1508 1587 1532 1458 1357 1285 1225 1162 1128 1114 1111 1122 1133 1178 1222 1288 1374 1463 1530 1507 1401 1342 1245 1191 1137 1113 1086 1086 1089 1112 1142 1182 1259 1326 1403 1500 1455 1375 1298 1231 1161 1117 1081 1059 1056 1064 1090 1116 1161 1225 1299 1378 1454 1427 1356 1285 1204 1145 1106 1067 1049 1040 1044 1064 1106 1143 1198 1273 1350 1422 1420 1347 1265 1201 1132 1095 1051 1040 1037 1037 1051 1091 1124 1185 1252 1332 1405 1408 1333 1261 1180 1125 1088 1049 1031 1027 1035 1049 1077 1125 1173 1245 1318 1397 1407 1330 1256 1188 1126 1079 1046 1028 1024 1025 1041 1076 1114 1168 1238 1310 1395 1419 1333 1259 1186 1124 1089 1054 1027 1024 1029 1048 1074 1122 1170 1245 1315 1374 1420 1344 1266 1197 1136 1091 1066 1038 1028 1033 1052 1080 1122 1177 1245 1320 1400 1421 1349 1275 1202 1144 1104 1064 1047 1036 1040 1051 1096 1134 1182 1260 1327 1401 1445 1374 1297 1224 1158 1114 1086 1062 1051 1058 1068 1110 1144 1213 1273 1347 1430 1470 1393 1312 1239 1183 1126 1104 1074 1069 1066 1091 1115 1165 1230 1290 1372 1460 1494 1410 1332 1264 1197 1148 1116 1096 1081 1093 1100 1137 1190 1247 1318 1404 1479 1534 1436 1362 1287 1229 1170 1136 1118 1109 1110 1132 1159 1211 1275 1353 1434 1523 1559 1476 1389 1318 1255 1201 1158 1139 1131 1133 1153 1198 1237 1308 1381 1463 1540 1590 1497 1426 1344 1291 1223 1187 1168 1160 1172 1181 1219 1276 1333 1405 1510 1615]
++            </LSC_SAMPLES_red>
++            <LSC_SAMPLES_greenR index="1" type="double" size="[17 17]">
++               [1615 1531 1444 1376 1306 1252 1211 1198 1192 1205 1232 1247 1316 1379 1462 1546 1626 1570 1477 1392 1322 1253 1204 1172 1159 1152 1162 1177 1214 1262 1320 1409 1480 1566 1506 1434 1365 1278 1220 1168 1142 1121 1122 1123 1150 1179 1222 1288 1353 1437 1526 1477 1385 1319 1246 1188 1139 1109 1088 1085 1093 1113 1145 1184 1246 1327 1403 1472 1445 1368 1294 1218 1160 1115 1085 1070 1065 1065 1095 1126 1162 1213 1290 1364 1433 1410 1350 1267 1195 1144 1103 1065 1054 1048 1058 1072 1106 1144 1200 1262 1340 1422 1415 1329 1254 1186 1123 1090 1057 1038 1041 1045 1062 1091 1133 1188 1254 1329 1407 1402 1327 1254 1181 1124 1081 1052 1032 1030 1036 1056 1082 1119 1176 1240 1323 1387 1397 1327 1246 1187 1124 1079 1049 1039 1028 1031 1051 1082 1121 1176 1248 1317 1386 1402 1323 1248 1184 1127 1085 1058 1037 1024 1033 1057 1081 1128 1182 1244 1316 1393 1408 1337 1258 1194 1133 1092 1060 1041 1037 1038 1056 1089 1135 1183 1255 1327 1399 1441 1354 1270 1207 1149 1110 1076 1061 1053 1055 1073 1099 1145 1202 1270 1343 1425 1446 1378 1297 1222 1165 1124 1095 1075 1064 1072 1084 1108 1163 1217 1297 1366 1448 1463 1392 1316 1255 1184 1144 1112 1094 1081 1080 1103 1133 1177 1248 1309 1404 1468 1510 1427 1352 1278 1221 1166 1135 1121 1109 1105 1131 1167 1207 1268 1347 1430 1518 1552 1445 1380 1303 1247 1206 1160 1140 1138 1141 1155 1186 1239 1297 1373 1458 1543 1585 1495 1415 1338 1276 1230 1192 1164 1175 1173 1184 1226 1275 1342 1414 1511 1570]
++            </LSC_SAMPLES_greenR>
++            <LSC_SAMPLES_greenB index="1" type="double" size="[17 17]">
++               [1625 1541 1442 1351 1273 1214 1171 1156 1148 1160 1191 1231 1311 1387 1485 1569 1692 1596 1486 1397 1308 1233 1178 1144 1117 1120 1130 1154 1193 1258 1340 1429 1551 1625 1541 1460 1358 1277 1206 1144 1114 1095 1086 1099 1131 1167 1229 1299 1397 1487 1586 1516 1425 1338 1249 1180 1126 1092 1064 1064 1073 1102 1142 1203 1275 1361 1452 1543 1484 1401 1315 1226 1162 1109 1068 1052 1055 1058 1084 1126 1178 1248 1340 1422 1527 1471 1391 1301 1217 1147 1098 1062 1042 1042 1052 1071 1116 1164 1232 1321 1416 1494 1463 1373 1287 1204 1142 1094 1052 1037 1037 1043 1068 1099 1160 1221 1309 1394 1492 1464 1377 1287 1204 1136 1084 1054 1034 1034 1033 1066 1100 1149 1217 1310 1400 1476 1464 1376 1287 1204 1139 1086 1057 1031 1024 1031 1063 1096 1151 1225 1303 1399 1486 1459 1372 1293 1211 1148 1090 1057 1037 1028 1036 1059 1107 1160 1228 1308 1394 1483 1471 1390 1296 1221 1148 1107 1063 1047 1037 1040 1069 1105 1167 1232 1326 1410 1507 1495 1411 1312 1235 1167 1117 1083 1058 1050 1061 1076 1123 1176 1260 1327 1433 1513 1514 1419 1341 1245 1185 1128 1097 1075 1064 1067 1096 1130 1192 1267 1362 1452 1547 1543 1437 1351 1282 1195 1147 1109 1091 1077 1083 1108 1154 1209 1284 1377 1480 1569 1570 1471 1379 1300 1231 1166 1137 1109 1104 1096 1129 1175 1233 1311 1402 1510 1594 1612 1492 1395 1324 1258 1199 1148 1130 1125 1132 1151 1209 1259 1337 1425 1535 1648 1624 1535 1436 1354 1270 1222 1189 1149 1153 1163 1187 1216 1299 1368 1465 1553 1665]
++            </LSC_SAMPLES_greenB>
++            <LSC_SAMPLES_blue index="1" type="double" size="[17 17]">
++               [1412 1339 1250 1198 1150 1101 1077 1067 1070 1063 1081 1103 1139 1198 1258 1306 1412 1374 1298 1230 1177 1128 1089 1064 1059 1054 1055 1062 1087 1118 1167 1209 1295 1338 1350 1277 1222 1155 1114 1079 1050 1046 1040 1049 1048 1072 1096 1148 1193 1244 1316 1326 1257 1197 1141 1098 1058 1041 1025 1030 1040 1043 1059 1082 1118 1167 1238 1288 1304 1235 1191 1136 1093 1058 1039 1024 1025 1027 1034 1057 1079 1117 1164 1212 1277 1302 1241 1173 1122 1082 1063 1039 1032 1026 1029 1031 1048 1076 1109 1146 1211 1253 1299 1237 1176 1132 1088 1066 1043 1031 1030 1028 1034 1055 1068 1111 1142 1203 1258 1293 1235 1176 1127 1095 1067 1043 1039 1034 1024 1031 1046 1077 1107 1161 1193 1251 1312 1245 1182 1146 1099 1086 1054 1042 1035 1037 1033 1058 1087 1113 1154 1207 1256 1304 1252 1204 1142 1113 1080 1074 1056 1036 1035 1044 1052 1094 1118 1157 1221 1259 1336 1253 1199 1164 1114 1096 1065 1059 1044 1040 1039 1078 1090 1124 1172 1214 1275 1359 1282 1227 1175 1138 1111 1087 1074 1055 1062 1064 1073 1103 1138 1181 1243 1292 1359 1312 1244 1201 1158 1123 1105 1082 1066 1063 1071 1084 1111 1144 1192 1244 1302 1389 1320 1254 1211 1174 1134 1108 1099 1076 1078 1072 1097 1131 1160 1221 1261 1324 1413 1343 1290 1239 1187 1160 1125 1116 1089 1089 1100 1119 1140 1190 1239 1292 1374 1461 1379 1312 1261 1217 1178 1142 1118 1110 1103 1115 1127 1176 1196 1256 1309 1393 1490 1413 1334 1280 1222 1201 1158 1141 1120 1130 1127 1151 1177 1215 1276 1344 1409]
++            </LSC_SAMPLES_blue>
++         </cell>
++         <cell index="2" type="struct" size="[1 1]">
++            <name index="1" type="char" size="[1 17]">
++               1920x1080_D50_100
++            </name>
++            <resolution index="1" type="char" size="[1 9]">
++               1920x1080
++            </resolution>
++            <illumination index="1" type="char" size="[1 3]">
++               D50
++            </illumination>
++            <LSC_sectors index="1" type="double" size="[1 1]">
++               [ 16]
++            </LSC_sectors>
++            <LSC_No index="1" type="double" size="[1 1]">
++               [ 10]
++            </LSC_No>
++            <LSC_Xo index="1" type="double" size="[1 1]">
++               [ 15]
++            </LSC_Xo>
++            <LSC_Yo index="1" type="double" size="[1 1]">
++               [ 15]
++            </LSC_Yo>
++            <LSC_SECT_SIZE_X index="1" type="double" size="[1 8]">
++               [96 103 110 119 126 131 136 139]
++            </LSC_SECT_SIZE_X>
++            <LSC_SECT_SIZE_Y index="1" type="double" size="[1 8]">
++               [62 64 66 69 68 70 71 70]
++            </LSC_SECT_SIZE_Y>
++            <vignetting index="1" type="double" size="[1 1]">
++               [ 100]
++            </vignetting>
++            <LSC_SAMPLES_red index="1" type="double" size="[17 17]">
++               [1452 1395 1298 1239 1180 1148 1095 1092 1093 1106 1117 1139 1179 1234 1298 1373 1462 1445 1350 1285 1214 1165 1110 1093 1070 1073 1077 1094 1119 1154 1205 1274 1349 1419 1422 1326 1254 1191 1138 1097 1067 1058 1057 1060 1080 1095 1135 1182 1238 1308 1389 1370 1310 1236 1181 1127 1083 1054 1044 1036 1041 1057 1073 1105 1165 1212 1277 1353 1372 1289 1231 1167 1111 1074 1054 1032 1027 1035 1041 1074 1095 1142 1202 1262 1327 1366 1290 1224 1159 1115 1073 1044 1033 1032 1031 1039 1054 1090 1142 1186 1262 1313 1371 1282 1223 1162 1113 1073 1051 1029 1030 1026 1032 1056 1091 1130 1175 1239 1308 1357 1294 1221 1169 1113 1083 1050 1032 1035 1024 1039 1056 1087 1128 1192 1241 1304 1372 1302 1228 1171 1120 1090 1064 1044 1035 1030 1045 1054 1093 1142 1185 1244 1311 1380 1304 1237 1176 1130 1095 1075 1056 1041 1039 1043 1066 1104 1144 1199 1261 1321 1387 1316 1246 1187 1135 1107 1085 1069 1051 1040 1052 1077 1105 1146 1203 1253 1334 1409 1338 1259 1205 1151 1120 1094 1081 1062 1059 1071 1091 1121 1168 1207 1282 1343 1426 1347 1282 1216 1168 1129 1114 1093 1077 1069 1076 1099 1127 1183 1235 1282 1382 1428 1369 1281 1228 1175 1138 1119 1098 1085 1087 1092 1113 1149 1193 1240 1317 1383 1467 1390 1314 1251 1202 1162 1127 1121 1103 1100 1109 1135 1177 1218 1277 1344 1417 1499 1417 1346 1267 1226 1173 1144 1126 1125 1126 1130 1160 1206 1249 1302 1370 1457 1537 1445 1376 1302 1246 1205 1175 1160 1144 1152 1162 1204 1228 1274 1323 1413 1501]
++            </LSC_SAMPLES_red>
++            <LSC_SAMPLES_greenR index="1" type="double" size="[17 17]">
++               [1555 1485 1378 1321 1251 1196 1170 1150 1153 1159 1188 1213 1267 1336 1428 1502 1589 1522 1429 1355 1278 1216 1169 1139 1123 1122 1129 1153 1180 1235 1296 1375 1460 1545 1507 1399 1324 1248 1186 1136 1104 1095 1086 1099 1125 1147 1194 1265 1340 1419 1512 1447 1379 1297 1222 1162 1117 1080 1068 1063 1072 1092 1128 1174 1228 1304 1389 1469 1463 1356 1288 1208 1139 1103 1068 1049 1050 1057 1074 1111 1145 1211 1284 1362 1434 1445 1347 1265 1195 1135 1088 1059 1041 1045 1042 1061 1094 1136 1197 1264 1347 1427 1429 1343 1259 1189 1126 1081 1052 1035 1033 1032 1050 1078 1130 1183 1255 1329 1414 1432 1333 1266 1177 1121 1086 1051 1034 1031 1030 1047 1078 1127 1182 1253 1332 1405 1421 1339 1254 1189 1124 1081 1056 1039 1027 1025 1047 1076 1126 1176 1253 1326 1392 1432 1342 1262 1188 1133 1091 1064 1048 1032 1024 1047 1080 1132 1184 1262 1320 1416 1439 1354 1259 1196 1139 1096 1071 1051 1044 1038 1055 1087 1131 1187 1262 1335 1413 1453 1361 1278 1209 1146 1111 1085 1062 1053 1054 1064 1094 1144 1203 1274 1343 1442 1461 1382 1298 1221 1158 1119 1094 1075 1059 1060 1077 1104 1148 1219 1291 1368 1451 1483 1392 1311 1245 1177 1125 1109 1085 1076 1073 1093 1116 1167 1227 1306 1378 1479 1508 1418 1340 1262 1200 1150 1117 1106 1095 1094 1109 1146 1192 1255 1324 1418 1501 1539 1451 1355 1292 1225 1177 1141 1123 1118 1119 1133 1173 1224 1289 1353 1450 1526 1577 1480 1391 1316 1254 1199 1176 1151 1150 1155 1165 1215 1260 1314 1388 1459 1573]
++            </LSC_SAMPLES_greenR>
++            <LSC_SAMPLES_greenB index="1" type="double" size="[17 17]">
++               [1554 1490 1388 1316 1246 1194 1160 1147 1154 1157 1180 1216 1272 1332 1427 1515 1586 1524 1431 1356 1274 1212 1161 1131 1121 1115 1130 1144 1178 1226 1303 1366 1472 1543 1493 1408 1323 1252 1182 1138 1104 1087 1087 1096 1122 1149 1198 1259 1344 1411 1525 1474 1380 1295 1227 1158 1116 1075 1060 1064 1072 1091 1123 1174 1238 1308 1394 1474 1445 1366 1280 1208 1147 1096 1066 1049 1043 1056 1070 1108 1151 1213 1289 1361 1456 1446 1354 1273 1198 1132 1090 1056 1038 1041 1042 1061 1095 1141 1200 1269 1353 1431 1433 1339 1260 1187 1128 1079 1052 1033 1034 1036 1052 1087 1133 1193 1258 1333 1434 1431 1352 1264 1184 1126 1084 1054 1033 1032 1027 1049 1076 1130 1179 1260 1337 1420 1432 1341 1256 1188 1125 1084 1058 1043 1029 1024 1049 1080 1127 1184 1256 1327 1420 1419 1355 1263 1193 1138 1091 1067 1046 1032 1029 1043 1082 1132 1187 1263 1340 1413 1447 1345 1276 1203 1139 1105 1071 1055 1041 1038 1053 1088 1135 1200 1269 1340 1428 1456 1373 1283 1212 1153 1107 1088 1065 1049 1051 1063 1094 1145 1212 1283 1356 1437 1465 1379 1308 1223 1156 1119 1097 1068 1062 1058 1081 1102 1156 1220 1299 1368 1462 1491 1396 1314 1241 1176 1129 1102 1088 1069 1072 1087 1123 1168 1236 1309 1390 1480 1516 1417 1340 1272 1198 1147 1120 1105 1092 1091 1110 1147 1192 1255 1334 1421 1513 1532 1456 1358 1284 1226 1171 1137 1120 1115 1119 1136 1174 1224 1285 1355 1444 1548 1583 1481 1393 1307 1244 1191 1162 1143 1143 1149 1162 1196 1257 1317 1390 1475 1551]
++            </LSC_SAMPLES_greenB>
++            <LSC_SAMPLES_blue index="1" type="double" size="[17 17]">
++               [1462 1396 1315 1243 1193 1142 1118 1097 1108 1106 1119 1145 1187 1255 1331 1407 1463 1445 1370 1278 1229 1164 1124 1092 1089 1076 1088 1103 1121 1167 1222 1286 1357 1444 1410 1335 1270 1192 1143 1102 1076 1066 1062 1067 1081 1105 1145 1193 1255 1335 1411 1398 1311 1248 1182 1128 1083 1057 1044 1046 1046 1068 1084 1122 1172 1237 1305 1368 1370 1302 1232 1170 1122 1073 1048 1035 1032 1036 1045 1076 1111 1156 1211 1289 1347 1367 1292 1219 1164 1105 1074 1045 1035 1030 1024 1042 1066 1095 1150 1209 1272 1350 1381 1287 1220 1156 1111 1070 1046 1036 1027 1025 1038 1060 1094 1141 1194 1272 1339 1359 1295 1217 1157 1108 1080 1048 1035 1032 1027 1030 1064 1089 1143 1204 1266 1338 1386 1289 1230 1161 1110 1084 1060 1042 1029 1029 1039 1062 1098 1148 1206 1265 1344 1374 1301 1233 1174 1128 1088 1076 1056 1037 1035 1046 1067 1103 1152 1210 1269 1337 1388 1300 1241 1178 1129 1098 1076 1059 1040 1036 1047 1075 1108 1157 1208 1274 1350 1394 1322 1243 1192 1141 1103 1086 1066 1054 1048 1060 1076 1116 1163 1224 1289 1370 1413 1333 1261 1202 1152 1105 1098 1078 1058 1060 1069 1087 1127 1175 1227 1301 1366 1427 1345 1281 1211 1163 1124 1097 1080 1073 1065 1077 1090 1137 1190 1244 1312 1396 1429 1378 1293 1233 1182 1130 1110 1097 1082 1079 1090 1117 1160 1205 1260 1334 1404 1475 1394 1326 1261 1203 1168 1130 1112 1097 1103 1114 1144 1185 1235 1284 1359 1435 1523 1413 1354 1288 1224 1180 1156 1132 1119 1129 1142 1170 1211 1254 1324 1377 1466]
++            </LSC_SAMPLES_blue>
++         </cell>
++         <cell index="3" type="struct" size="[1 1]">
++            <name index="1" type="char" size="[1 17]">
++               1920x1080_D65_100
++            </name>
++            <resolution index="1" type="char" size="[1 9]">
++               1920x1080
++            </resolution>
++            <illumination index="1" type="char" size="[1 3]">
++               D65
++            </illumination>
++            <LSC_sectors index="1" type="double" size="[1 1]">
++               [ 16]
++            </LSC_sectors>
++            <LSC_No index="1" type="double" size="[1 1]">
++               [ 10]
++            </LSC_No>
++            <LSC_Xo index="1" type="double" size="[1 1]">
++               [ 15]
++            </LSC_Xo>
++            <LSC_Yo index="1" type="double" size="[1 1]">
++               [ 15]
++            </LSC_Yo>
++            <LSC_SECT_SIZE_X index="1" type="double" size="[1 8]">
++               [93 101 109 118 128 132 139 140]
++            </LSC_SECT_SIZE_X>
++            <LSC_SECT_SIZE_Y index="1" type="double" size="[1 8]">
++               [62 65 66 67 69 69 72 70]
++            </LSC_SECT_SIZE_Y>
++            <vignetting index="1" type="double" size="[1 1]">
++               [ 100]
++            </vignetting>
++            <LSC_SAMPLES_red index="1" type="double" size="[17 17]">
++               [1436 1359 1280 1213 1158 1116 1092 1081 1072 1092 1088 1116 1164 1206 1276 1334 1429 1410 1326 1244 1201 1144 1098 1077 1064 1064 1066 1082 1102 1136 1185 1249 1311 1372 1380 1307 1246 1177 1131 1090 1058 1050 1042 1051 1069 1081 1118 1157 1216 1275 1343 1360 1284 1226 1166 1115 1076 1050 1041 1024 1044 1049 1067 1101 1137 1192 1266 1310 1344 1273 1223 1154 1107 1076 1044 1031 1027 1029 1044 1063 1096 1130 1176 1243 1300 1350 1285 1212 1166 1103 1074 1048 1035 1031 1029 1032 1058 1084 1124 1172 1236 1290 1363 1277 1217 1153 1110 1079 1049 1037 1034 1029 1033 1053 1088 1113 1166 1224 1291 1346 1283 1214 1166 1112 1085 1062 1040 1034 1028 1036 1058 1079 1126 1170 1229 1283 1365 1294 1227 1165 1121 1097 1072 1056 1042 1029 1042 1059 1092 1130 1173 1235 1284 1363 1297 1246 1185 1132 1101 1088 1070 1050 1040 1052 1070 1101 1131 1183 1234 1294 1365 1308 1238 1188 1136 1114 1091 1076 1060 1046 1055 1071 1103 1145 1182 1245 1303 1398 1314 1261 1200 1152 1117 1110 1094 1069 1065 1066 1086 1117 1148 1202 1250 1316 1406 1338 1269 1209 1164 1131 1112 1101 1084 1075 1081 1093 1124 1161 1219 1269 1321 1420 1349 1276 1226 1173 1134 1122 1101 1083 1086 1092 1100 1143 1176 1227 1278 1359 1452 1361 1315 1243 1196 1148 1125 1119 1099 1095 1111 1125 1157 1197 1255 1313 1384 1479 1404 1324 1265 1211 1170 1144 1127 1114 1115 1126 1158 1187 1229 1275 1333 1412 1535 1435 1364 1292 1243 1190 1166 1150 1144 1152 1157 1173 1223 1251 1316 1379 1452]
++            </LSC_SAMPLES_red>
++            <LSC_SAMPLES_greenR index="1" type="double" size="[17 17]">
++               [1566 1464 1385 1310 1251 1191 1170 1145 1149 1163 1184 1210 1271 1346 1428 1510 1595 1517 1440 1353 1282 1210 1169 1126 1112 1119 1126 1144 1180 1236 1292 1381 1461 1542 1491 1404 1328 1250 1186 1135 1104 1091 1083 1095 1119 1147 1199 1265 1347 1424 1521 1471 1381 1301 1230 1160 1119 1079 1065 1067 1067 1097 1125 1174 1238 1314 1389 1479 1440 1370 1286 1212 1149 1099 1065 1045 1048 1056 1076 1106 1157 1216 1291 1375 1445 1449 1353 1277 1198 1133 1091 1057 1042 1039 1040 1054 1094 1140 1197 1276 1357 1431 1441 1347 1269 1191 1129 1083 1057 1030 1038 1036 1051 1090 1134 1194 1261 1342 1429 1436 1351 1263 1192 1125 1086 1056 1039 1031 1031 1052 1077 1131 1192 1261 1336 1420 1437 1348 1269 1191 1134 1089 1059 1042 1034 1024 1050 1082 1136 1186 1257 1337 1428 1439 1352 1267 1199 1143 1093 1069 1050 1035 1029 1052 1082 1132 1197 1266 1338 1415 1449 1356 1277 1204 1142 1101 1077 1053 1046 1041 1051 1090 1140 1198 1266 1347 1424 1463 1374 1292 1214 1154 1114 1086 1072 1053 1052 1065 1097 1144 1209 1278 1354 1436 1471 1379 1304 1227 1157 1116 1098 1076 1062 1064 1076 1103 1157 1215 1298 1369 1456 1482 1398 1319 1244 1175 1130 1104 1086 1070 1074 1086 1114 1175 1242 1299 1393 1464 1516 1412 1336 1262 1202 1147 1119 1102 1090 1091 1106 1146 1192 1253 1332 1417 1495 1554 1453 1363 1287 1226 1175 1136 1124 1110 1118 1132 1174 1227 1287 1356 1442 1529 1574 1475 1382 1319 1247 1196 1170 1143 1147 1147 1165 1198 1266 1319 1381 1475 1553]
++            </LSC_SAMPLES_greenR>
++            <LSC_SAMPLES_greenB index="1" type="double" size="[17 17]">
++               [1549 1467 1388 1316 1246 1202 1163 1156 1148 1162 1180 1211 1265 1334 1410 1501 1573 1510 1432 1347 1280 1214 1164 1128 1117 1116 1130 1148 1177 1234 1301 1368 1453 1531 1488 1399 1320 1244 1185 1133 1101 1090 1088 1095 1117 1146 1195 1262 1332 1407 1496 1459 1363 1294 1224 1158 1110 1081 1062 1060 1068 1094 1123 1168 1232 1304 1375 1453 1431 1361 1278 1210 1147 1097 1060 1050 1047 1049 1071 1108 1153 1205 1285 1351 1433 1433 1348 1268 1192 1134 1089 1055 1041 1035 1039 1059 1089 1143 1197 1258 1340 1417 1424 1344 1261 1188 1129 1083 1049 1032 1034 1031 1051 1080 1127 1184 1253 1329 1410 1427 1340 1259 1187 1128 1080 1054 1038 1028 1030 1050 1079 1123 1184 1245 1324 1409 1425 1337 1261 1184 1126 1083 1060 1038 1028 1024 1038 1078 1129 1182 1250 1322 1397 1431 1343 1261 1192 1133 1092 1066 1051 1031 1028 1048 1081 1130 1183 1254 1326 1395 1445 1347 1272 1198 1136 1099 1075 1062 1043 1037 1050 1085 1138 1190 1255 1335 1399 1440 1366 1275 1204 1150 1111 1084 1066 1048 1049 1061 1092 1137 1202 1266 1338 1418 1459 1378 1299 1217 1157 1113 1098 1075 1060 1056 1078 1098 1151 1216 1278 1359 1430 1463 1381 1309 1234 1171 1122 1101 1081 1068 1070 1085 1113 1166 1219 1296 1370 1448 1505 1403 1323 1259 1192 1144 1112 1099 1087 1079 1106 1140 1185 1246 1317 1399 1497 1522 1448 1352 1282 1221 1160 1133 1112 1111 1111 1129 1172 1219 1274 1342 1425 1513 1558 1462 1377 1305 1238 1201 1160 1140 1132 1153 1160 1198 1256 1311 1374 1447 1539]
++            </LSC_SAMPLES_greenB>
++            <LSC_SAMPLES_blue index="1" type="double" size="[17 17]">
++               [1495 1401 1332 1277 1203 1161 1124 1118 1119 1114 1133 1155 1209 1274 1345 1418 1508 1448 1371 1302 1225 1182 1129 1101 1089 1086 1091 1105 1137 1179 1237 1293 1381 1435 1425 1352 1276 1212 1157 1111 1082 1068 1065 1073 1082 1110 1152 1209 1272 1345 1420 1395 1325 1261 1186 1134 1091 1064 1048 1045 1047 1071 1084 1134 1187 1249 1319 1379 1392 1316 1237 1182 1123 1083 1050 1039 1034 1040 1052 1084 1113 1168 1230 1300 1380 1372 1305 1237 1163 1114 1076 1044 1033 1030 1027 1039 1070 1101 1161 1212 1288 1356 1383 1300 1226 1172 1112 1071 1050 1034 1027 1029 1036 1063 1103 1147 1211 1283 1348 1381 1301 1231 1161 1114 1079 1047 1037 1028 1024 1035 1065 1094 1157 1203 1277 1359 1385 1300 1240 1170 1116 1087 1058 1041 1033 1028 1036 1059 1106 1148 1218 1277 1347 1393 1314 1234 1173 1126 1089 1072 1054 1036 1028 1041 1072 1108 1161 1209 1282 1356 1388 1317 1245 1188 1128 1097 1069 1060 1039 1033 1047 1072 1114 1160 1220 1292 1357 1401 1322 1254 1190 1140 1104 1093 1066 1052 1047 1059 1074 1125 1180 1219 1305 1367 1415 1341 1264 1203 1154 1110 1089 1075 1056 1059 1063 1085 1129 1180 1242 1307 1372 1421 1347 1281 1215 1153 1119 1101 1076 1070 1062 1075 1100 1145 1195 1247 1316 1400 1448 1370 1302 1236 1182 1137 1104 1089 1081 1076 1095 1113 1158 1212 1275 1337 1409 1487 1397 1332 1260 1208 1157 1123 1105 1098 1102 1107 1147 1185 1239 1297 1359 1441 1521 1439 1348 1283 1214 1177 1146 1126 1120 1126 1143 1174 1221 1258 1323 1388 1463]
++            </LSC_SAMPLES_blue>
++         </cell>
++         <cell index="4" type="struct" size="[1 1]">
++            <name index="1" type="char" size="[1 17]">
++               1920x1080_F11_100
++            </name>
++            <resolution index="1" type="char" size="[1 9]">
++               1920x1080
++            </resolution>
++            <illumination index="1" type="char" size="[1 3]">
++               F11
++            </illumination>
++            <LSC_sectors index="1" type="double" size="[1 1]">
++               [ 16]
++            </LSC_sectors>
++            <LSC_No index="1" type="double" size="[1 1]">
++               [ 10]
++            </LSC_No>
++            <LSC_Xo index="1" type="double" size="[1 1]">
++               [ 15]
++            </LSC_Xo>
++            <LSC_Yo index="1" type="double" size="[1 1]">
++               [ 15]
++            </LSC_Yo>
++            <LSC_SECT_SIZE_X index="1" type="double" size="[1 8]">
++               [92 101 107 118 129 132 139 142]
++            </LSC_SECT_SIZE_X>
++            <LSC_SECT_SIZE_Y index="1" type="double" size="[1 8]">
++               [63 65 65 68 69 70 70 70]
++            </LSC_SECT_SIZE_Y>
++            <vignetting index="1" type="double" size="[1 1]">
++               [ 100]
++            </vignetting>
++            <LSC_SAMPLES_red index="1" type="double" size="[17 17]">
++               [1521 1421 1339 1271 1202 1165 1125 1107 1099 1113 1132 1155 1217 1263 1343 1417 1497 1469 1380 1311 1242 1185 1132 1091 1089 1085 1095 1103 1138 1172 1242 1307 1373 1460 1427 1359 1288 1213 1161 1106 1084 1061 1063 1068 1088 1105 1151 1201 1268 1343 1414 1410 1335 1253 1203 1137 1094 1062 1050 1039 1048 1070 1090 1125 1182 1242 1322 1379 1387 1309 1247 1180 1121 1092 1048 1033 1028 1040 1049 1079 1109 1164 1225 1288 1369 1393 1302 1240 1182 1116 1078 1054 1032 1030 1028 1040 1069 1103 1151 1208 1278 1340 1375 1304 1236 1169 1117 1077 1046 1026 1025 1027 1040 1066 1099 1143 1197 1270 1342 1377 1304 1236 1174 1114 1079 1050 1033 1028 1024 1040 1059 1102 1146 1196 1264 1329 1397 1311 1244 1179 1121 1090 1063 1034 1032 1024 1042 1070 1105 1146 1210 1270 1333 1385 1323 1254 1180 1137 1091 1077 1054 1031 1035 1051 1075 1108 1155 1211 1279 1338 1406 1325 1259 1207 1132 1114 1075 1056 1047 1036 1055 1079 1119 1167 1221 1285 1351 1413 1347 1269 1212 1154 1115 1097 1074 1057 1059 1065 1094 1134 1175 1236 1303 1362 1439 1356 1296 1226 1170 1126 1108 1090 1067 1072 1078 1102 1142 1192 1251 1318 1388 1450 1373 1308 1240 1175 1149 1113 1097 1084 1082 1090 1120 1157 1215 1265 1338 1410 1485 1395 1327 1263 1209 1159 1125 1116 1099 1098 1115 1140 1184 1242 1300 1361 1444 1531 1425 1357 1290 1233 1180 1150 1131 1121 1129 1132 1173 1220 1259 1334 1397 1470 1556 1465 1383 1313 1268 1209 1172 1155 1148 1149 1175 1193 1239 1295 1358 1445 1519]
++            </LSC_SAMPLES_red>
++            <LSC_SAMPLES_greenR index="1" type="double" size="[17 17]">
++               [1575 1484 1403 1336 1260 1215 1174 1169 1168 1171 1199 1228 1287 1355 1430 1512 1595 1528 1446 1365 1294 1234 1178 1145 1130 1131 1138 1152 1191 1244 1309 1383 1469 1561 1502 1415 1337 1261 1190 1145 1110 1102 1100 1105 1125 1159 1202 1266 1345 1425 1502 1469 1375 1305 1236 1170 1122 1091 1072 1061 1081 1101 1132 1174 1245 1308 1388 1456 1435 1364 1281 1215 1151 1102 1074 1052 1053 1053 1079 1109 1157 1213 1285 1364 1453 1444 1341 1269 1204 1138 1095 1054 1045 1041 1044 1065 1101 1137 1200 1261 1346 1416 1429 1334 1258 1186 1128 1086 1054 1034 1032 1036 1052 1083 1135 1180 1254 1329 1412 1410 1330 1259 1179 1127 1080 1052 1037 1027 1028 1047 1082 1125 1181 1249 1327 1404 1419 1340 1253 1188 1121 1086 1059 1034 1029 1024 1046 1078 1127 1179 1250 1319 1393 1431 1334 1264 1190 1131 1094 1060 1046 1030 1029 1047 1084 1123 1189 1250 1330 1398 1438 1340 1267 1201 1143 1094 1069 1046 1041 1037 1050 1087 1140 1184 1264 1334 1398 1440 1359 1282 1210 1148 1109 1083 1060 1047 1055 1064 1100 1142 1206 1277 1346 1424 1467 1375 1293 1226 1156 1123 1099 1075 1059 1060 1074 1103 1152 1223 1288 1366 1454 1482 1388 1320 1246 1175 1135 1108 1088 1073 1071 1089 1128 1174 1235 1305 1391 1465 1517 1417 1335 1271 1209 1154 1118 1106 1097 1094 1117 1147 1199 1264 1332 1414 1504 1527 1457 1367 1289 1227 1179 1145 1124 1121 1121 1133 1184 1232 1284 1358 1441 1526 1579 1485 1405 1325 1259 1207 1172 1153 1150 1158 1177 1205 1268 1329 1386 1480 1567]
++            </LSC_SAMPLES_greenR>
++            <LSC_SAMPLES_greenB index="1" type="double" size="[17 17]">
++               [1570 1486 1398 1326 1257 1192 1158 1146 1148 1159 1172 1223 1273 1351 1449 1519 1616 1542 1442 1366 1286 1215 1161 1131 1116 1111 1118 1147 1178 1234 1318 1383 1488 1564 1502 1415 1329 1261 1188 1136 1102 1084 1082 1091 1119 1153 1204 1274 1352 1432 1518 1485 1375 1310 1235 1163 1114 1078 1062 1056 1066 1097 1124 1175 1245 1319 1408 1492 1460 1371 1287 1217 1151 1097 1064 1044 1051 1048 1073 1112 1156 1223 1297 1377 1448 1443 1361 1275 1200 1136 1090 1053 1039 1031 1042 1062 1097 1144 1212 1284 1365 1448 1423 1352 1272 1190 1135 1081 1049 1032 1028 1032 1053 1086 1135 1204 1275 1348 1445 1450 1345 1268 1192 1122 1083 1048 1027 1028 1026 1048 1081 1133 1192 1263 1347 1437 1424 1355 1272 1191 1128 1084 1054 1033 1024 1026 1046 1084 1132 1201 1270 1344 1426 1452 1350 1275 1197 1138 1090 1062 1041 1026 1030 1048 1090 1139 1196 1270 1348 1434 1451 1365 1281 1207 1141 1100 1067 1049 1040 1034 1056 1091 1144 1210 1278 1357 1433 1464 1374 1289 1217 1151 1115 1082 1062 1046 1049 1067 1102 1154 1219 1293 1370 1455 1479 1390 1306 1228 1162 1121 1093 1068 1057 1061 1079 1108 1161 1236 1306 1394 1473 1487 1411 1322 1252 1184 1129 1108 1085 1068 1073 1093 1129 1181 1251 1321 1413 1492 1517 1427 1335 1277 1205 1151 1115 1099 1094 1085 1113 1151 1198 1267 1349 1441 1528 1542 1460 1366 1295 1232 1172 1133 1116 1117 1117 1135 1179 1235 1293 1372 1466 1554 1594 1488 1390 1325 1252 1197 1161 1142 1136 1146 1170 1208 1264 1337 1407 1507 1587]
++            </LSC_SAMPLES_greenB>
++            <LSC_SAMPLES_blue index="1" type="double" size="[17 17]">
++               [1458 1385 1307 1244 1185 1140 1126 1093 1104 1111 1121 1146 1190 1248 1314 1395 1467 1437 1350 1278 1222 1164 1120 1086 1077 1080 1083 1096 1115 1168 1217 1269 1353 1421 1392 1335 1255 1208 1141 1100 1074 1067 1056 1067 1081 1101 1131 1188 1254 1306 1391 1372 1301 1236 1180 1119 1084 1060 1038 1044 1047 1060 1079 1126 1164 1219 1292 1347 1367 1293 1229 1168 1117 1079 1042 1039 1037 1035 1051 1078 1110 1158 1216 1273 1338 1355 1288 1216 1164 1109 1075 1046 1033 1032 1030 1042 1064 1094 1144 1192 1263 1326 1350 1278 1217 1156 1108 1068 1051 1036 1034 1029 1042 1063 1093 1135 1201 1254 1320 1353 1279 1226 1156 1109 1079 1049 1039 1031 1024 1038 1056 1091 1138 1193 1249 1318 1357 1294 1225 1167 1116 1085 1062 1053 1031 1034 1043 1060 1104 1142 1202 1259 1320 1363 1300 1232 1177 1132 1086 1075 1055 1042 1032 1051 1073 1107 1147 1197 1262 1333 1367 1299 1235 1175 1124 1099 1076 1062 1043 1037 1049 1072 1104 1157 1210 1268 1337 1386 1317 1251 1192 1142 1110 1083 1074 1057 1051 1057 1081 1120 1163 1222 1278 1346 1407 1329 1270 1205 1160 1113 1105 1084 1063 1062 1072 1084 1129 1172 1228 1292 1354 1422 1341 1277 1216 1171 1128 1104 1081 1071 1065 1073 1100 1133 1192 1240 1301 1375 1434 1368 1298 1231 1190 1136 1119 1097 1086 1083 1098 1116 1159 1202 1260 1325 1400 1475 1389 1329 1269 1216 1169 1128 1112 1105 1105 1113 1134 1185 1229 1284 1350 1417 1511 1427 1346 1287 1231 1179 1168 1129 1115 1128 1140 1173 1205 1259 1312 1368 1465]
++            </LSC_SAMPLES_blue>
++         </cell>
++         <cell index="5" type="struct" size="[1 1]">
++            <name index="1" type="char" size="[1 16]">
++               1920x1080_F2_100
++            </name>
++            <resolution index="1" type="char" size="[1 9]">
++               1920x1080
++            </resolution>
++            <illumination index="1" type="char" size="[1 2]">
++               F2
++            </illumination>
++            <LSC_sectors index="1" type="double" size="[1 1]">
++               [ 16]
++            </LSC_sectors>
++            <LSC_No index="1" type="double" size="[1 1]">
++               [ 10]
++            </LSC_No>
++            <LSC_Xo index="1" type="double" size="[1 1]">
++               [ 15]
++            </LSC_Xo>
++            <LSC_Yo index="1" type="double" size="[1 1]">
++               [ 15]
++            </LSC_Yo>
++            <LSC_SECT_SIZE_X index="1" type="double" size="[1 8]">
++               [86 98 107 122 130 133 141 143]
++            </LSC_SECT_SIZE_X>
++            <LSC_SECT_SIZE_Y index="1" type="double" size="[1 8]">
++               [59 63 65 67 70 71 73 72]
++            </LSC_SECT_SIZE_Y>
++            <vignetting index="1" type="double" size="[1 1]">
++               [ 100]
++            </vignetting>
++            <LSC_SAMPLES_red index="1" type="double" size="[17 17]">
++               [1989 1825 1652 1488 1348 1266 1178 1124 1098 1087 1086 1110 1145 1202 1298 1378 1481 1892 1744 1550 1430 1319 1222 1142 1103 1076 1070 1065 1102 1123 1205 1246 1332 1446 1793 1650 1519 1395 1290 1215 1145 1090 1071 1058 1054 1068 1110 1157 1223 1305 1386 1743 1594 1472 1366 1258 1182 1124 1078 1043 1041 1042 1059 1089 1139 1191 1273 1352 1645 1573 1449 1329 1235 1163 1113 1079 1047 1034 1031 1049 1081 1126 1192 1251 1316 1626 1525 1412 1332 1221 1160 1102 1066 1050 1024 1031 1048 1074 1109 1175 1238 1307 1625 1491 1394 1303 1226 1161 1106 1074 1051 1034 1027 1040 1065 1112 1150 1227 1292 1580 1498 1401 1310 1228 1163 1109 1082 1056 1050 1046 1049 1078 1104 1178 1221 1285 1633 1525 1414 1319 1242 1180 1116 1100 1072 1055 1047 1068 1082 1124 1152 1234 1300 1596 1516 1416 1333 1247 1186 1146 1101 1089 1072 1070 1074 1108 1130 1180 1248 1297 1637 1519 1437 1336 1267 1200 1149 1114 1085 1073 1078 1082 1104 1156 1194 1243 1322 1699 1566 1458 1367 1287 1221 1170 1129 1108 1106 1091 1105 1133 1187 1213 1278 1324 1682 1587 1504 1391 1305 1243 1199 1151 1129 1128 1128 1111 1163 1198 1256 1307 1355 1750 1616 1524 1408 1344 1274 1211 1165 1142 1131 1134 1140 1177 1214 1258 1316 1404 1781 1671 1556 1447 1353 1308 1229 1183 1162 1147 1156 1156 1193 1222 1287 1348 1435 1813 1735 1595 1499 1419 1317 1239 1219 1183 1163 1184 1187 1212 1237 1318 1379 1447 1904 1753 1653 1525 1429 1330 1287 1236 1189 1202 1216 1217 1230 1271 1320 1421 1492]
++            </LSC_SAMPLES_red>
++            <LSC_SAMPLES_greenR index="1" type="double" size="[17 17]">
++               [2160 1971 1754 1609 1445 1322 1236 1190 1165 1147 1161 1207 1248 1319 1417 1533 1639 1994 1850 1662 1527 1374 1281 1199 1151 1140 1120 1123 1175 1215 1302 1355 1483 1615 1900 1763 1605 1468 1339 1241 1177 1122 1096 1088 1107 1123 1182 1253 1338 1416 1541 1841 1680 1565 1417 1291 1209 1139 1095 1069 1065 1066 1108 1147 1214 1292 1398 1485 1775 1620 1493 1365 1253 1178 1118 1078 1051 1042 1058 1075 1131 1195 1271 1346 1430 1710 1587 1466 1328 1237 1160 1091 1064 1038 1024 1034 1060 1098 1169 1237 1337 1414 1692 1565 1411 1329 1216 1136 1085 1044 1034 1024 1025 1053 1097 1162 1236 1309 1405 1652 1551 1424 1304 1221 1142 1080 1058 1033 1030 1041 1059 1086 1158 1233 1310 1386 1684 1561 1429 1331 1223 1142 1095 1064 1040 1031 1037 1066 1103 1153 1228 1314 1387 1661 1544 1423 1325 1226 1157 1100 1054 1046 1038 1048 1068 1114 1171 1238 1303 1395 1693 1569 1441 1334 1240 1157 1110 1079 1056 1049 1052 1076 1120 1191 1261 1305 1390 1711 1580 1455 1346 1243 1180 1128 1087 1066 1068 1075 1100 1141 1222 1280 1350 1407 1709 1621 1492 1370 1273 1199 1150 1110 1089 1101 1104 1112 1171 1238 1307 1375 1455 1774 1642 1529 1404 1305 1243 1160 1124 1104 1105 1127 1133 1197 1254 1319 1416 1480 1806 1710 1561 1436 1337 1273 1185 1159 1126 1123 1138 1150 1210 1255 1341 1417 1508 1848 1730 1617 1495 1397 1306 1208 1167 1167 1138 1168 1204 1212 1288 1361 1439 1555 1907 1767 1674 1532 1423 1309 1248 1216 1167 1210 1206 1215 1273 1310 1385 1492 1597]
++            </LSC_SAMPLES_greenR>
++            <LSC_SAMPLES_greenB index="1" type="double" size="[17 17]">
++               [2175 1957 1740 1598 1427 1312 1224 1184 1144 1138 1143 1213 1242 1322 1435 1552 1670 2042 1858 1674 1522 1379 1264 1185 1136 1122 1103 1117 1162 1218 1317 1371 1505 1643 1926 1767 1614 1475 1333 1232 1169 1117 1094 1084 1097 1130 1189 1257 1347 1455 1564 1870 1710 1562 1412 1297 1204 1143 1080 1066 1055 1068 1105 1151 1222 1314 1402 1496 1784 1645 1509 1369 1267 1173 1112 1073 1044 1041 1056 1085 1132 1205 1279 1375 1477 1725 1596 1485 1344 1238 1160 1093 1061 1041 1024 1038 1066 1117 1182 1274 1342 1437 1714 1583 1446 1323 1225 1138 1085 1052 1027 1024 1028 1057 1105 1180 1249 1343 1432 1689 1568 1442 1329 1222 1151 1087 1051 1039 1032 1047 1071 1110 1172 1264 1332 1416 1706 1573 1454 1329 1235 1141 1092 1070 1037 1037 1045 1070 1106 1183 1243 1343 1422 1699 1571 1445 1341 1234 1155 1110 1059 1048 1041 1049 1076 1129 1181 1256 1336 1412 1713 1579 1467 1333 1260 1168 1106 1074 1057 1054 1062 1082 1134 1210 1276 1346 1421 1737 1617 1467 1355 1255 1183 1128 1090 1074 1068 1080 1102 1154 1238 1294 1367 1450 1735 1634 1522 1393 1287 1203 1159 1108 1093 1093 1113 1121 1183 1261 1328 1417 1484 1790 1670 1541 1419 1322 1247 1165 1129 1114 1107 1128 1137 1202 1269 1347 1435 1517 1851 1712 1580 1447 1346 1273 1185 1145 1130 1114 1143 1163 1215 1276 1359 1440 1542 1868 1763 1628 1497 1404 1299 1208 1170 1158 1137 1172 1194 1224 1297 1389 1472 1566 1922 1787 1684 1532 1422 1310 1246 1196 1167 1188 1189 1219 1273 1323 1398 1511 1620]
++            </LSC_SAMPLES_greenB>
++            <LSC_SAMPLES_blue index="1" type="double" size="[17 17]">
++               [1951 1772 1620 1451 1353 1232 1173 1127 1103 1076 1082 1123 1125 1197 1259 1365 1475 1873 1695 1547 1409 1300 1213 1140 1101 1088 1078 1054 1086 1121 1183 1227 1323 1427 1741 1647 1495 1388 1276 1198 1146 1106 1080 1057 1066 1070 1107 1144 1215 1278 1397 1704 1598 1444 1354 1248 1183 1121 1081 1060 1044 1039 1061 1080 1126 1174 1266 1323 1633 1527 1413 1316 1212 1162 1116 1076 1050 1045 1033 1044 1076 1109 1179 1228 1309 1602 1501 1391 1296 1205 1163 1109 1073 1053 1024 1025 1038 1061 1106 1141 1216 1294 1590 1475 1372 1289 1205 1147 1099 1076 1052 1031 1025 1025 1055 1095 1152 1212 1269 1592 1479 1373 1288 1213 1169 1112 1084 1068 1051 1048 1060 1059 1102 1156 1203 1268 1605 1514 1402 1316 1234 1183 1129 1115 1079 1072 1052 1066 1087 1108 1153 1225 1264 1603 1493 1402 1314 1237 1178 1150 1103 1083 1082 1069 1075 1094 1130 1159 1212 1273 1604 1506 1403 1324 1260 1189 1144 1114 1094 1081 1071 1076 1096 1142 1174 1225 1271 1670 1544 1433 1334 1271 1202 1177 1145 1110 1104 1098 1088 1128 1170 1208 1247 1299 1662 1568 1466 1374 1296 1233 1190 1153 1140 1132 1127 1117 1150 1186 1232 1281 1316 1706 1607 1495 1392 1314 1271 1197 1165 1144 1132 1145 1121 1160 1198 1231 1306 1351 1741 1657 1539 1417 1336 1292 1204 1180 1147 1136 1141 1141 1167 1194 1248 1303 1386 1759 1685 1569 1479 1392 1305 1233 1182 1176 1144 1167 1167 1162 1206 1271 1327 1405 1861 1720 1639 1494 1426 1306 1244 1208 1167 1191 1179 1183 1203 1228 1270 1346 1434]
++            </LSC_SAMPLES_blue>
++         </cell>
++      </LSC>
++      <CC index="1" type="cell" size="[1 5]">
++         <cell index="1" type="struct" size="[1 1]">
++            <name index="1" type="char" size="[1 5]">
++               A_100
++            </name>
++            <saturation index="1" type="double" size="[1 1]">
++               [ 100]
++            </saturation>
++            <ccMatrix index="1" type="double" size="[3 3]">
++               [2.05502 -0.214214 -0.872075 -0.325244 1.22854 0.203488 0.130251 -1.12547 2.1143]
++            </ccMatrix>
++            <ccOffsets index="1" type="double" size="[1 3]">
++               [127.942 130.472 141.6764]
++            </ccOffsets>
++            <wb index="1" type="double" size="[1 4]">
++               [1.08176 1 1 1.0586]
++            </wb>
++         </cell>
++         <cell index="2" type="struct" size="[1 1]">
++            <name index="1" type="char" size="[1 7]">
++               D50_100
++            </name>
++            <saturation index="1" type="double" size="[1 1]">
++               [ 100]
++            </saturation>
++            <ccMatrix index="1" type="double" size="[3 3]">
++               [1.84804 -0.742727 -0.136448 -0.258582 1.48073 -0.152505 0.0146423 -0.632875 1.6076]
++            </ccMatrix>
++            <ccOffsets index="1" type="double" size="[1 3]">
++               [127.389 128.702 133.3601]
++            </ccOffsets>
++            <wb index="1" type="double" size="[1 4]">
++               [1.03469 1 1 1.0529]
++            </wb>
++         </cell>
++         <cell index="3" type="struct" size="[1 1]">
++            <name index="1" type="char" size="[1 7]">
++               D65_100
++            </name>
++            <saturation index="1" type="double" size="[1 1]">
++               [ 100]
++            </saturation>
++            <ccMatrix index="1" type="double" size="[3 3]">
++               [1.55773 -0.481516 -0.0987445 -0.227694 1.30012 -0.0870893 0.0333118 -0.624873 1.5592]
++            </ccMatrix>
++            <ccOffsets index="1" type="double" size="[1 3]">
++               [148.351 131.784 132.5602]
++            </ccOffsets>
++            <wb index="1" type="double" size="[1 4]">
++               [1.46551 1.14339 1.14339 1]
++            </wb>
++         </cell>
++         <cell index="4" type="struct" size="[1 1]">
++            <name index="1" type="char" size="[1 7]">
++               F11_100
++            </name>
++            <saturation index="1" type="double" size="[1 1]">
++               [ 100]
++            </saturation>
++            <ccMatrix index="1" type="double" size="[3 3]">
++               [1.54103 -0.514551 -0.0590008 -0.307721 1.47183 -0.118799 0.0447289 -0.865046 1.835]
++            </ccMatrix>
++            <ccOffsets index="1" type="double" size="[1 3]">
++               [133.058 128.339 131.132]
++            </ccOffsets>
++            <wb index="1" type="double" size="[1 4]">
++               [1.30616 1.07888 1.07888 1]
++            </wb>
++         </cell>
++         <cell index="5" type="struct" size="[1 1]">
++            <name index="1" type="char" size="[1 6]">
++               F2_100
++            </name>
++            <saturation index="1" type="double" size="[1 1]">
++               [ 100]
++            </saturation>
++            <ccMatrix index="1" type="double" size="[3 3]">
++               [1.79652 -0.647267 -0.139731 -0.232795 1.30864 -0.106237 0.0372739 -0.737702 1.6859]
++            </ccMatrix>
++            <ccOffsets index="1" type="double" size="[1 3]">
++               [125.852 124.356 127.019]
++            </ccOffsets>
++            <wb index="1" type="double" size="[1 4]">
++               [1.05988 1.00421 1.00421 1]
++            </wb>
++         </cell>
++      </CC>
++      <AF index="1" type="struct" size="[1 1]">
++         <tbd index="1" type="double" size="[1 1]">
++            [ -1]
++         </tbd>
++      </AF>
++      <AEC index="1" type="struct" size="[1 1]">
++         <SetPoint index="1" type="double" size="[1 1]">
++            [ 80]
++         </SetPoint>
++         <ClmTolerance index="1" type="double" size="[1 1]">
++            [ 20]
++         </ClmTolerance>
++         <DampOver index="1" type="double" size="[1 1]">
++            [ 0.2]
++         </DampOver>
++         <DampUnder index="1" type="double" size="[1 1]">
++            [ 0.3]
++         </DampUnder>
++         <DampOverVideo index="1" type="double" size="[1 1]">
++            [ 0.7]
++         </DampOverVideo>
++         <DampUnderVideo index="1" type="double" size="[1 1]">
++            [ 0.9]
++         </DampUnderVideo>
++         <ECM index="1" type="cell" size="[1 3]">
++            <cell index="1" type="struct" size="[1 1]">
++               <name index="1" type="char" size="[1 16]">
++                  1920x1080_FPS_15
++               </name>
++               <PrioritySchemes index="1" type="cell" size="[1 3]">
++                  <cell index="1" type="struct" size="[1 1]">
++                     <name index="1" type="char" size="[1 4]">
++                        fast
++                     </name>
++                     <OffsetT0Fac index="1" type="double" size="[1 1]">
++                        [ 1]
++                     </OffsetT0Fac>
++                     <SlopeA0 index="1" type="double" size="[1 1]">
++                        [ 2]
++                     </SlopeA0>
++                  </cell>
++                  <cell index="2" type="struct" size="[1 1]">
++                     <name index="1" type="char" size="[1 6]">
++                        normal
++                     </name>
++                     <OffsetT0Fac index="1" type="double" size="[1 1]">
++                        [ 1]
++                     </OffsetT0Fac>
++                     <SlopeA0 index="1" type="double" size="[1 1]">
++                        [ 1]
++                     </SlopeA0>
++                  </cell>
++                  <cell index="3" type="struct" size="[1 1]">
++                     <name index="1" type="char" size="[1 4]">
++                        slow
++                     </name>
++                     <OffsetT0Fac index="1" type="double" size="[1 1]">
++                        [ 2]
++                     </OffsetT0Fac>
++                     <SlopeA0 index="1" type="double" size="[1 1]">
++                        [ 1]
++                     </SlopeA0>
++                  </cell>
++               </PrioritySchemes>
++            </cell>
++            <cell index="2" type="struct" size="[1 1]">
++               <name index="1" type="char" size="[1 16]">
++                  1920x1080_FPS_10
++               </name>
++               <PrioritySchemes index="1" type="cell" size="[1 3]">
++                  <cell index="1" type="struct" size="[1 1]">
++                     <name index="1" type="char" size="[1 4]">
++                        fast
++                     </name>
++                     <OffsetT0Fac index="1" type="double" size="[1 1]">
++                        [ 1]
++                     </OffsetT0Fac>
++                     <SlopeA0 index="1" type="double" size="[1 1]">
++                        [ 2]
++                     </SlopeA0>
++                  </cell>
++                  <cell index="2" type="struct" size="[1 1]">
++                     <name index="1" type="char" size="[1 6]">
++                        normal
++                     </name>
++                     <OffsetT0Fac index="1" type="double" size="[1 1]">
++                        [ 1]
++                     </OffsetT0Fac>
++                     <SlopeA0 index="1" type="double" size="[1 1]">
++                        [ 1]
++                     </SlopeA0>
++                  </cell>
++                  <cell index="3" type="struct" size="[1 1]">
++                     <name index="1" type="char" size="[1 4]">
++                        slow
++                     </name>
++                     <OffsetT0Fac index="1" type="double" size="[1 1]">
++                        [ 2]
++                     </OffsetT0Fac>
++                     <SlopeA0 index="1" type="double" size="[1 1]">
++                        [ 1]
++                     </SlopeA0>
++                  </cell>
++               </PrioritySchemes>
++            </cell>
++            <cell index="3" type="struct" size="[1 1]">
++               <name index="1" type="char" size="[1 16]">
++                  1920x1080_FPS_05
++               </name>
++               <PrioritySchemes index="1" type="cell" size="[1 3]">
++                  <cell index="1" type="struct" size="[1 1]">
++                     <name index="1" type="char" size="[1 4]">
++                        fast
++                     </name>
++                     <OffsetT0Fac index="1" type="double" size="[1 1]">
++                        [ 1]
++                     </OffsetT0Fac>
++                     <SlopeA0 index="1" type="double" size="[1 1]">
++                        [ 1]
++                     </SlopeA0>
++                  </cell>
++                  <cell index="2" type="struct" size="[1 1]">
++                     <name index="1" type="char" size="[1 6]">
++                        normal
++                     </name>
++                     <OffsetT0Fac index="1" type="double" size="[1 1]">
++                        [ 2]
++                     </OffsetT0Fac>
++                     <SlopeA0 index="1" type="double" size="[1 1]">
++                        [ 0.9]
++                     </SlopeA0>
++                  </cell>
++                  <cell index="3" type="struct" size="[1 1]">
++                     <name index="1" type="char" size="[1 4]">
++                        slow
++                     </name>
++                     <OffsetT0Fac index="1" type="double" size="[1 1]">
++                        [ 4]
++                     </OffsetT0Fac>
++                     <SlopeA0 index="1" type="double" size="[1 1]">
++                        [ 0.9]
++                     </SlopeA0>
++                  </cell>
++               </PrioritySchemes>
++            </cell>
++         </ECM>
++         <aFpsMaxGain index="1" type="double" size="[1 1]">
++            [ 8]
++         </aFpsMaxGain>
++      </AEC>
++      <BLS index="1" type="cell" size="[1 1]">
++         <cell index="1" type="struct" size="[1 1]">
++            <name index="1" type="char" size="[1 9]">
++               1920x1080
++            </name>
++            <resolution index="1" type="char" size="[1 9]">
++               1920x1080
++            </resolution>
++            <blsData index="1" type="double" size="[1 4]">
++               [64 64 64 64]
++            </blsData>
++         </cell>
++      </BLS>
++      <DEGAMMA index="1" type="cell" size="[1 1]">
++         <cell index="1" type="struct" size="[1 1]">
++            <name index="1" type="char" size="[1 6]">
++               linear
++            </name>
++            <degamma_dx index="1" type="double" size="[1 16]">
++               [256 512 768 1024 1280 1536 1792 2048 2304 2560 2816 3072 3328 3584 3840 4096]
++            </degamma_dx>
++            <degamma_y index="1" type="double" size="[1 17]">
++               [0 256 512 768 1024 1280 1536 1792 2048 2304 2560 2816 3072 3328 3584 3840 4095]
++            </degamma_y>
++         </cell>
++      </DEGAMMA>
++      <WDR index="1" type="struct" size="[1 1]">
++         <tbd index="1" type="double" size="[1 1]">
++            [ -1]
++         </tbd>
++         <curve1 index="1" type="struct" size="[1 1]">
++            <xval index="1" type="double" size="[1 33]">
++               [-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1]
++            </xval>
++            <yval index="1" type="double" size="[1 33]">
++               [-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1]
++            </yval>
++         </curve1>
++         <curve2 index="1" type="struct" size="[1 1]">
++            <xval index="1" type="double" size="[1 33]">
++               [-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1]
++            </xval>
++            <yval index="1" type="double" size="[1 33]">
++               [-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1]
++            </yval>
++         </curve2>
++      </WDR>
++      <CAC index="1" type="cell" size="[1 1]">
++         <cell index="1" type="struct" size="[1 1]">
++            <name index="1" type="char" size="[1 9]">
++               1920x1080
++            </name>
++            <resolution index="1" type="char" size="[1 9]">
++               1920x1080
++            </resolution>
++            <x_normshift index="1" type="double" size="[1 1]">
++               [ 6]
++            </x_normshift>
++            <x_normfactor index="1" type="double" size="[1 1]">
++               [ 29]
++            </x_normfactor>
++            <y_normshift index="1" type="double" size="[1 1]">
++               [ 6]
++            </y_normshift>
++            <y_normfactor index="1" type="double" size="[1 1]">
++               [ 29]
++            </y_normfactor>
++            <x_offset index="1" type="double" size="[1 1]">
++               [ 0]
++            </x_offset>
++            <y_offset index="1" type="double" size="[1 1]">
++               [ 0]
++            </y_offset>
++            <red_parameters index="1" type="double" size="[1 3]">
++               [-2.3125 4.25 -2.625]
++            </red_parameters>
++            <blue_parameters index="1" type="double" size="[1 3]">
++               [2.375 -5.0625 3.25]
++            </blue_parameters>
++         </cell>
++      </CAC>
++      <DPF index="1" type="cell" size="[1 1]">
++         <cell index="1" type="struct" size="[1 1]">
++            <name index="1" type="char" size="[1 9]">
++               1920x1080
++            </name>
++            <resolution index="1" type="char" size="[1 9]">
++               1920x1080
++            </resolution>
++            <NLL_SEGMENTATION index="1" type="double" size="[1 1]">
++               [ 1]
++            </NLL_SEGMENTATION>
++            <nll_coeff_n index="1" type="double" size="[1 17]">
++               [1023 268 179 144 123 100 86 77 70 60 54 49 43 38 35 32 30]
++            </nll_coeff_n>
++            <SigmaGreen index="1" type="double" size="[1 1]">
++               [ 4]
++            </SigmaGreen>
++            <SigmaRedBlue index="1" type="double" size="[1 1]">
++               [ 4]
++            </SigmaRedBlue>
++            <Gradient index="1" type="double" size="[1 1]">
++               [ 0.15]
++            </Gradient>
++            <Offset index="1" type="double" size="[1 1]">
++               [ 0]
++            </Offset>
++            <NlGains index="1" type="double" size="[1 4]">
++               [1 1 1 1]
++            </NlGains>
++         </cell>
++      </DPF>
++      <DPCC index="1" type="cell" size="[1 1]">
++         <cell index="1" type="struct" size="[1 1]">
++            <name index="1" type="char" size="[1 9]">
++               1920x1080
++            </name>
++            <resolution index="1" type="char" size="[1 9]">
++               1920x1080
++            </resolution>
++            <register index="1" type="cell" size="[1 23]">
++               <cell index="1" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 13]">
++                     ISP_DPCC_MODE
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x0004
++                  </value>
++               </cell>
++               <cell index="2" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 17]">
++                     ISP_DPCC_OUT_MODE
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x0003
++                  </value>
++               </cell>
++               <cell index="3" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 16]">
++                     ISP_DPCC_SET_USE
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x0007
++                  </value>
++               </cell>
++               <cell index="4" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 21]">
++                     ISP_DPCC_METHODS_SET1
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x1D1D
++                  </value>
++               </cell>
++               <cell index="5" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 21]">
++                     ISP_DPCC_METHODS_SET2
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x0707
++                  </value>
++               </cell>
++               <cell index="6" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 21]">
++                     ISP_DPCC_METHODS_SET3
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x1F1F
++                  </value>
++               </cell>
++               <cell index="7" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 22]">
++                     ISP_DPCC_LINE_THRESH_1
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x0808
++                  </value>
++               </cell>
++               <cell index="8" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 23]">
++                     ISP_DPCC_LINE_MAD_FAC_1
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x0404
++                  </value>
++               </cell>
++               <cell index="9" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 17]">
++                     ISP_DPCC_PG_FAC_1
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x0403
++                  </value>
++               </cell>
++               <cell index="10" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 21]">
++                     ISP_DPCC_RND_THRESH_1
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x0A0A
++                  </value>
++               </cell>
++               <cell index="11" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 17]">
++                     ISP_DPCC_RG_FAC_1
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x2020
++                  </value>
++               </cell>
++               <cell index="12" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 22]">
++                     ISP_DPCC_LINE_THRESH_2
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x100C
++                  </value>
++               </cell>
++               <cell index="13" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 23]">
++                     ISP_DPCC_LINE_MAD_FAC_2
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x1810
++                  </value>
++               </cell>
++               <cell index="14" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 17]">
++                     ISP_DPCC_PG_FAC_2
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x0403
++                  </value>
++               </cell>
++               <cell index="15" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 21]">
++                     ISP_DPCC_RND_THRESH_2
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x0808
++                  </value>
++               </cell>
++               <cell index="16" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 17]">
++                     ISP_DPCC_RG_FAC_2
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x0808
++                  </value>
++               </cell>
++               <cell index="17" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 22]">
++                     ISP_DPCC_LINE_THRESH_3
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x2020
++                  </value>
++               </cell>
++               <cell index="18" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 23]">
++                     ISP_DPCC_LINE_MAD_FAC_3
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x0404
++                  </value>
++               </cell>
++               <cell index="19" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 17]">
++                     ISP_DPCC_PG_FAC_3
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x0403
++                  </value>
++               </cell>
++               <cell index="20" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 21]">
++                     ISP_DPCC_RND_THRESH_3
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x0806
++                  </value>
++               </cell>
++               <cell index="21" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 17]">
++                     ISP_DPCC_RG_FAC_3
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x0404
++                  </value>
++               </cell>
++               <cell index="22" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 18]">
++                     ISP_DPCC_RO_LIMITS
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x0A0A
++                  </value>
++               </cell>
++               <cell index="23" type="struct" size="[1 1]">
++                  <name index="1" type="char" size="[1 17]">
++                     ISP_DPCC_RND_OFFS
++                  </name>
++                  <value index="1" type="char" size="[1 6]">
++                     0x0FFF
++                  </value>
++               </cell>
++            </register>
++         </cell>
++      </DPCC>
++   </sensor>
++   <system type="struct" size="[1 1]">
++      <AFPS index="1" type="struct" size="[1 1]">
++         <aFpsDefault index="1" type="char" size="[1 2]">
++            on
++         </aFpsDefault>
++      </AFPS>
++   </system>
++</matfile>
+diff --git a/units/isi/drv/OV5647/source/OV5647.c b/units/isi/drv/OV5647/source/OV5647.c
+new file mode 100644
+index 0000000..db58d6f
+--- /dev/null
++++ b/units/isi/drv/OV5647/source/OV5647.c
+@@ -0,0 +1,1237 @@
++/****************************************************************************
++ * Copyright (c) 2020 VeriSilicon Holdings Co., Ltd.
++ * Copyright 2023-2025 NXP
++ *
++ * SPDX-License-Identifier: MIT
++ *****************************************************************************/
++
++#include <ebase/types.h>
++#include <ebase/trace.h>
++#include <ebase/builtins.h>
++#include <common/return_codes.h>
++#include <common/misc.h>
++#include <sys/ioctl.h>
++#include <fcntl.h>
++#include "isi.h"
++#include "isi_iss.h"
++#include "isi_priv.h"
++#include "vvsensor.h"
++
++
++CREATE_TRACER( OV5647_INFO , "OV5647: ", INFO,    0);
++CREATE_TRACER( OV5647_WARN , "OV5647: ", WARNING, 0);
++CREATE_TRACER( OV5647_ERROR, "OV5647: ", ERROR,   1);
++
++
++#ifdef SUBDEV_V4L2
++#include <sys/ioctl.h>
++#include <sys/mman.h>
++#include <fcntl.h>
++#include <linux/videodev2.h>
++#include <linux/v4l2-subdev.h>
++//#undef TRACE
++//#define TRACE(x, ...)
++#endif
++
++#define OV5647_ISI_TPG_MAX 4
++
++static const char SensorName[16] = "ov5647";
++
++typedef struct OV5647_Context_s
++{
++    IsiSensorContext_t  IsiCtx;
++    struct vvcam_mode_info_s CurMode;
++    IsiSensorAeInfo_t AeInfo;
++    IsiSensorIntTime_t IntTime;
++    uint32_t LongIntLine;
++    uint32_t IntLine;
++    uint32_t ShortIntLine;
++    IsiSensorGain_t SensorGain;
++    uint32_t minAfps;
++    uint64_t AEStartExposure;
++} OV5647_Context_t;
++
++static RESULT OV5647_IsiSensorSetPowerIss(IsiSensorHandle_t handle, bool_t on)
++{
++    int ret = 0;
++
++    TRACE( OV5647_INFO, "%s: (enter)\n", __func__);
++    TRACE( OV5647_INFO, "%s: set power %d\n", __func__,on);
++
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++    HalContext_t *pHalCtx = (HalContext_t *) pSensorCtx->IsiCtx.HalHandle;
++
++    int32_t power = on;
++    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_POWER, &power);
++    if (ret != 0){
++        TRACE(OV5647_ERROR, "%s set power %d error\n", __func__,power);
++        return RET_FAILURE;
++    }
++
++    TRACE( OV5647_INFO, "%s: (exit)\n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiSensorGetClkIss(IsiSensorHandle_t handle,
++                                        struct vvcam_clk_s *pclk)
++{
++    int ret = 0;
++
++    TRACE( OV5647_INFO, "%s: (enter)\n", __func__);
++
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++    HalContext_t *pHalCtx = (HalContext_t *) pSensorCtx->IsiCtx.HalHandle;
++
++    if (!pclk)
++        return RET_NULL_POINTER;
++
++    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_G_CLK, pclk);
++    if (ret != 0) {
++        TRACE(OV5647_ERROR, "%s get clock error\n", __func__);
++        return RET_FAILURE;
++    }
++
++    TRACE( OV5647_INFO, "%s: status:%d sensor_mclk:%d csi_max_pixel_clk:%d\n",
++        __func__, pclk->status, pclk->sensor_mclk, pclk->csi_max_pixel_clk);
++    TRACE( OV5647_INFO, "%s: (exit)\n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiSensorSetClkIss(IsiSensorHandle_t handle,
++                                        struct vvcam_clk_s *pclk)
++{
++    int ret = 0;
++
++    TRACE( OV5647_INFO, "%s: (enter)\n", __func__);
++
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++    HalContext_t *pHalCtx = (HalContext_t *) pSensorCtx->IsiCtx.HalHandle;
++
++    if (pclk == NULL)
++        return RET_NULL_POINTER;
++
++    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_CLK, &pclk);
++    if (ret != 0) {
++        TRACE(OV5647_ERROR, "%s set clk error\n", __func__);
++        return RET_FAILURE;
++    }
++
++    TRACE( OV5647_INFO, "%s: status:%d sensor_mclk:%d csi_max_pixel_clk:%d\n",
++        __func__, pclk->status, pclk->sensor_mclk, pclk->csi_max_pixel_clk);
++
++    TRACE( OV5647_INFO, "%s: (exit)\n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiResetSensorIss(IsiSensorHandle_t handle)
++{
++    int ret = 0;
++
++    TRACE( OV5647_INFO, "%s: (enter)\n", __func__);
++
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++    HalContext_t *pHalCtx = (HalContext_t *) pSensorCtx->IsiCtx.HalHandle;
++
++    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_RESET, NULL);
++    if (ret != 0) {
++        TRACE(OV5647_ERROR, "%s set reset error\n", __func__);
++        return RET_FAILURE;
++    }
++
++    TRACE( OV5647_INFO, "%s: (exit)\n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiRegisterReadIss(IsiSensorHandle_t handle,
++                                        const uint32_t address,
++                                        uint32_t * pValue)
++{
++    int32_t ret = 0;
++
++    TRACE(OV5647_INFO, "%s (enter)\n", __func__);
++
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++    HalContext_t *pHalCtx = (HalContext_t *) pSensorCtx->IsiCtx.HalHandle;
++
++    struct vvcam_sccb_data_s sccb_data;
++    sccb_data.addr = address;
++    sccb_data.data = 0;
++    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_READ_REG, &sccb_data);
++    if (ret != 0) {
++        TRACE(OV5647_ERROR, "%s: read sensor register error!\n", __func__);
++        return (RET_FAILURE);
++    }
++
++    *pValue = sccb_data.data;
++
++    TRACE(OV5647_INFO, "%s (exit) \n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiRegisterWriteIss(IsiSensorHandle_t handle,
++                                        const uint32_t address,
++                                        const uint32_t value)
++{
++    int ret = 0;
++
++    TRACE(OV5647_INFO, "%s (enter)\n", __func__);
++
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++    HalContext_t *pHalCtx = (HalContext_t *) pSensorCtx->IsiCtx.HalHandle;
++
++    struct vvcam_sccb_data_s sccb_data;
++    sccb_data.addr = address;
++    sccb_data.data = value;
++
++    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_WRITE_REG, &sccb_data);
++    if (ret != 0) {
++        TRACE(OV5647_ERROR, "%s: write sensor register error!\n", __func__);
++        return (RET_FAILURE);
++    }
++
++    TRACE(OV5647_INFO, "%s (exit) \n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_UpdateIsiAEInfo(IsiSensorHandle_t handle)
++{
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++
++    uint32_t exp_line_time = pSensorCtx->CurMode.ae_info.one_line_exp_time_ns;
++
++    IsiSensorAeInfo_t *pAeInfo = &pSensorCtx->AeInfo;
++    pAeInfo->oneLineExpTime = (exp_line_time << ISI_EXPO_PARAS_FIX_FRACBITS) / 1000;
++
++    if (pSensorCtx->CurMode.hdr_mode == SENSOR_MODE_LINEAR) {
++        pAeInfo->maxIntTime.linearInt =
++            pSensorCtx->CurMode.ae_info.max_integration_line * pAeInfo->oneLineExpTime;
++        pAeInfo->minIntTime.linearInt =
++            pSensorCtx->CurMode.ae_info.min_integration_line * pAeInfo->oneLineExpTime;
++        pAeInfo->maxAGain.linearGainParas = pSensorCtx->CurMode.ae_info.max_again;
++        pAeInfo->minAGain.linearGainParas = pSensorCtx->CurMode.ae_info.min_again;
++        pAeInfo->maxDGain.linearGainParas = pSensorCtx->CurMode.ae_info.max_dgain;
++        pAeInfo->minDGain.linearGainParas = pSensorCtx->CurMode.ae_info.min_dgain;
++    } else {
++        switch (pSensorCtx->CurMode.stitching_mode) {
++            case SENSOR_STITCHING_DUAL_DCG:
++            case SENSOR_STITCHING_3DOL:
++            case SENSOR_STITCHING_LINEBYLINE:
++                pAeInfo->maxIntTime.triInt.triSIntTime =
++                    pSensorCtx->CurMode.ae_info.max_vsintegration_line * pAeInfo->oneLineExpTime;
++                pAeInfo->minIntTime.triInt.triSIntTime =
++                    pSensorCtx->CurMode.ae_info.min_vsintegration_line * pAeInfo->oneLineExpTime;
++
++                pAeInfo->maxIntTime.triInt.triIntTime =
++                    pSensorCtx->CurMode.ae_info.max_integration_line * pAeInfo->oneLineExpTime;
++                pAeInfo->minIntTime.triInt.triIntTime =
++                    pSensorCtx->CurMode.ae_info.min_integration_line * pAeInfo->oneLineExpTime;
++
++                if (pSensorCtx->CurMode.stitching_mode == SENSOR_STITCHING_DUAL_DCG) {
++                    pAeInfo->maxIntTime.triInt.triLIntTime = pAeInfo->maxIntTime.triInt.triIntTime;
++                    pAeInfo->minIntTime.triInt.triLIntTime = pAeInfo->minIntTime.triInt.triIntTime;
++                } else {
++                    pAeInfo->maxIntTime.triInt.triLIntTime =
++                        pSensorCtx->CurMode.ae_info.max_longintegration_line * pAeInfo->oneLineExpTime;
++                    pAeInfo->minIntTime.triInt.triLIntTime =
++                        pSensorCtx->CurMode.ae_info.min_longintegration_line * pAeInfo->oneLineExpTime;
++                }
++
++                pAeInfo->maxAGain.triGainParas.triSGain = pSensorCtx->CurMode.ae_info.max_short_again;
++                pAeInfo->minAGain.triGainParas.triSGain = pSensorCtx->CurMode.ae_info.min_short_again;
++                pAeInfo->maxDGain.triGainParas.triSGain = pSensorCtx->CurMode.ae_info.max_short_dgain;
++                pAeInfo->minDGain.triGainParas.triSGain = pSensorCtx->CurMode.ae_info.min_short_dgain;
++
++                pAeInfo->maxAGain.triGainParas.triGain = pSensorCtx->CurMode.ae_info.max_again;
++                pAeInfo->minAGain.triGainParas.triGain = pSensorCtx->CurMode.ae_info.min_again;
++                pAeInfo->maxDGain.triGainParas.triGain = pSensorCtx->CurMode.ae_info.max_dgain;
++                pAeInfo->minDGain.triGainParas.triGain = pSensorCtx->CurMode.ae_info.min_dgain;
++
++                pAeInfo->maxAGain.triGainParas.triLGain = pSensorCtx->CurMode.ae_info.max_long_again;
++                pAeInfo->minAGain.triGainParas.triLGain = pSensorCtx->CurMode.ae_info.min_long_again;
++                pAeInfo->maxDGain.triGainParas.triLGain = pSensorCtx->CurMode.ae_info.max_long_dgain;
++                pAeInfo->minDGain.triGainParas.triLGain = pSensorCtx->CurMode.ae_info.min_long_dgain;
++                break;
++            case SENSOR_STITCHING_DUAL_DCG_NOWAIT:
++            case SENSOR_STITCHING_16BIT_COMPRESS:
++            case SENSOR_STITCHING_L_AND_S:
++            case SENSOR_STITCHING_2DOL:
++                pAeInfo->maxIntTime.dualInt.dualIntTime =
++                    pSensorCtx->CurMode.ae_info.max_integration_line * pAeInfo->oneLineExpTime;
++                pAeInfo->minIntTime.dualInt.dualIntTime =
++                    pSensorCtx->CurMode.ae_info.min_integration_line * pAeInfo->oneLineExpTime;
++
++                if (pSensorCtx->CurMode.stitching_mode == SENSOR_STITCHING_DUAL_DCG_NOWAIT) {
++                    pAeInfo->maxIntTime.dualInt.dualSIntTime = pAeInfo->maxIntTime.dualInt.dualIntTime;
++                    pAeInfo->minIntTime.dualInt.dualSIntTime = pAeInfo->minIntTime.dualInt.dualIntTime;
++                } else {
++                    pAeInfo->maxIntTime.dualInt.dualSIntTime =
++                        pSensorCtx->CurMode.ae_info.max_vsintegration_line * pAeInfo->oneLineExpTime;
++                    pAeInfo->minIntTime.dualInt.dualSIntTime =
++                        pSensorCtx->CurMode.ae_info.min_vsintegration_line * pAeInfo->oneLineExpTime;
++                }
++
++                if (pSensorCtx->CurMode.stitching_mode == SENSOR_STITCHING_DUAL_DCG_NOWAIT) {
++                    pAeInfo->maxAGain.dualGainParas.dualSGain = pSensorCtx->CurMode.ae_info.max_again;
++                    pAeInfo->minAGain.dualGainParas.dualSGain = pSensorCtx->CurMode.ae_info.min_again;
++                    pAeInfo->maxDGain.dualGainParas.dualSGain = pSensorCtx->CurMode.ae_info.max_dgain;
++                    pAeInfo->minDGain.dualGainParas.dualSGain = pSensorCtx->CurMode.ae_info.min_dgain;
++                    pAeInfo->maxAGain.dualGainParas.dualGain  = pSensorCtx->CurMode.ae_info.max_long_again;
++                    pAeInfo->minAGain.dualGainParas.dualGain  = pSensorCtx->CurMode.ae_info.min_long_again;
++                    pAeInfo->maxDGain.dualGainParas.dualGain  = pSensorCtx->CurMode.ae_info.max_long_dgain;
++                    pAeInfo->minDGain.dualGainParas.dualGain  = pSensorCtx->CurMode.ae_info.min_long_dgain;
++                } else {
++                    pAeInfo->maxAGain.dualGainParas.dualSGain = pSensorCtx->CurMode.ae_info.max_short_again;
++                    pAeInfo->minAGain.dualGainParas.dualSGain = pSensorCtx->CurMode.ae_info.min_short_again;
++                    pAeInfo->maxDGain.dualGainParas.dualSGain = pSensorCtx->CurMode.ae_info.max_short_dgain;
++                    pAeInfo->minDGain.dualGainParas.dualSGain = pSensorCtx->CurMode.ae_info.min_short_dgain;
++                    pAeInfo->maxAGain.dualGainParas.dualGain  = pSensorCtx->CurMode.ae_info.max_again;
++                    pAeInfo->minAGain.dualGainParas.dualGain  = pSensorCtx->CurMode.ae_info.min_again;
++                    pAeInfo->maxDGain.dualGainParas.dualGain  = pSensorCtx->CurMode.ae_info.max_dgain;
++                    pAeInfo->minDGain.dualGainParas.dualGain  = pSensorCtx->CurMode.ae_info.min_dgain;
++                }
++
++                break;
++            default:
++                break;
++        }
++    }
++    pAeInfo->gainStep = pSensorCtx->CurMode.ae_info.gain_step;
++    pAeInfo->currFps  = pSensorCtx->CurMode.ae_info.cur_fps;
++    pAeInfo->maxFps   = pSensorCtx->CurMode.ae_info.max_fps;
++    pAeInfo->minFps   = pSensorCtx->CurMode.ae_info.min_fps;
++    pAeInfo->minAfps  = pSensorCtx->CurMode.ae_info.min_afps;
++    pAeInfo->hdrRatio[0] = pSensorCtx->CurMode.ae_info.hdr_ratio.ratio_l_s;
++    pAeInfo->hdrRatio[1] = pSensorCtx->CurMode.ae_info.hdr_ratio.ratio_s_vs;
++
++    pAeInfo->intUpdateDlyFrm = pSensorCtx->CurMode.ae_info.int_update_delay_frm;
++    pAeInfo->gainUpdateDlyFrm = pSensorCtx->CurMode.ae_info.gain_update_delay_frm;
++
++    if (pSensorCtx->minAfps != 0) {
++        pAeInfo->minAfps = pSensorCtx->minAfps;
++    }
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiGetSensorModeIss(IsiSensorHandle_t handle,
++                                         IsiSensorMode_t *pMode)
++{
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++
++    TRACE(OV5647_INFO, "%s (enter)\n", __func__);
++
++    if (pMode == NULL)
++        return (RET_NULL_POINTER);
++
++    memcpy(pMode, &pSensorCtx->CurMode, sizeof(IsiSensorMode_t));
++
++    TRACE(OV5647_INFO, "%s (exit) \n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiSetSensorModeIss(IsiSensorHandle_t handle,
++                                         IsiSensorMode_t *pMode)
++{
++    int ret = 0;
++
++    TRACE(OV5647_INFO, "%s (enter)\n", __func__);
++
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++    HalContext_t *pHalCtx = (HalContext_t *) pSensorCtx->IsiCtx.HalHandle;
++
++    if (pMode == NULL)
++        return (RET_NULL_POINTER);
++
++    struct vvcam_mode_info_s sensor_mode;
++    memset(&sensor_mode, 0, sizeof(struct vvcam_mode_info_s));
++    sensor_mode.index = pMode->index;
++
++    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_SENSOR_MODE, &sensor_mode);
++    if (ret != 0) {
++        TRACE(OV5647_ERROR, "%s set sensor mode error\n", __func__);
++        return RET_FAILURE;
++    }
++
++    memset(&sensor_mode, 0, sizeof(struct vvcam_mode_info_s));
++    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_G_SENSOR_MODE, &sensor_mode);
++    if (ret != 0) {
++        TRACE(OV5647_ERROR, "%s set sensor mode failed", __func__);
++        return RET_FAILURE;
++    }
++    memcpy(&pSensorCtx->CurMode, &sensor_mode, sizeof(struct vvcam_mode_info_s));
++    OV5647_UpdateIsiAEInfo(handle);
++
++    TRACE(OV5647_INFO, "%s (exit) \n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiSensorSetStreamingIss(IsiSensorHandle_t handle,
++                                              bool_t on)
++{
++    int ret = 0;
++
++    TRACE(OV5647_INFO, "%s (enter)\n", __func__);
++
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++    HalContext_t *pHalCtx = (HalContext_t *) pSensorCtx->IsiCtx.HalHandle;
++
++    uint32_t status = on;
++    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_STREAM, &status);
++    if (ret != 0){
++        TRACE(OV5647_ERROR, "%s set sensor stream %d error\n", __func__);
++        return RET_FAILURE;
++    }
++
++    TRACE(OV5647_INFO, "%s: set streaming %d\n", __func__, on);
++    TRACE(OV5647_INFO, "%s (exit) \n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiCreateSensorIss(IsiSensorInstanceConfig_t * pConfig)
++{
++    RESULT result = RET_SUCCESS;
++    OV5647_Context_t *pSensorCtx;
++
++    TRACE(OV5647_INFO, "%s (enter)\n", __func__);
++
++    if (!pConfig || !pConfig->pSensor || !pConfig->HalHandle)
++        return RET_NULL_POINTER;
++
++    pSensorCtx = (OV5647_Context_t *) malloc(sizeof(OV5647_Context_t));
++    if (!pSensorCtx)
++        return RET_OUTOFMEM;
++
++    memset(pSensorCtx, 0, sizeof(OV5647_Context_t));
++    pSensorCtx->IsiCtx.HalHandle = pConfig->HalHandle;
++    pSensorCtx->IsiCtx.pSensor   = pConfig->pSensor;
++    pConfig->hSensor = (IsiSensorHandle_t) pSensorCtx;
++
++    result = OV5647_IsiSensorSetPowerIss(pSensorCtx, BOOL_TRUE);
++    if (result != RET_SUCCESS) {
++        TRACE(OV5647_ERROR, "%s set power error\n", __func__);
++        return RET_FAILURE;
++    }
++    struct vvcam_clk_s clk;
++    memset(&clk, 0, sizeof(struct vvcam_clk_s));
++    result = OV5647_IsiSensorGetClkIss(pSensorCtx, &clk);
++    if (result != RET_SUCCESS) {
++        TRACE(OV5647_ERROR, "%s get clk error\n", __func__);
++        return RET_FAILURE;
++    }
++    clk.status = 1;
++    result = OV5647_IsiSensorSetClkIss(pSensorCtx, &clk);
++    if (result != RET_SUCCESS) {
++        TRACE(OV5647_ERROR, "%s set clk error\n", __func__);
++        return RET_FAILURE;
++    }
++    result = OV5647_IsiResetSensorIss(pSensorCtx);
++    if (result != RET_SUCCESS) {
++        TRACE(OV5647_ERROR, "%s retset sensor error\n", __func__);
++        return RET_FAILURE;
++    }
++
++    IsiSensorMode_t SensorMode;
++    SensorMode.index = pConfig->SensorModeIndex;
++    result = OV5647_IsiSetSensorModeIss(pSensorCtx, &SensorMode);
++    if (result != RET_SUCCESS) {
++        TRACE(OV5647_ERROR, "%s set sensor mode error\n", __func__);
++        return RET_FAILURE;
++    }
++
++    TRACE(OV5647_INFO, "%s (exit)\n", __func__);
++
++    return result;
++}
++
++static RESULT OV5647_IsiReleaseSensorIss(IsiSensorHandle_t handle)
++{
++    TRACE(OV5647_INFO, "%s (enter) \n", __func__);
++
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++    if (pSensorCtx == NULL)
++        return (RET_WRONG_HANDLE);
++
++    OV5647_IsiSensorSetStreamingIss(pSensorCtx, BOOL_FALSE);
++    struct vvcam_clk_s clk;
++    memset(&clk, 0, sizeof(struct vvcam_clk_s));
++    OV5647_IsiSensorGetClkIss(pSensorCtx, &clk);
++    clk.status = 0;
++    OV5647_IsiSensorSetClkIss(pSensorCtx, &clk);
++    OV5647_IsiSensorSetPowerIss(pSensorCtx, BOOL_FALSE);
++    free(pSensorCtx);
++    pSensorCtx = NULL;
++
++    TRACE(OV5647_INFO, "%s (exit)\n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiHalQuerySensorIss(HalHandle_t HalHandle,
++                                          IsiSensorModeInfoArray_t *pSensorMode)
++{
++    int ret = 0;
++
++    TRACE(OV5647_INFO, "%s (enter) \n", __func__);
++
++    if (HalHandle == NULL || pSensorMode == NULL)
++        return RET_NULL_POINTER;
++
++    HalContext_t *pHalCtx = (HalContext_t *)HalHandle;
++    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_QUERY, pSensorMode);
++    if (ret != 0) {
++        TRACE(OV5647_ERROR, "%s: query sensor mode info error!\n", __func__);
++        return RET_FAILURE;
++    }
++
++    TRACE(OV5647_INFO, "%s (exit)\n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiQuerySensorIss(IsiSensorHandle_t handle,
++                                       IsiSensorModeInfoArray_t *pSensorMode)
++{
++    RESULT result = RET_SUCCESS;
++
++    TRACE(OV5647_INFO, "%s (enter) \n", __func__);
++
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++
++    result = OV5647_IsiHalQuerySensorIss(pSensorCtx->IsiCtx.HalHandle,
++                                         pSensorMode);
++    if (result != RET_SUCCESS)
++        TRACE(OV5647_ERROR, "%s: query sensor mode info error!\n", __func__);
++
++    TRACE(OV5647_INFO, "%s (exit)\n", __func__);
++
++    return result;
++}
++
++static RESULT OV5647_IsiGetCapsIss(IsiSensorHandle_t handle,
++                                   IsiSensorCaps_t * pIsiSensorCaps)
++{
++    RESULT result = RET_SUCCESS;
++
++    TRACE(OV5647_INFO, "%s (enter) \n", __func__);
++
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++
++    if (pIsiSensorCaps == NULL)
++        return RET_NULL_POINTER;
++
++    IsiSensorModeInfoArray_t SensorModeInfo;
++    memset(&SensorModeInfo, 0, sizeof(IsiSensorModeInfoArray_t));
++    result = OV5647_IsiQuerySensorIss(handle, &SensorModeInfo);
++    if (result != RET_SUCCESS) {
++        TRACE(OV5647_ERROR, "%s: query sensor mode info error!\n", __func__);
++        return RET_FAILURE;
++    }
++
++    pIsiSensorCaps->FieldSelection    = ISI_FIELDSEL_BOTH;
++    pIsiSensorCaps->YCSequence        = ISI_YCSEQ_YCBYCR;
++    pIsiSensorCaps->Conv422           = ISI_CONV422_NOCOSITED;
++    pIsiSensorCaps->HPol              = ISI_HPOL_REFPOS;
++    pIsiSensorCaps->VPol              = ISI_VPOL_NEG;
++    pIsiSensorCaps->Edge              = ISI_EDGE_RISING;
++    pIsiSensorCaps->supportModeNum    = SensorModeInfo.count;
++    pIsiSensorCaps->currentMode       = pSensorCtx->CurMode.index;
++
++    TRACE(OV5647_INFO, "%s (exit)\n", __func__);
++
++    return result;
++}
++
++static RESULT OV5647_IsiSetupSensorIss(IsiSensorHandle_t handle,
++                                       const IsiSensorCaps_t *pIsiSensorCaps )
++{
++    int ret = 0;
++    RESULT result = RET_SUCCESS;
++
++    TRACE(OV5647_INFO, "%s (enter)\n", __func__);
++
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++    HalContext_t *pHalCtx = (HalContext_t *) pSensorCtx->IsiCtx.HalHandle;
++
++    if (pIsiSensorCaps == NULL)
++        return RET_NULL_POINTER;
++
++    if (pIsiSensorCaps->currentMode != pSensorCtx->CurMode.index) {
++        IsiSensorMode_t SensorMode;
++        memset(&SensorMode, 0, sizeof(IsiSensorMode_t));
++        SensorMode.index = pIsiSensorCaps->currentMode;
++        result = OV5647_IsiSetSensorModeIss(handle, &SensorMode);
++        if (result != RET_SUCCESS) {
++            TRACE(OV5647_ERROR, "%s:set sensor mode %d failed!\n",
++                  __func__, SensorMode.index);
++            return result;
++        }
++    }
++
++#ifdef SUBDEV_V4L2
++    struct v4l2_subdev_format format;
++    memset(&format, 0, sizeof(struct v4l2_subdev_format));
++    format.format.width  = pSensorCtx->CurMode.size.bounds_width;
++    format.format.height = pSensorCtx->CurMode.size.bounds_height;
++    format.which = V4L2_SUBDEV_FORMAT_ACTIVE;
++    format.pad = 0;
++    ret = ioctl(pHalCtx->sensor_fd, VIDIOC_SUBDEV_S_FMT, &format);
++    if (ret != 0){
++        TRACE(OV5647_ERROR, "%s: sensor set format error!\n", __func__);
++        return RET_FAILURE;
++    }
++#else
++    ret = ioctrl(pHalCtx->sensor_fd, VVSENSORIOC_S_INIT, NULL);
++    if (ret != 0){
++        TRACE(OV5647_ERROR, "%s: sensor init error!\n", __func__);
++        return RET_FAILURE;
++    }
++#endif
++
++    TRACE(OV5647_INFO, "%s (exit)\n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiGetSensorRevisionIss(IsiSensorHandle_t handle, uint32_t *pValue)
++{
++    int ret = 0;
++
++    TRACE(OV5647_INFO, "%s (enter)\n", __func__);
++
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++    HalContext_t *pHalCtx = (HalContext_t *) pSensorCtx->IsiCtx.HalHandle;
++
++    if (pValue == NULL)
++        return RET_NULL_POINTER;
++
++    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_G_CHIP_ID, pValue);
++    if (ret != 0) {
++        TRACE(OV5647_ERROR, "%s: get chip id error!\n", __func__);
++        return RET_FAILURE;
++    }
++
++    TRACE(OV5647_INFO, "%s (exit)\n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiCheckSensorConnectionIss(IsiSensorHandle_t handle)
++{
++    RESULT result = RET_SUCCESS;
++
++    TRACE(OV5647_INFO, "%s (enter)\n", __func__);
++
++    uint32_t ChipId = 0;
++    result = OV5647_IsiGetSensorRevisionIss(handle, &ChipId);
++    if (result != RET_SUCCESS) {
++        TRACE(OV5647_ERROR, "%s:get sensor chip id error!\n",__func__);
++        return RET_FAILURE;
++    }
++
++    if (ChipId != 0x530841) {
++        TRACE(OV5647_ERROR,
++            "%s:ChipID=0x2770,while read sensor Id=0x%x error!\n",
++             __func__, ChipId);
++        return RET_FAILURE;
++    }
++
++    TRACE(OV5647_INFO, "%s (exit)\n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiGetAeInfoIss(IsiSensorHandle_t handle,
++                                     IsiSensorAeInfo_t *pAeInfo)
++{
++    TRACE(OV5647_INFO, "%s (enter)\n", __func__);
++
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++
++    if (pAeInfo == NULL)
++        return RET_NULL_POINTER;
++
++    memcpy(pAeInfo, &pSensorCtx->AeInfo, sizeof(IsiSensorAeInfo_t));
++
++    TRACE(OV5647_INFO, "%s (exit)\n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiSetHdrRatioIss(IsiSensorHandle_t handle,
++                                       uint8_t hdrRatioNum,
++                                       uint32_t HdrRatio[])
++{
++    int ret = 0;
++
++    TRACE(OV5647_INFO, "%s (enter)\n", __func__);
++
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++    HalContext_t *pHalCtx = (HalContext_t *) pSensorCtx->IsiCtx.HalHandle;
++
++    struct sensor_hdr_artio_s hdr_ratio;
++    if (hdrRatioNum == 2) {
++        hdr_ratio.ratio_s_vs = HdrRatio[1];
++        hdr_ratio.ratio_l_s = HdrRatio[0];
++    }else {
++        hdr_ratio.ratio_s_vs = HdrRatio[0];
++        hdr_ratio.ratio_l_s = 0;
++    }
++
++    if (hdr_ratio.ratio_s_vs == pSensorCtx->CurMode.ae_info.hdr_ratio.ratio_s_vs &&
++        hdr_ratio.ratio_l_s == pSensorCtx->CurMode.ae_info.hdr_ratio.ratio_l_s)
++        return RET_SUCCESS;
++
++    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_HDR_RADIO, &hdr_ratio);
++    if (ret != 0) {
++        TRACE(OV5647_ERROR,"%s: set hdr ratio error!\n", __func__);
++        return RET_FAILURE;
++    }
++    struct vvcam_mode_info_s sensor_mode;
++    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_G_SENSOR_MODE, &sensor_mode);
++    if (ret != 0) {
++        TRACE(OV5647_ERROR,"%s: get mode info error!\n", __func__);
++        return RET_FAILURE;
++    }
++
++    memcpy(&pSensorCtx->CurMode, &sensor_mode, sizeof (struct vvcam_mode_info_s));
++    OV5647_UpdateIsiAEInfo(handle);
++
++    TRACE(OV5647_INFO, "%s (exit)\n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiGetIntegrationTimeIss(IsiSensorHandle_t handle,
++                                   IsiSensorIntTime_t *pIntegrationTime)
++{
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++
++    TRACE(OV5647_INFO, "%s (enter)\n", __func__);
++
++    memcpy(pIntegrationTime, &pSensorCtx->IntTime, sizeof(IsiSensorIntTime_t));
++
++    TRACE(OV5647_INFO, "%s (exit)\n", __func__);
++
++    return RET_SUCCESS;
++
++}
++
++static RESULT OV5647_IsiSetIntegrationTimeIss(IsiSensorHandle_t handle,
++                                   IsiSensorIntTime_t *pIntegrationTime)
++{
++    int ret = 0;
++    uint32_t LongIntLine;
++    uint32_t IntLine;
++    uint32_t ShortIntLine;
++    uint32_t oneLineTime;
++
++    TRACE(OV5647_INFO, "%s (enter)\n", __func__);
++
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++    HalContext_t *pHalCtx = (HalContext_t *) pSensorCtx->IsiCtx.HalHandle;
++
++    if (pIntegrationTime == NULL)
++        return RET_NULL_POINTER;
++
++    oneLineTime =  pSensorCtx->AeInfo.oneLineExpTime;
++    pSensorCtx->IntTime.expoFrmType = pIntegrationTime->expoFrmType;
++
++    switch (pIntegrationTime->expoFrmType) {
++        case ISI_EXPO_FRAME_TYPE_1FRAME:
++            IntLine = (pIntegrationTime->IntegrationTime.linearInt +
++                       (oneLineTime / 2)) / oneLineTime;
++            if (IntLine != pSensorCtx->IntLine) {
++                ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_EXP, &IntLine);
++                if (ret != 0) {
++                    TRACE(OV5647_ERROR,"%s:set sensor linear exp error!\n", __func__);
++                    return RET_FAILURE;
++                }
++               pSensorCtx->IntLine = IntLine;
++            }
++            TRACE(OV5647_INFO, "%s set linear exp %d \n", __func__,IntLine);
++            pSensorCtx->IntTime.IntegrationTime.linearInt =  IntLine * oneLineTime;
++            break;
++        case ISI_EXPO_FRAME_TYPE_2FRAMES:
++            IntLine = (pIntegrationTime->IntegrationTime.dualInt.dualIntTime +
++                       (oneLineTime / 2)) / oneLineTime;
++            if (IntLine != pSensorCtx->IntLine) {
++                ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_EXP, &IntLine);
++                if (ret != 0) {
++                    TRACE(OV5647_ERROR,"%s:set sensor dual exp error!\n", __func__);
++                    return RET_FAILURE;
++                }
++                pSensorCtx->IntLine = IntLine;
++            }
++
++            if (pSensorCtx->CurMode.stitching_mode != SENSOR_STITCHING_DUAL_DCG_NOWAIT) {
++                ShortIntLine = (pIntegrationTime->IntegrationTime.dualInt.dualSIntTime +
++                               (oneLineTime / 2)) / oneLineTime;
++                if (ShortIntLine != pSensorCtx->ShortIntLine) {
++                    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_VSEXP, &ShortIntLine);
++                    if (ret != 0) {
++                        TRACE(OV5647_ERROR,"%s:set sensor dual vsexp error!\n", __func__);
++                        return RET_FAILURE;
++                    }
++                    pSensorCtx->ShortIntLine = ShortIntLine;
++                }
++            } else {
++                ShortIntLine = IntLine;
++                pSensorCtx->ShortIntLine = ShortIntLine;
++            }
++            TRACE(OV5647_INFO, "%s set dual exp %d short_exp %d\n", __func__, IntLine, ShortIntLine);
++            pSensorCtx->IntTime.IntegrationTime.dualInt.dualIntTime  = IntLine * oneLineTime;
++            pSensorCtx->IntTime.IntegrationTime.dualInt.dualSIntTime = ShortIntLine * oneLineTime;
++            break;
++        case ISI_EXPO_FRAME_TYPE_3FRAMES:
++            if (pSensorCtx->CurMode.stitching_mode != SENSOR_STITCHING_DUAL_DCG_NOWAIT) {
++                LongIntLine = (pIntegrationTime->IntegrationTime.triInt.triLIntTime +
++                        (oneLineTime / 2)) / oneLineTime;
++                if (LongIntLine != pSensorCtx->LongIntLine) {
++                    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_LONG_EXP, &LongIntLine);
++                    if (ret != 0) {
++                        TRACE(OV5647_ERROR,"%s:set sensor tri lexp error!\n", __func__);
++                        return RET_FAILURE;
++                    }
++                    pSensorCtx->LongIntLine = LongIntLine;
++                }
++            } else {
++                LongIntLine = (pIntegrationTime->IntegrationTime.triInt.triIntTime +
++                       (oneLineTime / 2)) / oneLineTime;
++                pSensorCtx->LongIntLine = LongIntLine;
++            }
++
++            IntLine = (pIntegrationTime->IntegrationTime.triInt.triIntTime +
++                       (oneLineTime / 2)) / oneLineTime;
++            if (IntLine != pSensorCtx->IntLine) {
++                ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_EXP, &IntLine);
++                if (ret != 0) {
++                    TRACE(OV5647_ERROR,"%s:set sensor tri exp error!\n", __func__);
++                    return RET_FAILURE;
++                }
++                pSensorCtx->IntLine = IntLine;
++            }
++
++            ShortIntLine = (pIntegrationTime->IntegrationTime.triInt.triSIntTime +
++                       (oneLineTime / 2)) / oneLineTime;
++            if (ShortIntLine != pSensorCtx->ShortIntLine) {
++                ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_VSEXP, &ShortIntLine);
++                if (ret != 0) {
++                    TRACE(OV5647_ERROR,"%s:set sensor tri vsexp error!\n", __func__);
++                    return RET_FAILURE;
++                }
++                pSensorCtx->ShortIntLine = ShortIntLine;
++            }
++            TRACE(OV5647_INFO, "%s set tri long exp %d exp %d short_exp %d\n", __func__, LongIntLine, IntLine, ShortIntLine);
++            pSensorCtx->IntTime.IntegrationTime.triInt.triLIntTime = LongIntLine * oneLineTime;
++            pSensorCtx->IntTime.IntegrationTime.triInt.triIntTime = IntLine * oneLineTime;
++            pSensorCtx->IntTime.IntegrationTime.triInt.triSIntTime = ShortIntLine * oneLineTime;
++            break;
++        default:
++            return RET_FAILURE;
++            break;
++    }
++
++    TRACE(OV5647_INFO, "%s (exit)\n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiGetGainIss(IsiSensorHandle_t handle, IsiSensorGain_t *pGain)
++{
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++
++    TRACE(OV5647_INFO, "%s (enter)\n", __func__);
++
++    if (pGain == NULL)
++        return RET_NULL_POINTER;
++    memcpy(pGain, &pSensorCtx->SensorGain, sizeof(IsiSensorGain_t));
++
++    TRACE(OV5647_INFO, "%s (exit)\n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiSetGainIss(IsiSensorHandle_t handle, IsiSensorGain_t *pGain)
++{
++    int ret = 0;
++    uint32_t LongGain;
++    uint32_t Gain;
++    uint32_t ShortGain;
++
++    TRACE(OV5647_INFO, "%s (enter)\n", __func__);
++
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++    HalContext_t *pHalCtx = (HalContext_t *) pSensorCtx->IsiCtx.HalHandle;
++
++    if (pGain == NULL)
++        return RET_NULL_POINTER;
++
++    pSensorCtx->SensorGain.expoFrmType = pGain->expoFrmType;
++    switch (pGain->expoFrmType) {
++        case ISI_EXPO_FRAME_TYPE_1FRAME:
++            Gain = pGain->gain.linearGainParas;
++            if (pSensorCtx->SensorGain.gain.linearGainParas != Gain) {
++                ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_GAIN, &Gain);
++                if (ret != 0) {
++                    TRACE(OV5647_ERROR,"%s:set sensor linear gain error!\n", __func__);
++                    return RET_FAILURE;
++                }
++            }
++            pSensorCtx->SensorGain.gain.linearGainParas = pGain->gain.linearGainParas;
++            TRACE(OV5647_INFO, "%s set linear gain %d\n", __func__,pGain->gain.linearGainParas);
++            break;
++        case ISI_EXPO_FRAME_TYPE_2FRAMES:
++            Gain = pGain->gain.dualGainParas.dualGain;
++            if (pSensorCtx->SensorGain.gain.dualGainParas.dualGain != Gain) {
++                if (pSensorCtx->CurMode.stitching_mode != SENSOR_STITCHING_DUAL_DCG_NOWAIT) {
++                    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_GAIN, &Gain);
++                } else {
++                    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_LONG_GAIN, &Gain);
++                }
++                if (ret != 0) {
++                    TRACE(OV5647_ERROR,"%s:set sensor dual gain error!\n", __func__);
++                    return RET_FAILURE;
++                }
++            }
++
++            ShortGain = pGain->gain.dualGainParas.dualSGain;
++            if (pSensorCtx->SensorGain.gain.dualGainParas.dualSGain != ShortGain) {
++                if (pSensorCtx->CurMode.stitching_mode != SENSOR_STITCHING_DUAL_DCG_NOWAIT) {
++                    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_VSGAIN, &ShortGain);
++                } else {
++                    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_GAIN, &ShortGain);
++                }
++                if (ret != 0) {
++                    TRACE(OV5647_ERROR,"%s:set sensor dual vs gain error!\n", __func__);
++                    return RET_FAILURE;
++                }
++            }
++            TRACE(OV5647_INFO,"%s:set gain%d short gain %d!\n", __func__,Gain,ShortGain);
++            pSensorCtx->SensorGain.gain.dualGainParas.dualGain = Gain;
++            pSensorCtx->SensorGain.gain.dualGainParas.dualSGain = ShortGain;
++            break;
++        case ISI_EXPO_FRAME_TYPE_3FRAMES:
++            LongGain = pGain->gain.triGainParas.triLGain;
++            if (pSensorCtx->SensorGain.gain.triGainParas.triLGain != LongGain) {
++                ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_LONG_GAIN, &LongGain);
++                if (ret != 0) {
++                    TRACE(OV5647_ERROR,"%s:set sensor tri gain error!\n", __func__);
++                    return RET_FAILURE;
++                }
++            }
++            Gain = pGain->gain.triGainParas.triGain;
++            if (pSensorCtx->SensorGain.gain.triGainParas.triGain != Gain) {
++                ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_GAIN, &Gain);
++                if (ret != 0) {
++                    TRACE(OV5647_ERROR,"%s:set sensor tri gain error!\n", __func__);
++                    return RET_FAILURE;
++                }
++            }
++
++            ShortGain = pGain->gain.triGainParas.triSGain;
++            if (pSensorCtx->SensorGain.gain.triGainParas.triSGain != ShortGain) {
++                ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_VSGAIN, &ShortGain);
++                if (ret != 0) {
++                    TRACE(OV5647_ERROR,"%s:set sensor tri vs gain error!\n", __func__);
++                    return RET_FAILURE;
++                }
++            }
++            TRACE(OV5647_INFO,"%s:set long gain %d gain%d short gain %d!\n", __func__, LongGain, Gain, ShortGain);
++            pSensorCtx->SensorGain.gain.triGainParas.triLGain = LongGain;
++            pSensorCtx->SensorGain.gain.triGainParas.triGain = Gain;
++            pSensorCtx->SensorGain.gain.triGainParas.triSGain = ShortGain;
++            break;
++        default:
++            return RET_FAILURE;
++            break;
++    }
++
++    TRACE(OV5647_INFO, "%s (exit)\n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiGetSensorFpsIss(IsiSensorHandle_t handle, uint32_t * pfps)
++{
++    TRACE(OV5647_INFO, "%s: (enter)\n", __func__);
++
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++
++    if (pfps == NULL)
++        return RET_NULL_POINTER;
++
++    *pfps = pSensorCtx->CurMode.ae_info.cur_fps;
++
++    TRACE(OV5647_INFO, "%s: (exit)\n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiSetSensorFpsIss(IsiSensorHandle_t handle, uint32_t fps)
++{
++    int ret = 0;
++
++    TRACE(OV5647_INFO, "%s: (enter)\n", __func__);
++
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++    HalContext_t *pHalCtx = (HalContext_t *) pSensorCtx->IsiCtx.HalHandle;
++
++    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_FPS, &fps);
++    if (ret != 0) {
++        TRACE(OV5647_ERROR,"%s:set sensor fps error!\n", __func__);
++        return RET_FAILURE;
++    }
++    struct vvcam_mode_info_s SensorMode;
++    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_G_SENSOR_MODE, &SensorMode);
++    if (ret != 0) {
++        TRACE(OV5647_ERROR,"%s:get sensor mode error!\n", __func__);
++        return RET_FAILURE;
++    }
++    memcpy(&pSensorCtx->CurMode, &SensorMode, sizeof(struct vvcam_mode_info_s));
++    OV5647_UpdateIsiAEInfo(handle);
++
++    TRACE(OV5647_INFO, "%s: (exit)\n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiSetSensorAfpsLimitsIss(IsiSensorHandle_t handle, uint32_t minAfps)
++{
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++
++    TRACE(OV5647_INFO, "%s: (enter)\n", __func__);
++
++    if ((minAfps > pSensorCtx->CurMode.ae_info.max_fps) ||
++        (minAfps < pSensorCtx->CurMode.ae_info.min_fps))
++        return RET_FAILURE;
++    pSensorCtx->minAfps = minAfps;
++    pSensorCtx->CurMode.ae_info.min_afps = minAfps;
++
++    TRACE(OV5647_INFO, "%s: (exit)\n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiGetSensorIspStatusIss(IsiSensorHandle_t handle,
++                               IsiSensorIspStatus_t *pSensorIspStatus)
++{
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++
++    TRACE(OV5647_INFO, "%s: (enter)\n", __func__);
++
++    if (pSensorCtx->CurMode.hdr_mode == SENSOR_MODE_HDR_NATIVE) {
++        pSensorIspStatus->useSensorAWB = true;
++        pSensorIspStatus->useSensorBLC = true;
++    } else {
++        pSensorIspStatus->useSensorAWB = false;
++        pSensorIspStatus->useSensorBLC = false;
++    }
++
++    TRACE(OV5647_INFO, "%s: (exit)\n", __func__);
++
++    return RET_SUCCESS;
++}
++
++#ifndef ISI_LITE
++
++static RESULT OV5647_IsiSensorGetCompressCurveIss(IsiSensorHandle_t handle, IsiSensorCompressCurve_t *pCompressCurve)
++{
++    int i = 0;
++    TRACE(OV5647_INFO, "%s: (enter)\n", __func__);
++
++    if (pCompressCurve == NULL)
++        return RET_NULL_POINTER;
++
++    if ((pCompressCurve->x_bit == 16) && (pCompressCurve->y_bit == 12)) {
++
++        uint8_t compress_px[64] = {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
++					10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
++					10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
++					10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10};
++        uint32_t compress_y_data[65] = {
++                    0   ,390 ,670 ,894 ,1096,1254,1378,1493,1592,1683,1769,1849,1926,1999,2069,2136,
++                    2200,2262,2322,2380,2436,2491,2544,2596,2646,2696,2744,2791,2837,2882,2926,2969,
++                    3012,3054,3095,3135,3175,3214,3252,3290,3327,3364,3400,3436,3471,3506,3540,3574,
++                    3608,3641,3674,3706,3738,3769,3801,3832,3862,3892,3922,3952,3981,4010,4039,4068,4095};
++        pCompressCurve->compress_x_data[0] = 0;
++        pCompressCurve->compress_y_data[0] = 0;
++        for (i= 1; i < 65; i++) {
++            pCompressCurve->compress_px[i-1] = compress_px[i-1];
++            pCompressCurve->compress_x_data[i] = pCompressCurve->compress_x_data[i-1] + (1 << compress_px[i-1]);
++            pCompressCurve->compress_y_data[i] = compress_y_data[i];
++        }
++
++    } else if ((pCompressCurve->x_bit == 20) && (pCompressCurve->y_bit == 12)) {
++        return RET_FAILURE;
++    } else {
++        return RET_FAILURE;
++    }
++
++    TRACE(OV5647_INFO, "%s: (exit)\n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiSetTestPatternIss(IsiSensorHandle_t handle,
++                                       IsiSensorTpgMode_e  tpgMode)
++{
++    int32_t ret = 0;
++
++    TRACE( OV5647_INFO, "%s (enter)\n", __func__);
++
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++    HalContext_t *pHalCtx = (HalContext_t *) pSensorCtx->IsiCtx.HalHandle;
++
++    struct sensor_test_pattern_s TestPattern;
++    if (tpgMode == ISI_TPG_DISABLE) {
++        TestPattern.enable = 0;
++        TestPattern.pattern = 0;
++    } else {
++        TestPattern.enable = 1;
++        TestPattern.pattern = (uint32_t)tpgMode - 1;
++    }
++
++    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_TEST_PATTERN, &TestPattern);
++    if (ret != 0)
++    {
++        TRACE(OV5647_ERROR, "%s: set test pattern enable[%d] mode[%d] error, max mode[%d]\n",
++            __func__, TestPattern.enable, (uint32_t)tpgMode - 1, OV5647_ISI_TPG_MAX);
++        return RET_FAILURE;
++    }
++
++    TRACE(OV5647_INFO, "%s: test pattern enable[%d] mode[%d]\n", __func__, TestPattern.enable, TestPattern.pattern);
++
++    TRACE(OV5647_INFO, "%s: (exit)\n", __func__);
++
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiFocusSetupIss(IsiSensorHandle_t handle)
++{
++    TRACE(OV5647_INFO, "%s (enter)\n", __func__);
++    TRACE(OV5647_INFO, "%s: (exit)\n", __func__);
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiFocusReleaseIss(IsiSensorHandle_t handle)
++{
++    TRACE(OV5647_INFO, "%s (enter)\n", __func__);
++    TRACE(OV5647_INFO, "%s: (exit)\n", __func__);
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiFocusGetIss(IsiSensorHandle_t handle, IsiFocusPos_t *pPos)
++{
++    TRACE(OV5647_INFO, "%s (enter)\n", __func__);
++    TRACE(OV5647_INFO, "%s: (exit)\n", __func__);
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiFocusSetIss(IsiSensorHandle_t handle, IsiFocusPos_t *pPos)
++{
++    TRACE(OV5647_INFO, "%s (enter)\n", __func__);
++    TRACE(OV5647_INFO, "%s: (exit)\n", __func__);
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiGetFocusCalibrateIss(IsiSensorHandle_t handle, IsiFoucsCalibAttr_t *pFocusCalib)
++{
++    TRACE(OV5647_INFO, "%s (enter)\n", __func__);
++    TRACE(OV5647_INFO, "%s: (exit)\n", __func__);
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiGetAeStartExposureIs(IsiSensorHandle_t handle, uint64_t *pExposure)
++{
++    TRACE(OV5647_INFO, "%s (enter)\n", __func__);
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++
++    if (pSensorCtx->AEStartExposure == 0) {
++        pSensorCtx->AEStartExposure =
++            (uint64_t)pSensorCtx->CurMode.ae_info.start_exposure *
++            pSensorCtx->CurMode.ae_info.one_line_exp_time_ns / 1000;
++
++    }
++    *pExposure =  pSensorCtx->AEStartExposure;
++    TRACE(OV5647_INFO, "%s:get start exposure %d\n", __func__, pSensorCtx->AEStartExposure);
++
++    TRACE(OV5647_INFO, "%s: (exit)\n", __func__);
++    return RET_SUCCESS;
++}
++
++static RESULT OV5647_IsiSetAeStartExposureIs(IsiSensorHandle_t handle, uint64_t exposure)
++{
++    TRACE( OV5647_INFO, "%s (enter)\n", __func__);
++    OV5647_Context_t *pSensorCtx = (OV5647_Context_t *) handle;
++
++    pSensorCtx->AEStartExposure = exposure;
++    TRACE(OV5647_INFO, "set start exposure %d\n", __func__,pSensorCtx->AEStartExposure);
++    TRACE(OV5647_INFO, "%s: (exit)\n", __func__);
++    return RET_SUCCESS;
++}
++
++#endif
++
++RESULT OV5647_IsiGetSensorIss(IsiSensor_t *pIsiSensor)
++{
++    TRACE( OV5647_INFO, "%s (enter)\n", __func__);
++
++    if (pIsiSensor == NULL)
++        return RET_NULL_POINTER;
++    memset(pIsiSensor, 0, sizeof(IsiSensor_t));
++
++    pIsiSensor->pszName                         = SensorName;
++    pIsiSensor->pIsiSensorSetPowerIss           = OV5647_IsiSensorSetPowerIss;
++    pIsiSensor->pIsiCreateSensorIss             = OV5647_IsiCreateSensorIss;
++    pIsiSensor->pIsiReleaseSensorIss            = OV5647_IsiReleaseSensorIss;
++    pIsiSensor->pIsiRegisterReadIss             = OV5647_IsiRegisterReadIss;
++    pIsiSensor->pIsiRegisterWriteIss            = OV5647_IsiRegisterWriteIss;
++    pIsiSensor->pIsiGetSensorModeIss            = OV5647_IsiGetSensorModeIss;
++    pIsiSensor->pIsiSetSensorModeIss            = OV5647_IsiSetSensorModeIss;
++    pIsiSensor->pIsiQuerySensorIss              = OV5647_IsiQuerySensorIss;
++    pIsiSensor->pIsiGetCapsIss                  = OV5647_IsiGetCapsIss;
++    pIsiSensor->pIsiSetupSensorIss              = OV5647_IsiSetupSensorIss;
++    pIsiSensor->pIsiGetSensorRevisionIss        = OV5647_IsiGetSensorRevisionIss;
++    pIsiSensor->pIsiCheckSensorConnectionIss    = OV5647_IsiCheckSensorConnectionIss;
++    pIsiSensor->pIsiSensorSetStreamingIss       = OV5647_IsiSensorSetStreamingIss;
++    pIsiSensor->pIsiGetAeInfoIss                = OV5647_IsiGetAeInfoIss;
++    pIsiSensor->pIsiSetHdrRatioIss              = OV5647_IsiSetHdrRatioIss;
++    pIsiSensor->pIsiGetIntegrationTimeIss       = OV5647_IsiGetIntegrationTimeIss;
++    pIsiSensor->pIsiSetIntegrationTimeIss       = OV5647_IsiSetIntegrationTimeIss;
++    pIsiSensor->pIsiGetGainIss                  = OV5647_IsiGetGainIss;
++    pIsiSensor->pIsiSetGainIss                  = OV5647_IsiSetGainIss;
++    pIsiSensor->pIsiGetSensorFpsIss             = OV5647_IsiGetSensorFpsIss;
++    pIsiSensor->pIsiSetSensorFpsIss             = OV5647_IsiSetSensorFpsIss;
++    pIsiSensor->pIsiSetSensorAfpsLimitsIss      = OV5647_IsiSetSensorAfpsLimitsIss;
++    pIsiSensor->pIsiGetSensorIspStatusIss       = OV5647_IsiGetSensorIspStatusIss;
++#ifndef ISI_LITE
++    pIsiSensor->pIsiSensorGetCompressCurveIss    = OV5647_IsiSensorGetCompressCurveIss;
++    pIsiSensor->pIsiActivateTestPatternIss       = OV5647_IsiSetTestPatternIss;
++    pIsiSensor->pIsiFocusSetupIss                = OV5647_IsiFocusSetupIss;
++    pIsiSensor->pIsiFocusReleaseIss              = OV5647_IsiFocusReleaseIss;
++    pIsiSensor->pIsiFocusSetIss                  = OV5647_IsiFocusSetIss;
++    pIsiSensor->pIsiFocusGetIss                  = OV5647_IsiFocusGetIss;
++    pIsiSensor->pIsiGetFocusCalibrateIss         = OV5647_IsiGetFocusCalibrateIss;
++    pIsiSensor->pIsiSetAeStartExposureIss        = OV5647_IsiSetAeStartExposureIs;
++    pIsiSensor->pIsiGetAeStartExposureIss        = OV5647_IsiGetAeStartExposureIs;
++#endif
++    TRACE( OV5647_INFO, "%s (exit)\n", __func__);
++    return RET_SUCCESS;
++}
++
++/*****************************************************************************
++* each sensor driver need declare this struct for isi load
++*****************************************************************************/
++IsiCamDrvConfig_t IsiCamDrvConfig = {
++    .CameraDriverID = 0x5647,
++    .pIsiHalQuerySensor = OV5647_IsiHalQuerySensorIss,
++    .pfIsiGetSensorIss = OV5647_IsiGetSensorIss,
++};
+-- 
+2.43.0
+
