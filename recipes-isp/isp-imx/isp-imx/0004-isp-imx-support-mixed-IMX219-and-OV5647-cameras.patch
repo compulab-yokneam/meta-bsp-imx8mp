@@ -1,0 +1,119 @@
+From c7b10a1474f96a812dd974bf5599a14b8669cfc1 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Thu, 1 Oct 2026 13:28:21 +0000
+Subject: [PATCH] isp-imx: support mixed IMX219 and OV5647 cameras
+
+Add a dual configuration that assigns each sensor from csi_id.
+
+Start the media server in DUAL_CAMERA mode.
+
+Detect the mixed pair during automatic startup.
+
+Upstream-Status: Inappropriate [CompuLab BSP integration]
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ imx/run.sh       | 22 +++++++++++++++++++++-
+ imx/start_isp.sh | 26 +++++++++++++++++++++-----
+ 2 files changed, 42 insertions(+), 6 deletions(-)
+
+diff --git a/imx/run.sh b/imx/run.sh
+index 73a6b56..8df3ec2 100755
+--- a/imx/run.sh
++++ b/imx/run.sh
+@@ -14,6 +14,7 @@ LOAD_MODULES="0" # do not load modules, they are automatically loaded if present
+ LOCAL_RUN="0" # search modules in /lib/modules and libraries in /usr/lib
+ RUN_OPTION=""
+ LOCAL_RUN="0"
++DEVICE_TREE_ROOT="${DEVICE_TREE_ROOT:-/sys/firmware/devicetree/base/soc@0}"
+ # an array with the modules to load, insertion order
+ declare -a MODULES=("imx8-media-dev" "vvcam-dwe" "vvcam-isp" "vvcam-video")
+ 
+@@ -36,6 +37,7 @@ USAGE+="\tos08a20_4khdr           - single os08a20 camera on MIPI-CSI1, 3840x216
+ 
+ USAGE+="\timx219_1080p30         - single imx219 camera on MIPI-CSI1/2, 1920x1080, 30 fps\n"
+ USAGE+="\tov5647_1080p30         - single ov5647 camera on MIPI-CSI1/2, 1920x1080, 30 fps\n"
++USAGE+="\tdual_imx219_ov5647_1080p30 - imx219 and ov5647 on MIPI-CSI1/2, 1920x1080, 30 fps\n"
+ 
+ # parse command line arguments
+ while [ "$1" != "" ]; do
+@@ -135,7 +137,7 @@ select_sensor_camera () {
+ 	local CSI_ID
+ 
+ 	CSI_ID="0"
+-	for COMPATIBLE_FILE in $(find /sys/firmware/devicetree/base/soc@0/ \
++	for COMPATIBLE_FILE in $(find "$DEVICE_TREE_ROOT" \
+ 		-name compatible 2>/dev/null | grep i2c); do
+ 		if grep -q "$SENSOR_COMPATIBLE" "$COMPATIBLE_FILE"; then
+ 			CSI_ID_FILE="${COMPATIBLE_FILE%/compatible}/csi_id"
+@@ -372,6 +374,24 @@ case "$ISP_CONFIG" in
+ 			 MODE="0"
+ 			 write_sensor_cfg_file "$SENSOR_CFG_FILE" $CAM_NAME $DRV_FILE $MODE_FILE $MODE
+ 			 ;;
++		 dual_imx219_ov5647_1080p30 )
++			 MODULES=("imx219" "ov5647" "${MODULES[@]}")
++			 select_sensor_camera "sony,imx219"
++			 IMX219_SENSOR_CFG_FILE="$SENSOR_CFG_FILE"
++			 select_sensor_camera "ovti,ov5647"
++			 OV5647_SENSOR_CFG_FILE="$SENSOR_CFG_FILE"
++
++			 if [ "$IMX219_SENSOR_CFG_FILE" = "$OV5647_SENSOR_CFG_FILE" ]; then
++				 echo "IMX219 and OV5647 have the same csi_id" >&2
++				 exit 1
++			 fi
++
++			 RUN_OPTION="DUAL_CAMERA"
++			 write_sensor_cfg_file "$IMX219_SENSOR_CFG_FILE" \
++				 "imx219" "imx219.drv" "IMX219_MODES.txt" "0"
++			 write_sensor_cfg_file "$OV5647_SENSOR_CFG_FILE" \
++				 "ov5647" "ov5647.drv" "OV5647_MODES.txt" "0"
++			 ;;
+ 		 *)
+ 			echo "ISP configuration \"$ISP_CONFIG\" unsupported."
+ 			echo -e "$USAGE" >&2
+diff --git a/imx/start_isp.sh b/imx/start_isp.sh
+index 1905a34..4b4fb8c 100755
+--- a/imx/start_isp.sh
++++ b/imx/start_isp.sh
+@@ -7,11 +7,18 @@
+ #
+ 
+ RUNTIME_DIR="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+-NR_DEVICE_TREE_BASLER=$(grep basler-camera-vvcam `find /sys/firmware/devicetree/base/soc@0/ -name compatible | grep i2c` -l | wc -l 2> /dev/null)
+-NR_DEVICE_TREE_OV5640=$(grep ov5640 `find /sys/firmware/devicetree/base/soc@0/ -name compatible | grep i2c` -l | wc -l 2> /dev/null)
+-NR_DEVICE_TREE_OS08A20=$(grep os08a20 `find /sys/firmware/devicetree/base/soc@0/ -name compatible | grep i2c` -l | wc -l 2> /dev/null)
+-NR_DEVICE_TREE_IMX219=$(grep imx219 `find /sys/firmware/devicetree/base/soc@0/ -name compatible | grep i2c` -l | wc -l 2> /dev/null)
+-NR_DEVICE_TREE_OV5647=$(grep ov5647 `find /sys/firmware/devicetree/base/soc@0/ -name compatible | grep i2c` -l | wc -l 2> /dev/null)
++DEVICE_TREE_ROOT="${DEVICE_TREE_ROOT:-/sys/firmware/devicetree/base/soc@0}"
++
++count_compatible () {
++	find "$DEVICE_TREE_ROOT" -path '*i2c*' -name compatible \
++		-exec grep -l "$1" {} + 2>/dev/null | wc -l
++}
++
++NR_DEVICE_TREE_BASLER=$(count_compatible basler-camera-vvcam)
++NR_DEVICE_TREE_OV5640=$(count_compatible ov5640)
++NR_DEVICE_TREE_OS08A20=$(count_compatible os08a20)
++NR_DEVICE_TREE_IMX219=$(count_compatible imx219)
++NR_DEVICE_TREE_OV5647=$(count_compatible ov5647)
+ 
+ 
+ # check if the basler device has been enabled in the device tree
+@@ -71,6 +78,15 @@ elif [ $NR_DEVICE_TREE_OS08A20 -eq 2 ]; then
+ 	# Available configurations: dual_Os08a20_1080p60, dual_Os08a20_1080p30hdr
+ 	exec ./run.sh -c dual_os08a20_1080p60 -lm
+ 
++elif [ $NR_DEVICE_TREE_IMX219 -eq 1 ] && \
++	[ $NR_DEVICE_TREE_OV5647 -eq 1 ]; then
++
++	echo "Starting isp_media_server for IMX219 and OV5647"
++
++	cd $RUNTIME_DIR
++	# The run script assigns each sensor to Sensor0 or Sensor1 from csi_id.
++	exec ./run.sh -c dual_imx219_ov5647_1080p30 -lm
++
+ elif [ $NR_DEVICE_TREE_IMX219 -eq 1 ]; then
+ 
+ 	echo "Starting isp_media_server for Single imx219"
+-- 
+2.43.0
+

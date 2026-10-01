@@ -1,0 +1,81 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Thu, 1 Oct 2026 16:00:00 +0000
+Subject: [PATCH] isp-vvcam: retry OV5647 chip ID read
+
+The OV5647 may not acknowledge its chip ID registers immediately after
+the first cold-start reset. Retry the chip ID transaction for a bounded
+period so a transient startup delay does not fail the initial probe.
+
+Upstream-Status: Inappropriate [CompuLab BSP integration]
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ sensor/ov5647/ov5647_mipi_v3.c | 29 +++++++++++++++++++++++------
+ 1 file changed, 23 insertions(+), 6 deletions(-)
+
+diff --git a/sensor/ov5647/ov5647_mipi_v3.c b/sensor/ov5647/ov5647_mipi_v3.c
+index 826cb34..34b9115 100644
+--- a/sensor/ov5647/ov5647_mipi_v3.c
++++ b/sensor/ov5647/ov5647_mipi_v3.c
+@@ -32,6 +32,10 @@
+ #define OV5647_XCLK_MIN 6000000
+ #define OV5647_XCLK_MAX 24000000
+ 
++#define OV5647_CHIP_ID 0x5647
++#define OV5647_CHIP_ID_RETRIES 5
++#define OV5647_CHIP_ID_RETRY_DELAY_MS 100
++
+ #define OV5647_SENS_PAD_SOURCE	0
+ #define OV5647_SENS_PADS_NUM	1
+ 
+@@ -771,6 +775,7 @@ static int ov5647_probe(struct i2c_client *client,
+ 	struct ov5647 *sensor;
+ 	u32 chip_id = 0;
+ 	u8 reg_val = 0;
++	unsigned int retry;
+ 
+ 	pr_info("enter %s\n", __func__);
+ 
+@@ -814,16 +819,34 @@ static int ov5647_probe(struct i2c_client *client,
+ 
+ 	ov5647_reset(sensor);
+ 
+-	ov5647_read_reg(sensor, 0x300a, &reg_val);
+-	chip_id |= reg_val << 8;
+-	ov5647_read_reg(sensor, 0x300b, &reg_val);
+-	chip_id |= reg_val;
+-	if (chip_id != 0x5647) {
+-		pr_warn("camera ov5647 is not found\n");
++	for (retry = 0; retry < OV5647_CHIP_ID_RETRIES; retry++) {
++		chip_id = 0;
++		reg_val = 0;
++		retval = ov5647_read_reg(sensor, 0x300a, &reg_val);
++		if (!retval) {
++			chip_id = reg_val << 8;
++			retval = ov5647_read_reg(sensor, 0x300b, &reg_val);
++			if (!retval) {
++				chip_id |= reg_val;
++				if (chip_id == OV5647_CHIP_ID)
++					break;
++			}
++		}
++
++		if (retry + 1 < OV5647_CHIP_ID_RETRIES)
++			msleep(OV5647_CHIP_ID_RETRY_DELAY_MS);
++	}
++
++	if (chip_id != OV5647_CHIP_ID) {
++		dev_warn(dev, "camera ov5647 is not found, chip ID 0x%04x\n",
++			 chip_id);
+ 		retval = -ENODEV;
+ 		goto probe_err_power_off;
+ 	}
+ 
++	if (retry)
++		dev_info(dev, "chip ID read succeeded after %u retries\n", retry);
++
+ 	sd = &sensor->subdev;
+ 	v4l2_i2c_subdev_init(sd, client, &ov5647_subdev_ops);
+ 	sd->flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
+-- 
+2.51.0
