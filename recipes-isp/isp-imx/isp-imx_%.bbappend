@@ -3,6 +3,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI:append = " \
     file://0001-isp-imx-add-IMX219-camera-support.patch \
     file://0002-isp-imx-add-OV5647-camera-support.patch \
+    file://0003-isp-imx-support-IMX219-and-OV5647-on-CSI2.patch \
 "
 
 FILES_SOLIBS_VERSIONED += " \

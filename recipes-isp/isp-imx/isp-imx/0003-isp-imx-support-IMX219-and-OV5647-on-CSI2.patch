@@ -1,0 +1,100 @@
+From 08843325af400562e83e1a8d7e2ab778c75c6290 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Thu, 1 Oct 2026 13:03:39 +0000
+Subject: [PATCH] isp-imx: support IMX219 and OV5647 on CSI2
+
+Read csi_id from the matching sensor device-tree node. Select CAMERA0 and
+Sensor0_Entry.cfg for CSI1/ISP0, or CAMERA1 and Sensor1_Entry.cfg for
+CSI2/ISP1.
+
+Keep the existing sensor mode names so automatic startup and manual use of
+run.sh work on either camera pipeline.
+
+Upstream-Status: Inappropriate [CompuLab BSP integration]
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ imx/run.sh | 43 +++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 37 insertions(+), 6 deletions(-)
+
+diff --git a/imx/run.sh b/imx/run.sh
+index 9f46573..73a6b56 100755
+--- a/imx/run.sh
++++ b/imx/run.sh
+@@ -34,8 +34,8 @@ USAGE+="\tos08a20_1080p30hdr      - single os08a20 camera on MIPI-CSI1, 1920x108
+ USAGE+="\tdual_os08a20_1080p30hdr - dual os08a20 cameras on MIPI-CSI1/2, 1920x1080, 30 fps, HDR configuration\n"
+ USAGE+="\tos08a20_4khdr           - single os08a20 camera on MIPI-CSI1, 3840x2160, 15 fps, HDR configuration\n"
+ 
+-USAGE+="\timx219_1080p30         - single imx219 camera on MIPI-CSI1, 1920x1080, 30 fps\n"
+-USAGE+="\tov5647_1080p30         - single ov5647 camera on MIPI-CSI1, 1920x1080, 30 fps\n"
++USAGE+="\timx219_1080p30         - single imx219 camera on MIPI-CSI1/2, 1920x1080, 30 fps\n"
++USAGE+="\tov5647_1080p30         - single ov5647 camera on MIPI-CSI1/2, 1920x1080, 30 fps\n"
+ 
+ # parse command line arguments
+ while [ "$1" != "" ]; do
+@@ -128,6 +128,37 @@ write_sensor_cfg_file () {
+ 	fi
+ }
+ 
++select_sensor_camera () {
++	local SENSOR_COMPATIBLE="$1"
++	local COMPATIBLE_FILE
++	local CSI_ID_FILE
++	local CSI_ID
++
++	CSI_ID="0"
++	for COMPATIBLE_FILE in $(find /sys/firmware/devicetree/base/soc@0/ \
++		-name compatible 2>/dev/null | grep i2c); do
++		if grep -q "$SENSOR_COMPATIBLE" "$COMPATIBLE_FILE"; then
++			CSI_ID_FILE="${COMPATIBLE_FILE%/compatible}/csi_id"
++			if [ -r "$CSI_ID_FILE" ]; then
++				CSI_ID=$(od -An -tu1 "$CSI_ID_FILE" | awk '{print $NF}')
++			fi
++			break
++		fi
++	done
++
++	case "$CSI_ID" in
++		0 | 1 ) ;;
++		* )
++			echo "Invalid csi_id $CSI_ID for $SENSOR_COMPATIBLE; using CSI1/ISP0" >&2
++			CSI_ID="0"
++			;;
++	esac
++
++	RUN_OPTION="CAMERA${CSI_ID}"
++	SENSOR_CFG_FILE="Sensor${CSI_ID}_Entry.cfg"
++	echo "Using $RUN_OPTION for $SENSOR_COMPATIBLE"
++}
++
+ # write the sensonr config file
+ set_libs_path () {
+ 	local ONE_LIB="$1"
+@@ -325,21 +356,21 @@ case "$ISP_CONFIG" in
+                          ;;
+ 		 imx219_1080p30 )
+ 			 MODULES=("imx219" "${MODULES[@]}")
+-			 RUN_OPTION="CAMERA0"
++			 select_sensor_camera "sony,imx219"
+ 			 CAM_NAME="imx219"
+ 			 DRV_FILE="imx219.drv"
+ 			 MODE_FILE="IMX219_MODES.txt"
+ 			 MODE="0"
+-			 write_sensor_cfg_file "Sensor0_Entry.cfg" $CAM_NAME $DRV_FILE $MODE_FILE $MODE
++			 write_sensor_cfg_file "$SENSOR_CFG_FILE" $CAM_NAME $DRV_FILE $MODE_FILE $MODE
+ 			 ;;
+ 		 ov5647_1080p30 )
+ 			 MODULES=("ov5647" "${MODULES[@]}")
+-			 RUN_OPTION="CAMERA0"
++			 select_sensor_camera "ovti,ov5647"
+ 			 CAM_NAME="ov5647"
+ 			 DRV_FILE="ov5647.drv"
+ 			 MODE_FILE="OV5647_MODES.txt"
+ 			 MODE="0"
+-			 write_sensor_cfg_file "Sensor0_Entry.cfg" $CAM_NAME $DRV_FILE $MODE_FILE $MODE
++			 write_sensor_cfg_file "$SENSOR_CFG_FILE" $CAM_NAME $DRV_FILE $MODE_FILE $MODE
+ 			 ;;
+ 		 *)
+ 			echo "ISP configuration \"$ISP_CONFIG\" unsupported."
+-- 
+2.43.0
+
