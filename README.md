@@ -98,10 +98,38 @@ source setup-environment build-${MACHINE}
 
 ## Advanced Features
 
-The following optional U-Boot workflows use Yocto multiconfig. Enable only one
-of the configuration files below in `${BUILDDIR}/conf/local.conf` at a time.
+The following options extend the standard per-machine build when a family-wide
+image or additional bootloader variants are required.
+
+### Build grouped family images
+
+Two independent options install related machine payloads into an image built
+for any CompuLab i.MX8MP machine. Enable the MCM, SOM, UCM, and SBEV-UCM group
+with:
+
+```
+SUPER_EVK = "1"
+```
+
+Enable the IOT-GATE and IOTDIN group with:
+
+```
+SUPER_IOT = "1"
+```
+
+Add either or both settings to `${BUILDDIR}/conf/local.conf`, then build the
+image normally. Each option adds that group's DTBs and overlays, firmware,
+machine features, private configuration applications and tools, and kernel
+module autoload settings. The selected machine still controls the bootloader
+and default device tree. The `compulab-imx8mp` demonstration machine enables
+both groups by default. Per-machine inventories are maintained under
+`conf/machine/include/machine-payload/`.
 
 ### Build multiple DRAM configurations
+
+This and the multiple-machine U-Boot workflow use Yocto multiconfig. Enable
+only one of their configuration files in `${BUILDDIR}/conf/local.conf` at a
+time.
 
 The supported DRAM configuration options are `d1d8` and `d2d4`. Enable both
 options for the selected machine with:

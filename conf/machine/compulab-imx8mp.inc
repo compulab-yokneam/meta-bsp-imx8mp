@@ -4,12 +4,17 @@ MACHINEOVERRIDES =. "imx-boot-container:mx8:mx8m:mx8mp:compulab-mx8mp:"
 
 require conf/machine/include/imx-base.inc
 require conf/machine/include/arm/armv8a/tune-cortexa53.inc
+require include/compulab-imx8mp-groups.inc
 
 DEFAULTTUNE:use-mainline-bsp = "cortexa53-crypto"
 DEFAULTTUNE:use-nxp-bsp = "cortexa53-crypto"
 
 MACHINE_FEATURES += " pci wifi bluetooth "
 MACHINE_FEATURES:append:use-nxp-bsp = " optee "
+
+# meta-imx removes this legacy feature globally. Keep it available for the
+# MCM/SOM payloads and grouped images, which ship the corresponding firmware.
+MACHINE_FEATURES_IMX_REMOVALS:remove:compulab-mx8mp = "mrvl8997"
 
 IMX_DEFAULT_BOOTLOADER:use-mainline-bsp = "u-boot-compulab"
 IMX_DEFAULT_BOOTLOADER:use-nxp-bsp = "u-boot-compulab"
@@ -66,6 +71,8 @@ PREFERRED_VERSION_libgpiod = "1.6.4"
 IMXBOOT_TARGETS_BASENAME = "flash_evk"
 
 PREFERRED_RROVIDER_u-boot-fw-utils = "libubootenv-bin"
+
+# Family default; a child machine, distro, or local.conf may override it.
 PREFERRED_VERSION_u-boot-compulab ??= "2023.04"
 
 MACHINE_FIRMWARE:remove = " linux-firmware-ath10k "

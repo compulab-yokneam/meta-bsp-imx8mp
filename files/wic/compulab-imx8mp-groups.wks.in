@@ -1,0 +1,5 @@
+part u-boot --source rawcopy --sourceparams="file=imx-boot" --ondisk mmcblk --no-table --align ${IMX_BOOT_SEEK}
+part /boot --source rootfs --rootfs-dir=${IMAGE_ROOTFS}/boot --ondisk mmcblk --fstype=vfat --mkfs-extraopts="-F 32" --label boot --active --align 8192 --uuid ${PARTUUID_BOOT} --fsuuid ${UUID_BOOT} --size ${WKS_BOOT_SIZE}
+part / --source rootfs --ondisk mmcblk --fstype=ext4 --label root --align 8192 --uuid ${PARTUUID} --fsuuid ${UUID}
+
+bootloader --ptable gpt
