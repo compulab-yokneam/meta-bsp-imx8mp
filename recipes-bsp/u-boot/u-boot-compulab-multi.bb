@@ -3,7 +3,7 @@ DESCRIPTION = "Aggregate independently built machine and DRAM boot containers"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
-inherit deploy
+inherit allarch deploy
 
 INHIBIT_DEFAULT_DEPS = "1"
 
@@ -95,9 +95,8 @@ do_deploy() {
 addtask deploy after do_install before do_build
 
 FILES:${PN} = "/boot/${PN}"
-PACKAGE_ARCH = "all"
 
-# PACKAGE_ARCH does not automatically extend the SPDX sstate search path.
+# The allarch class does not automatically extend the SPDX sstate search path.
 SPDX_MULTILIB_SSTATE_ARCHS:append = " ${SSTATE_PKGARCH}"
 
 COMPATIBLE_MACHINE = "(compulab-mx8mp)"
