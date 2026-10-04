@@ -1,9 +1,10 @@
-DESCRIPTION = "CLab i.MX8 U-Boot"
+SUMMARY = "CompuLab i.MX8MP family bootloader bundle"
+DESCRIPTION = "Build U-Boot boot containers for every supported CompuLab i.MX8MP machine and DRAM configuration"
+
 require recipes-bsp/u-boot/u-boot.inc
 
-PROVIDES += " ${PN} "
-PROVIDES += " u-boot-initial-env "
-PROVIDES += " u-boot-compulab-env "
+# This is a family firmware payload, not the bootloader used to assemble the
+# current machine's image.
 PROVIDES:remove = "virtual/bootloader"
 
 LICENSE = "GPL-2.0-or-later"
@@ -12,178 +13,230 @@ LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a
 UBOOT_VERSION = "2023.04"
 SRCBRANCH = "u-boot-compulab_v2023.04-d1d8_d2d4"
 SRC_URI = "git://github.com/compulab-yokneam/u-boot-compulab;protocol=https;branch=${SRCBRANCH}"
-PV = "${UBOOT_VERSION}+git${SRCPV}"
-SRCREV = "${AUTOREV}"
+SRCREV = "1d776c6866b34e915f03dfb7b2a86dd2bdb82fc9"
+PV = "${UBOOT_VERSION}+git"
 
-DEPENDS += " flex-native bison-native bc-native dtc-native xz-native python3-setuptools-native u-boot-tools-native"
+DEPENDS += "flex-native bison-native bc-native dtc-native xz-native python3-setuptools-native u-boot-tools-native"
 
 B = "${WORKDIR}/build"
 
-UBOOT_VERSION_EXTENSION = "-${CL_RELEASE}"
-COMPULAB_BOOTLOADER_FAMILY_MEMBERS = "iot-gate-imx8plus iotdin-imx8p mcm-imx8m-plus som-imx8m-plus ucm-imx8m-plus ucm-imx8m-plus-sbev"
-COMPULAB_BOOTLOADER_MACHINE = "${@bb.utils.contains('MACHINE', 'compulab-imx8mp', 'ucm-imx8m-plus-sbev', '${MACHINE}', d)}"
-COMPULAB_BOOTLOADER_MACHINES ?= "${@bb.utils.contains('COMPULAB_BOOTLOADER_FAMILY', '1', '${COMPULAB_BOOTLOADER_FAMILY_MEMBERS}', '${COMPULAB_BOOTLOADER_MACHINE}', d)}"
-DRAM_CONFIGS = "d1d8 d2d4"
+# The standard U-Boot configuration type describes the current MACHINE and is
+# not used by this family matrix. Clearing it also prevents inherited signing
+# deploy hooks from looking for the standard <defconfig>-<type> build folder.
+UBOOT_CONFIG = ""
+UBOOT_MACHINE = "compulab-family"
+
+COMPULAB_BOOTLOADER_FAMILY_MEMBERS = "${COMPULAB_IMX8MP_IOT_MACHINES} ${COMPULAB_IMX8MP_EVK_MACHINES}"
+COMPULAB_BOOTLOADER_MACHINES ?= "${COMPULAB_BOOTLOADER_FAMILY_MEMBERS}"
+COMPULAB_BOOTLOADER_DRAM_CONFIGS ?= "d1d8 d2d4"
+COMPULAB_BOOTLOADER_DEFAULT_DRAM ?= "d2d4"
+COMPULAB_BOOTLOADER_INSTALL_DIR = "/boot/${PN}"
 
 inherit fsl-u-boot-localversion
 
-DEPENDS += " \
-    ${IMX_EXTRA_FIRMWARE} \
-    imx-atf \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os', '', d)} \
-"
+# CONFIG_LOCALVERSION carries the release and DRAM configuration. Keep the SCM
+# suffix, but do not add the class's default +fslc marker as well.
+LOCALVERSION = ""
 
+python __anonymous() {
+    supported_machines = set((d.getVar("COMPULAB_BOOTLOADER_FAMILY_MEMBERS") or "").split())
+    requested_machines = (d.getVar("COMPULAB_BOOTLOADER_MACHINES") or "").split()
+    requested_dram = (d.getVar("COMPULAB_BOOTLOADER_DRAM_CONFIGS") or "").split()
+    default_dram = d.getVar("COMPULAB_BOOTLOADER_DEFAULT_DRAM")
+
+    if not requested_machines:
+        bb.fatal("COMPULAB_BOOTLOADER_MACHINES must not be empty")
+
+    unknown_machines = sorted(set(requested_machines) - supported_machines)
+    if unknown_machines:
+        bb.fatal("Unsupported CompuLab bootloader machines: %s" %
+                 " ".join(unknown_machines))
+
+    supported_dram = {"d1d8", "d2d4"}
+    if not requested_dram or set(requested_dram) - supported_dram:
+        bb.fatal("COMPULAB_BOOTLOADER_DRAM_CONFIGS must contain only d1d8 and/or d2d4")
+
+    if default_dram not in requested_dram:
+        bb.fatal("COMPULAB_BOOTLOADER_DEFAULT_DRAM must be present in COMPULAB_BOOTLOADER_DRAM_CONFIGS")
+}
+
+# The build consumes deployed firmware files rather than recipe sysroots.
 do_configure[depends] += " \
-    ${@' '.join('%s:do_deploy' % r for r in '${IMX_EXTRA_FIRMWARE}'.split() )} \
-    imx-atf:do_deploy \
+    ${@' '.join('%s:do_deploy' % recipe for recipe in (d.getVar('IMX_EXTRA_FIRMWARE') or '').split())} \
+    ${IMX_DEFAULT_ATF_PROVIDER}:do_deploy \
     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os:do_deploy', '', d)} \
 "
 
 ATF_MACHINE_NAME ?= "bl31-${ATF_PLATFORM}.bin"
 ATF_MACHINE_NAME:append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
 
+# These inherited tasks do not produce anything for this firmware bundle.
+do_uboot_generate_rsa_keys[noexec] = "1"
 do_uboot_assemble_fitimage[noexec] = "1"
+do_create_extlinux_config[noexec] = "1"
 
-do_configure1()  {
-    mkdir -p ${B}/${BOOTLOADER_BUILD_FOLDER}
-    oe_runmake -C ${S} O=${B}/${BOOTLOADER_BUILD_FOLDER} ${BOOTLOADER_CONFIG}
+compulab_prepare_build_dir() {
+    build_dir="$1"
+
+    install -d "${build_dir}"
+
     for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
-        ln -sf ${DEPLOY_DIR_IMAGE}/${ddr_firmware} ${B}/${BOOTLOADER_BUILD_FOLDER}/
+        if [ ! -s "${DEPLOY_DIR_IMAGE}/${ddr_firmware}" ]; then
+            bbfatal "Missing DDR firmware: ${DEPLOY_DIR_IMAGE}/${ddr_firmware}"
+        fi
+        ln -snf "${DEPLOY_DIR_IMAGE}/${ddr_firmware}" "${build_dir}/${ddr_firmware}"
     done
-    ln -sf ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME} ${B}/${BOOTLOADER_BUILD_FOLDER}/bl31.bin
-    ln -sf ${DEPLOY_DIR_IMAGE}/tee.bin ${B}/${BOOTLOADER_BUILD_FOLDER}/
+
+    if [ ! -s "${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME}" ]; then
+        bbfatal "Missing Arm Trusted Firmware: ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME}"
+    fi
+    ln -snf "${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME}" "${build_dir}/bl31.bin"
+
+    if ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'true', 'false', d)}; then
+        if [ ! -s "${DEPLOY_DIR_IMAGE}/tee.bin" ]; then
+            bbfatal "Missing OP-TEE firmware: ${DEPLOY_DIR_IMAGE}/tee.bin"
+        fi
+        ln -snf "${DEPLOY_DIR_IMAGE}/tee.bin" "${build_dir}/tee.bin"
+    fi
 }
 
 do_configure() {
-    for MACH in ${COMPULAB_BOOTLOADER_MACHINES};do
-        BOOTLOADER_BUILD_FOLDER=${MACH}_defconfig-${UBOOT_CONFIG} BOOTLOADER_CONFIG=${MACH}_defconfig do_configure1
+    for machine in ${COMPULAB_BOOTLOADER_MACHINES}; do
+        for dram_config in ${COMPULAB_BOOTLOADER_DRAM_CONFIGS}; do
+            compulab_prepare_build_dir "${B}/${machine}-${dram_config}"
+        done
     done
 }
 
-do_compile_dram_cfg() {
-    DRAM_CFG=${1}
+compulab_compile_config() {
+    machine="$1"
+    dram_config="$2"
+    build_dir="${B}/${machine}-${dram_config}"
 
-    oe_runmake -C ${S} O=${B}/${BOOTLOADER_BUILD_FOLDER}  ${BOOTLOADER_CONFIG} ${DRAM_CFG}.config
+    oe_runmake -C "${S}" O="${build_dir}" \
+        "${machine}_defconfig" "${dram_config}.config"
 
-    sed -i "/CONFIG_LOCALVERSION=/d" ${B}/${BOOTLOADER_BUILD_FOLDER}/.config
-    sed -i "$ a CONFIG_LOCALVERSION=\"${UBOOT_VERSION_EXTENSION}-${DRAM_CFG}\"" ${B}/${BOOTLOADER_BUILD_FOLDER}/.config
+    sed -i '/^CONFIG_LOCALVERSION=/d' "${build_dir}/.config"
+    printf '%s\n' \
+        "CONFIG_LOCALVERSION=\"-${CL_RELEASE}-${dram_config}\"" \
+        >> "${build_dir}/.config"
+    oe_runmake -C "${S}" O="${build_dir}" olddefconfig
 
-    oe_runmake -C ${S} O=${B}/${BOOTLOADER_BUILD_FOLDER} flash.bin
-    mv ${B}/${BOOTLOADER_BUILD_FOLDER}/flash.bin ${B}/${BOOTLOADER_BUILD_FOLDER}/flash.bin_${DRAM_CFG}
+    # flash.bin-with-env depends on and leaves behind flash.bin and
+    # u-boot-initial-env, so one make invocation produces all three outputs.
+    oe_runmake -C "${S}" O="${build_dir}" flash.bin-with-env
 
-    oe_runmake -C ${S} O=${B}/${BOOTLOADER_BUILD_FOLDER} flash.bin-with-env
-    mv ${B}/${BOOTLOADER_BUILD_FOLDER}/flash.bin-with-env ${B}/${BOOTLOADER_BUILD_FOLDER}/flash.bin-with-env_${DRAM_CFG}
-}
-
-do_compile1() {
-    for dram_cfg in ${DRAM_CONFIGS};do
-        BOOTLOADER_BUILD_FOLDER=${BOOTLOADER_BUILD_FOLDER} do_compile_dram_cfg ${dram_cfg}
+    for output in flash.bin flash.bin-with-env u-boot-initial-env; do
+        if [ ! -s "${build_dir}/${output}" ]; then
+            bbfatal "Missing ${machine}/${dram_config} output: ${output}"
+        fi
     done
-
-    oe_runmake -C ${S} O=${B}/${BOOTLOADER_BUILD_FOLDER} u-boot-initial-env
-    mv ${B}/${BOOTLOADER_BUILD_FOLDER}/u-boot-initial-env ${B}/${BOOTLOADER_BUILD_FOLDER}/u-boot-initial-env-${MACH}
 }
 
 do_compile() {
-    for MACH in ${COMPULAB_BOOTLOADER_MACHINES};do
-        BOOTLOADER_BUILD_FOLDER=${MACH}_defconfig-${UBOOT_CONFIG} BOOTLOADER_CONFIG=${MACH}_defconfig do_compile1
+    unset LDFLAGS
+    unset CFLAGS
+    unset CPPFLAGS
+
+    for machine in ${COMPULAB_BOOTLOADER_MACHINES}; do
+        for dram_config in ${COMPULAB_BOOTLOADER_DRAM_CONFIGS}; do
+            compulab_compile_config "${machine}" "${dram_config}"
+        done
     done
 }
 
-do_deploy2() {
-    D2=${DEPLOYDIR}/${PN}/${MACH}
-    install -d ${D2}
-    for dram_cfg in ${DRAM_CONFIGS};do
-        xz -9c ${B}/${BOOTLOADER_BUILD_FOLDER}/flash.bin_${dram_cfg} > ${D2}/flash.bin.${dram_cfg}.xz
+compulab_deploy_machine() {
+    machine="$1"
+    compressed_dir="${DEPLOYDIR}/${PN}/${machine}"
+    manufacturing_dir="${DEPLOYDIR}/${PN}/mfg/${machine}"
+
+    install -d "${compressed_dir}" "${manufacturing_dir}"
+
+    for dram_config in ${COMPULAB_BOOTLOADER_DRAM_CONFIGS}; do
+        build_dir="${B}/${machine}-${dram_config}"
+
+        xz -9c "${build_dir}/flash.bin" \
+            > "${compressed_dir}/flash.bin.${dram_config}.xz"
+        install -m 0644 "${build_dir}/flash.bin" \
+            "${manufacturing_dir}/imx-boot_${machine}_${dram_config}"
+        install -m 0644 "${build_dir}/flash.bin-with-env" \
+            "${manufacturing_dir}/imx-boot_with-env_${machine}_${dram_config}"
     done
+
+    install -m 0644 \
+        "${B}/${machine}-${COMPULAB_BOOTLOADER_DEFAULT_DRAM}/u-boot-initial-env" \
+        "${manufacturing_dir}/u-boot-initial-env-${machine}"
 }
 
-do_deploy3() {
-    D3=${DEPLOYDIR}/${PN}/imx8mp/firmware
-    if [ -d "${D3}" ];then
-        return
+compulab_deploy_firmware() {
+    firmware_dir="${DEPLOYDIR}/${PN}/imx8mp/firmware"
+    install -d "${firmware_dir}"
+
+    for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
+        gzip -9n -c "${DEPLOY_DIR_IMAGE}/${ddr_firmware}" \
+            > "${firmware_dir}/${ddr_firmware}.gz"
+    done
+
+    gzip -9n -c "${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME}" \
+        > "${firmware_dir}/bl31.bin.gz"
+
+    if ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'true', 'false', d)}; then
+        gzip -9n -c "${DEPLOY_DIR_IMAGE}/tee.bin" \
+            > "${firmware_dir}/tee.bin.gz"
     fi
-    install -d ${D3}
-    cp -L ${B}/${BOOTLOADER_BUILD_FOLDER}/lpddr4_pmu_train_* ${D3}/
-    cp -L ${B}/${BOOTLOADER_BUILD_FOLDER}/bl31.bin ${D3}/
-    cp -L ${B}/${BOOTLOADER_BUILD_FOLDER}/tee.bin ${D3}/
-    cd ${D3}
-    for _bin in *.bin;do
-        gzip -9 ${_bin}
-    done
-    cd -
-}
-
-do_deploy1() {
-    D1=${DEPLOYDIR}/${PN}/mfg/${MACH}
-    install -d ${D1}/
-    for dram_cfg in ${DRAM_CONFIGS};do
-        install -m 0644 ${B}/${BOOTLOADER_BUILD_FOLDER}/flash.bin_${dram_cfg}  ${D1}/imx-boot_${MACH}_${dram_cfg}
-        install -m 0644 ${B}/${BOOTLOADER_BUILD_FOLDER}/flash.bin-with-env_${dram_cfg}  ${D1}/imx-boot_with-env_${MACH}_${dram_cfg}
-    done
-    install -m 0644 ${B}/${BOOTLOADER_BUILD_FOLDER}/u-boot-initial-env-${MACH}  ${D1}/u-boot-initial-env-${MACH}
-}
-
-do_deploy0() {
-    D0=${DEPLOYDIR}
-    install -d ${D0}
-    install -m 0644 ${B}/${BOOTLOADER_BUILD_FOLDER}/flash.bin_${dram_cfg}  ${D0}/imx-boot_${MACH}_${dram_cfg}
-    install -m 0644 ${B}/${BOOTLOADER_BUILD_FOLDER}/u-boot-initial-env-${MACH}  ${D0}/u-boot-initial-env-${MACH}
-
-    cp ${D0}/imx-boot_${MACH}_${dram_cfg} ${D0}/imx-boot.tagged
-    stat -L -cUUUBURNXXOEUZX7+A-XY5601QQWWZ%sEND ${D0}/imx-boot.tagged >> ${D0}/imx-boot.tagged
-
-    ln -fs imx-boot_${MACH}_${dram_cfg} ${D0}/imx-boot
-    ln -fs u-boot-initial-env-${MACH} ${D0}/u-boot-initial-env
-    ln -fs u-boot-initial-env-${MACH} ${D0}/u-boot-compulab-env
 }
 
 do_deploy() {
-    # BOOTLOADER_CONFIG=${COMPULAB_BOOTLOADER_MACHINE}_defconfig MACH=${COMPULAB_BOOTLOADER_MACHINE} dram_cfg=${DRAM_CONF} do_deploy0
-    for MACH in ${COMPULAB_BOOTLOADER_MACHINES};do
-        BOOTLOADER_BUILD_FOLDER=${MACH}_defconfig-${UBOOT_CONFIG} BOOTLOADER_CONFIG=${MACH}_defconfig do_deploy1
-        BOOTLOADER_BUILD_FOLDER=${MACH}_defconfig-${UBOOT_CONFIG} BOOTLOADER_CONFIG=${MACH}_defconfig do_deploy2
-        BOOTLOADER_BUILD_FOLDER=${MACH}_defconfig-${UBOOT_CONFIG} BOOTLOADER_CONFIG=${MACH}_defconfig do_deploy3
+    for machine in ${COMPULAB_BOOTLOADER_MACHINES}; do
+        compulab_deploy_machine "${machine}"
     done
+
+    compulab_deploy_firmware
 }
 
-do_install1() {
-    I1=${D}/boot/${PN}
-    install -d ${I1}
-    for dram_cfg in ${DRAM_CONFIGS};do
-        install -m 0644 ${B}/${BOOTLOADER_BUILD_FOLDER}/flash.bin_${dram_cfg} ${I1}/imx-boot_${MACH}_${dram_cfg}
-        install -m 0644 ${B}/${BOOTLOADER_BUILD_FOLDER}/flash.bin-with-env_${dram_cfg}  ${I1}/imx-boot_with-env_${MACH}_${dram_cfg}
-    done
-    install -d ${D}/etc
-    install -m 0644 ${B}/${BOOTLOADER_BUILD_FOLDER}/u-boot-initial-env-${MACH} ${D}/etc/u-boot-initial-env-${MACH}
-    install -m 0644 ${S}/tools/env/fw_env.config  ${D}/etc/fw_env.config
-}
+compulab_install_machine() {
+    machine="$1"
+    install_dir="${D}${COMPULAB_BOOTLOADER_INSTALL_DIR}"
 
-do_install0() {
-    I0=${D}/boot
-    install -d ${I0}
-    ln -s ${PN}/imx-boot_${MACH}_${dram_cfg} ${I0}/imx-boot_${MACH}_${dram_cfg}-flash_evk
-    ln -s imx-boot_${MACH}_${dram_cfg}-flash_evk ${I0}/imx-boot
-    ln -s u-boot-initial-env-${MACH} ${D}/etc/u-boot-initial-env
+    for dram_config in ${COMPULAB_BOOTLOADER_DRAM_CONFIGS}; do
+        build_dir="${B}/${machine}-${dram_config}"
+        install -m 0644 "${build_dir}/flash.bin" \
+            "${install_dir}/imx-boot_${machine}_${dram_config}"
+        install -m 0644 "${build_dir}/flash.bin-with-env" \
+            "${install_dir}/imx-boot_with-env_${machine}_${dram_config}"
+    done
+
+    install -m 0644 \
+        "${B}/${machine}-${COMPULAB_BOOTLOADER_DEFAULT_DRAM}/u-boot-initial-env" \
+        "${D}${sysconfdir}/u-boot-initial-env-${machine}"
 }
 
 do_install() {
-    for MACH in ${COMPULAB_BOOTLOADER_MACHINES};do
-        BOOTLOADER_BUILD_FOLDER=${MACH}_defconfig-${UBOOT_CONFIG} MACH=${MACH} BOOTLOADER_CONFIG=${MACH}_defconfig do_install1
+    install -d "${D}${COMPULAB_BOOTLOADER_INSTALL_DIR}" "${D}${sysconfdir}"
+
+    for machine in ${COMPULAB_BOOTLOADER_MACHINES}; do
+        compulab_install_machine "${machine}"
     done
-    # BOOTLOADER_CONFIG=${COMPULAB_BOOTLOADER_MACHINE}_defconfig MACH=${COMPULAB_BOOTLOADER_MACHINE} dram_cfg=${DRAM_CONF} do_install0
+
+    install -m 0644 "${S}/tools/env/fw_env.config" \
+        "${D}${sysconfdir}/fw_env.config"
+
+    (
+        cd "${D}${COMPULAB_BOOTLOADER_INSTALL_DIR}"
+        sha256sum imx-boot_* > SHA256SUMS
+    )
 }
 
-FILES:${PN} = " \
-    /boot \
-"
-
+FILES:${PN} = "${COMPULAB_BOOTLOADER_INSTALL_DIR}"
 FILES:${PN}-env = " \
-    /etc/ \
+    ${sysconfdir}/u-boot-initial-env-* \
+    ${sysconfdir}/fw_env.config \
 "
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
+COMPATIBLE_MACHINE = "(compulab-mx8mp)"
 
-EXTRA_OEMAKE += "debug=n  DEBUG=0 "
+EXTRA_OEMAKE += "debug=n DEBUG=0"
 
+# The updater needs the boot containers, not the optional environment package.
 RDEPENDS:${PN}:remove = "${PN}-env"

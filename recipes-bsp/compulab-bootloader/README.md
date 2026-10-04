@@ -32,5 +32,9 @@ both packages to the image from `conf/local.conf`:
 CORE_IMAGE_EXTRA_INSTALL:append = " compulab-bootloader cl-firmware"
 ```
 
+The recipe always builds the complete family matrix. Each machine/DRAM pair
+uses a separate U-Boot build directory, and the installed payload includes
+`/boot/compulab-bootloader/SHA256SUMS` for integrity checks.
+
 Enabling `cl-firmware` authorizes an automatic write to eMMC boot0 during
 system startup. Keep a tested recovery path available while evaluating it.
