@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: CompuLab <support@compulab.co.il>
+Date: Fri, 9 Oct 2026 10:30:00 +0000
+Subject: [PATCH] beepdec: disable automatic decoder selection
+
+beepdec causes a system-level hang on i.MX8MP with the Wrynose
+multimedia stack. Keep the element available for explicit use, but
+prevent decodebin and playbin from selecting it automatically. This
+allows the working avdec_aac decoder to be selected instead.
+
+Upstream-Status: Inappropriate [local workaround pending NXP fix]
+
+Signed-off-by: CompuLab <support@compulab.co.il>
+---
+ plugins/beepdec/beep.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/plugins/beepdec/beep.c b/plugins/beepdec/beep.c
+index 92bb37e..66da179 100755
+--- a/plugins/beepdec/beep.c
++++ b/plugins/beepdec/beep.c
+@@ -47,7 +47,7 @@ plugin_init (GstPlugin * plugin)
+   beep_register_external_typefinders (plugin);
+
+   if (!gst_element_register
+-      (plugin, "beepdec", GST_RANK_PRIMARY+1, GST_TYPE_BEEP_DEC))
++      (plugin, "beepdec", GST_RANK_NONE, GST_TYPE_BEEP_DEC))
+     return FALSE;
+
+   return TRUE;
