@@ -86,10 +86,6 @@ CORE_IMAGE_EXTRA_INSTALL:append:compulab-iot-group = " \
 	${COMPULAB_IMX8MP_IOT_CORE_IMAGE_EXTRA_INSTALL} \
 "
 
-CORE_IMAGE_EXTRA_INSTALL:append:compulab-family-groups = " \
-	${@'u-boot-compulab-multi' if d.getVar('COMPULAB_UBOOT_MULTI_CONFIGS') else ''} \
-"
-
 MACHINE_FEATURES:append:compulab-evk-group = " \
 	${COMPULAB_IMX8MP_EVK_MACHINE_FEATURES} \
 "

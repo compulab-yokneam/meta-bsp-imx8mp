@@ -126,6 +126,11 @@ Then issue one build command:
 bitbake u-boot-compulab-multi
 ```
 
+The aggregate package is not added to regular image targets automatically.
+This is intentional: attaching its cross-config dependencies to an image task
+would also expand the image's recursive packaging dependencies and build a
+kernel in every U-Boot multiconfig.
+
 Every machine and DRAM pair has a separate work and deploy directory. For
 example:
 

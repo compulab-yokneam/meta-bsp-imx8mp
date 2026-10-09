@@ -175,6 +175,11 @@ available in the deploy directory. See
 [`Documentation/imx_boot_image_build.md`](Documentation/imx_boot_image_build.md)
 for the supported matrix and exact paths.
 
+The family bundle is built only by the explicit command above; enabling the
+multiconfig file does not add it to normal image targets. This keeps
+`imx-image-full` from expanding its kernel and package tasks into all 12
+U-Boot-only multiconfigs.
+
 For the faster, single-recipe family build used by the experimental firmware
 updater, build `compulab-bootloader` instead. It builds the complete family
 matrix in separate machine/DRAM work directories without BitBake
