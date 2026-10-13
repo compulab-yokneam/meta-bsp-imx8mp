@@ -13,7 +13,12 @@ LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a
 UBOOT_VERSION = "2023.04"
 SRCBRANCH = "u-boot-compulab_v2023.04-d1d8_d2d4"
 SRC_URI = "git://github.com/compulab-yokneam/u-boot-compulab;protocol=https;branch=${SRCBRANCH}"
-SRCREV = "1d776c6866b34e915f03dfb7b2a86dd2bdb82fc9"
+SRCREV = "${AUTOREV}"
+# A '+' in PV enables Yocto's automatic SCM suffix in PKGV. SRCPV is
+# deprecated and empty in this release; package.bbclass adds the resolved
+# revision and replaces AUTOINC with the PR-service counter (0 without one).
+# package_deb uses PKGV-PKGR in both the .deb filename and its Version field,
+# for example: compulab-bootloader_2023.04+git0+<sha10>-r0_<arch>.deb.
 PV = "${UBOOT_VERSION}+git"
 
 DEPENDS += "flex-native bison-native bc-native dtc-native xz-native python3-setuptools-native u-boot-tools-native"
