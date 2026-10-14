@@ -1,0 +1,184 @@
+From f589e1df23251d8319063da0a61c1016b2a0bf85 Mon Sep 17 00:00:00 2001
+From: Bruce Ashfield <bruce.ashfield@gmail.com>
+Date: Wed, 15 Oct 2025 18:12:20 -0400
+Subject: [PATCH] tools/Kconfiglib: add support for transitional attribute
+
+We need to update the parser to handle:
+
+commit f9afce4f32e9a120fc902fa6c9e0b90ad799a6ec
+Author: Kees Cook <kees@kernel.org>
+Date:   Tue Sep 23 14:34:18 2025 -0700
+
+    kconfig: Add transitional symbol attribute for migration support
+
+    During kernel option migrations (e.g. CONFIG_CFI_CLANG to CONFIG_CFI),
+    existing .config files need to maintain backward compatibility while
+    preventing deprecated options from appearing in newly generated
+    configurations. This is challenging with existing Kconfig mechanisms
+    because:
+
+    1. Simply removing old options breaks existing .config files.
+    2. Manually listing an option as "deprecated" leaves it needlessly
+       visible and still writes them to new .config files.
+    3. Using any method to remove visibility (.e.g no 'prompt', 'if n',
+       etc) prevents the option from being processed at all.
+
+    Add a "transitional" attribute that creates symbols which are:
+    - Processed during configuration (can influence other symbols' defaults)
+    - Hidden from user menus (no prompts appear)
+    - Omitted from newly written .config files (gets migrated)
+    - Restricted to only having help sections (no defaults, selects, etc)
+      making it truly just a "prior value pass-through" option.
+
+    The transitional syntax requires a type argument and prevents type
+    redefinition:
+
+        config NEW_OPTION
+            bool "New option"
+            default OLD_OPTION
+
+        config OLD_OPTION
+            bool
+            transitional
+            help
+              Transitional config for OLD_OPTION migration.
+
+    This allows seamless migration: olddefconfig processes existing
+    CONFIG_OLD_OPTION=y settings to enable CONFIG_NEW_OPTION=y, while
+    CONFIG_OLD_OPTION is omitted from newly generated .config files.
+
+    Added positive and negative testing via "testconfig" make target.
+
+    Co-developed-by: Vegard Nossum <vegard.nossum@oracle.com>
+    Signed-off-by: Vegard Nossum <vegard.nossum@oracle.com>
+    Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+    Tested-by: Nathan Chancellor <nathan@kernel.org>
+    Link: https://lore.kernel.org/r/20250923213422.1105654-2-kees@kernel.org
+    Signed-off-by: Kees Cook <kees@kernel.org>
+
+Upstream-Status: Backport [f589e1df23251d8319063da0a61c1016b2a0bf85]
+
+Signed-off-by: Bruce Ashfield <bruce.ashfield@gmail.com>
+---
+ Kconfiglib/kconfiglib.py | 37 +++++++++++++++++++++++++++++++++----
+ 1 file changed, 33 insertions(+), 4 deletions(-)
+
+diff --git a/Kconfiglib/kconfiglib.py b/Kconfiglib/kconfiglib.py
+index 36500c2..e5b37fc 100644
+--- a/Kconfiglib/kconfiglib.py
++++ b/Kconfiglib/kconfiglib.py
+@@ -845,6 +845,7 @@ class Kconfig(object):
+         "warn_assign_undef",
+         "warn_to_stderr",
+         "warnings",
++        "_is_transitional_context",
+         "y",
+ 
+         # Parsing-related
+@@ -975,6 +976,7 @@ class Kconfig(object):
+         self._warn_assign_no_prompt = True
+ 
+         self.warnings = []
++        self._is_transitional_context = False
+ 
+         self.config_prefix = os.getenv("CONFIG_", "CONFIG_")
+         # Regular expressions for parsing .config files
+@@ -2938,6 +2940,11 @@ class Kconfig(object):
+ 
+                 sym.nodes.append(node)
+ 
++                # Check if we are in a transitional context
++                if self._is_transitional_context:
++                    sym.is_transitional = True
++                    self._is_transitional_context = False
++
+                 self._parse_props(node)
+ 
+                 if node.is_menuconfig and not node.prompt:
+@@ -3134,13 +3141,24 @@ class Kconfig(object):
+         # node:
+         #   The menu node we're parsing properties on
+ 
+-        # Dependencies from 'depends on'. Will get propagated to the properties
++        # Dependencies from 'depends on'. Will get propagated by the properties
+         # below.
+-        node.dep = self.y
++        node.dep = self.y # Initialize node.dep
+ 
+         while self._next_line():
+             t0 = self._tokens[0]
+ 
++            if node.item.__class__ is Symbol and node.item.is_transitional:
++                if t0 is _T_DEFAULT or \
++                   t0 is _T_SELECT or \
++                   t0 is _T_IMPLY or \
++                   t0 is _T_RANGE or \
++                   t0 is _T_PROMPT or \
++                   t0 in _TYPE_TOKENS: # Transitional symbols can have a type, but not re-define it
++                    if t0 is not _T_HELP: # Help is allowed
++                        self._parse_error("transitional symbols can only have 'help' sections")
++
++
+             if t0 in _TYPE_TOKENS:
+                 # Relies on '_T_BOOL is BOOL', etc., to save a conversion
+                 self._set_type(node.item, t0)
+@@ -3198,6 +3216,13 @@ class Kconfig(object):
+                 node.visibility = self._make_and(node.visibility,
+                                                  self._expect_expr_and_eol())
+ 
++            elif t0 is _T_TRANSITIONAL:
++                if node.item.__class__ is not Symbol:
++                    self._parse_error("'transitional' is only valid for symbols")
++                node.item.is_transitional = True
++                if self._tokens[1] is not None:
++                    self._trailing_tokens_error()
++
+             elif t0 is _T_OPTION:
+                 if self._check_token(_T_ENV):
+                     if not self._check_token(_T_EQUAL):
+@@ -4272,6 +4297,7 @@ class Symbol(object):
+         "implies",
+         "is_allnoconfig_y",
+         "is_constant",
++        "is_transitional",
+         "kconfig",
+         "name",
+         "nodes",
+@@ -4547,7 +4573,7 @@ class Symbol(object):
+         # _write_to_conf is determined when the value is calculated. This is a
+         # hidden function call due to property magic.
+         val = self.str_value
+-        if not self._write_to_conf:
++        if not self._write_to_conf or self.is_transitional: # Omit transitional symbols
+             return ""
+ 
+         if self.orig_type in _BOOL_TRISTATE:
+@@ -4821,6 +4847,7 @@ class Symbol(object):
+         # Symbol gets a .config entry.
+ 
+         self.is_allnoconfig_y = \
++        self.is_transitional = \
+         self._was_set = \
+         self._write_to_conf = False
+ 
+@@ -6916,7 +6943,8 @@ except AttributeError:
+     _T_TRISTATE,
+     _T_UNEQUAL,
+     _T_VISIBLE,
+-) = range(1, 51)
++    _T_TRANSITIONAL,
++) = range(1, 52)
+ 
+ # Keyword to token map, with the get() method assigned directly as a small
+ # optimization
+@@ -6963,6 +6991,7 @@ _get_keyword = {
+     "source":         _T_SOURCE,
+     "string":         _T_STRING,
+     "tristate":       _T_TRISTATE,
++    "transitional":   _T_TRANSITIONAL,
+     "visible":        _T_VISIBLE,
+ }.get
+ 
+-- 
+2.43.0
+
