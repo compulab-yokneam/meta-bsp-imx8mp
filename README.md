@@ -81,7 +81,7 @@ source setup-environment build-${MACHINE}
 | Target | Command | The target file location |
 |--- |---|---|
 |full image|```bitbake -k imx-image-full```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/imx-image-full-${MACHINE}.wic.zst```|
-|boot loader|```bitbake -k imx-boot```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/imx-boot-tagged```|
+|boot loader|```bitbake -k u-boot-compulab```|```${BUILDDIR}/tmp/deploy/images/${MACHINE}/flash.bin.tagged```|
 
 * Other available targets (no desktop environment):
 
@@ -120,7 +120,7 @@ cd tmp/deploy/images/${MACHINE}
 * Issue uuu command with the root credentials:
 ```
 zstd -dc imx-image-full-${MACHINE}.wic.zst > imx-image-full-${MACHINE}.wic
-sudo uuu -v -b emmc_all imx-boot-tagged mx-image-full-${MACHINE}.wic
+sudo uuu -v -b emmc_all flash.bin mx-image-full-${MACHINE}.wic
 ```
 
 #### Target Device ####

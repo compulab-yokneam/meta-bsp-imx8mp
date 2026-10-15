@@ -42,7 +42,7 @@ devtool update-recipe u-boot-compulab
  bitbake-layers remove-layer  ${BUILDDIR}/workspace
 ```
 
-* Issue the entirer bootloader build:
+* Build the complete bootloader container:
 ```
-bitbake -k imx-boot
+bitbake -k u-boot-compulab
 ```
