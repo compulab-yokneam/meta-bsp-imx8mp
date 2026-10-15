@@ -1,4 +1,5 @@
 SRCBRANCH = "linux-compulab_v6.18.20"
 SRC_URI = "git://github.com/compulab-yokneam/linux-compulab;protocol=https;branch=${SRCBRANCH}"
-SRCREV = "${AUTOREV}"
+# SRCREV = "${AUTOREV}"
+SRCREV = "741f6e4b192fec9407442c6ebb5e4b7e02c7d634"
 LINUX_VERSION = "6.18.20"
