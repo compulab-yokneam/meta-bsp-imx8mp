@@ -1,8 +1,7 @@
-SRC_URI:append = " \
-	file://linux-headers.cfg \
-	file://linux-firmware-sdma.cfg \
-	file://sdma.cfg \
-"
+# Use in-tree config fragments
+KERNEL_FEATURES:append = " linux-headers.config "
+KERNEL_FEATURES:append = " linux-firmware-sdma.config "
+KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'yebian', ' nxp-wlan.config ', '', d)}"
 
 FIRMWARE_DIR_SOURCE = "${RECIPE_SYSROOT}${nonarch_base_libdir}/firmware/imx/sdma"
 FIRMWARE_FILE_NAME = "sdma-imx7d.bin"
