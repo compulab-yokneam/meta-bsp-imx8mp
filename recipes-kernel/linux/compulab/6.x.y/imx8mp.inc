@@ -4,15 +4,18 @@ SRC_URI:append = " \
 	file://sdma.cfg \
 "
 
-FIRMWARE_DIR_SOURCE = "${UNPACKDIR}/../recipe-sysroot"
+FIRMWARE_DIR_SOURCE = "${RECIPE_SYSROOT}${nonarch_base_libdir}/firmware/imx/sdma"
 FIRMWARE_FILE_NAME = "sdma-imx7d.bin"
 
-do_patch[depends] += " \
+do_configure[depends] += " \
     firmware-imx:do_populate_sysroot \
 "
 
-do_patch:append() {
-    FW_FILE=$(find ${FIRMWARE_DIR_SOURCE} -name ${FIRMWARE_FILE_NAME})
-    mkdir -p ${S}/lib/firmware/imx/sdma
-    cp ${FW_FILE} ${S}/lib/firmware/imx/sdma
+# Use the firmware-imx binary in normal and externalsrc builds, which skip do_patch.
+# If unavailable, let the kernel unpack its in-tree firmware archive.
+do_configure:prepend() {
+    FW_FILE="${FIRMWARE_DIR_SOURCE}/${FIRMWARE_FILE_NAME}"
+    if [ -f "${FW_FILE}" ]; then
+        install -D -m 0644 "${FW_FILE}" "${S}/lib/firmware/imx/sdma/${FIRMWARE_FILE_NAME}"
+    fi
 }
