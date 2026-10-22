@@ -8,3 +8,7 @@ do_configure:append() {
         oe_runmake -C ${S} O=${B}/${config} olddefconfig
     done
 }
+
+SRC_URI:append = " \
+    file://iotdin-imx8p-lowmem.cfg \
+"
