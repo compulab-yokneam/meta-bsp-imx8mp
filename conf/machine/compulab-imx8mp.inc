@@ -78,7 +78,7 @@ IMX_DEFAULT_BSP = "nxp"
 DRAM_CONF ?= "d2"
 
 # Preferred versions for the entire family
-PREFERRED_VERSION_linux-compulab = "6.18.20"
+PREFERRED_VERSION_linux-compulab = "6.6.52"
 PREFERRED_VERSION_u-boot-compulab = "2023.04"
 
 # i.MX8MP does not use System Manager firmware.
