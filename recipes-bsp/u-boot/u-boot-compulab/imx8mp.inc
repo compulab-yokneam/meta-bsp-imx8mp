@@ -9,6 +9,6 @@ do_configure:append() {
     done
 }
 
-SRC_URI:append = " \
+SRC_URI:append:iotdin-imx8p-d1d8 = " \
     file://iotdin-imx8p-lowmem.cfg \
 "
