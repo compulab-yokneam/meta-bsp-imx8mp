@@ -106,7 +106,8 @@ image or additional bootloader variants are required.
 ### Build grouped family images
 
 Two independent options install related machine payloads into an image built
-for any CompuLab i.MX8MP machine. Enable the MCM, SOM, UCM, and SBEV-UCM group
+for any CompuLab i.MX8MP machine. Enable the MCM, MCM-iMX8Pv2, SOM, UCM,
+and SBEV-UCM group
 with:
 
 ```

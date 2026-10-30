@@ -26,6 +26,29 @@ mcm-imx8pv2_defconfig d0.config d1.config d2.config d4.config d8.config lpddr_mr
 
 All four DRAM capacities and LPDDR4 MRR probing are enabled. The deployed
 image is labeled `d1d2d4d8`; this machine does not use the `d1d8`/`d2d4`
-multiconfig split. The existing family-wide bundle and grouped image
-membership are unchanged while this machine requires the development
-U-Boot branch.
+multiconfig split. The optional family-wide bootloader bundle still covers
+the existing split-DRAM machines; it does not include this development
+U-Boot target.
+
+## Grouped images with SUPER_EVK
+
+MCM-iMX8Pv2 is part of the `SUPER_EVK` kernel payload group. Add this to
+`conf/local.conf` to include the MCM, MCM-iMX8Pv2, SOM, UCM and SBEV-UCM
+DTBs and overlays in the same image:
+
+```bitbake
+SUPER_EVK = "1"
+```
+
+This works with `MACHINE=mcm-imx8pv2` and with the other CompuLab i.MX8MP
+machines. The shared inventory in
+`conf/machine/include/machine-payload/mcm-imx8pv2.inc` lists all 22
+MCM-iMX8Pv2 DTBs and overlays. It is used by both this machine and grouped
+images so their payloads stay aligned.
+
+The selected machine controls the bootloader and default DTB. For
+`MACHINE=mcm-imx8pv2`, the all-capacity U-Boot configuration, development
+branch and default `mcm-imx8pv2.dtb` remain selected. Grouped images retain
+PCI, Wi-Fi and Bluetooth machine features needed by the other boards;
+this does not enable those interfaces in the MCM-iMX8Pv2 device tree.
+`SUPER_IOT` can be enabled alongside `SUPER_EVK` for the IOT payloads.

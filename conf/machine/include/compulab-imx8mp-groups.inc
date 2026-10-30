@@ -11,10 +11,13 @@ WKS_BOOT_SIZE:compulab-family-groups = "256M"
 require machine-payload/iot-gate-imx8plus.inc
 require machine-payload/iotdin-imx8p.inc
 require machine-payload/mcm-imx8m-plus.inc
+require machine-payload/mcm-imx8pv2.inc
 require machine-payload/som-imx8m-plus.inc
 require machine-payload/ucm-imx8m-plus.inc
 require machine-payload/ucm-imx8m-plus-sbev.inc
 
+# Split-DRAM machines supported by the optional family bootloader bundle.
+# Grouped-image device trees below also include the all-capacity MCM-iMX8Pv2.
 COMPULAB_IMX8MP_EVK_MACHINES = " \
 	mcm-imx8m-plus \
 	som-imx8m-plus \
@@ -29,6 +32,7 @@ COMPULAB_IMX8MP_IOT_MACHINES = " \
 
 COMPULAB_IMX8MP_EVK_DEVICETREES = " \
 	${COMPULAB_MCM_IMX8M_PLUS_DEVICETREES} \
+	${COMPULAB_MCM_IMX8PV2_DEVICETREES} \
 	${COMPULAB_SOM_IMX8M_PLUS_DEVICETREES} \
 	${COMPULAB_UCM_IMX8M_PLUS_DEVICETREES} \
 	${COMPULAB_UCM_IMX8M_PLUS_SBEV_DEVICETREES} \
