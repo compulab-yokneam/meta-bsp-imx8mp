@@ -35,8 +35,7 @@ do_deploy[depends] += " \
 "
 
 python __anonymous() {
-    if (not d.getVar("BB_CURRENT_MC") and
-            bb.utils.contains("BBMULTICONFIG", "d1d8 d2d4", True, False, d)):
+    if d.getVar("COMPULAB_DRAM_MULTICONFIG_ENABLED") == "1":
         d.setVar("DRAM_CONF", d.getVar("COMPULAB_DRAM_MULTICONFIG_DEFAULT"))
 }
 
