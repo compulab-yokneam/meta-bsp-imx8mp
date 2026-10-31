@@ -6,7 +6,7 @@ COMPULAB_MCM_IMX8PV2_DEVICETREES = " \
     compulab/sbc-mcm8pv2-hdmi.dtb \
     compulab/sbc-mcm8pv2-lvds.dtb \
     compulab/sbc-mcm8pv2-mipi.dtb \
-    compulab/sbc-mcm8pv2-dualhead.dtb \
+    compulab/sbc-mcm8pv2-allheads.dtb \
     compulab/sbc-mcm8pv2.dtbo \
     compulab/sbc-mcm8pv2-enet.dtbo \
     compulab/sbc-mcm8pv2-enet1.dtbo \
