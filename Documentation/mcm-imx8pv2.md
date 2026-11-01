@@ -42,7 +42,7 @@ SUPER_EVK = "1"
 
 This works with `MACHINE=mcm-imx8pv2` and with the other CompuLab i.MX8MP
 machines. The shared inventory in
-`conf/machine/include/machine-payload/mcm-imx8pv2.inc` lists all 22
+`conf/machine/include/machine-payload/mcm-imx8pv2.inc` lists all 23
 MCM-iMX8Pv2 DTBs and overlays. It is used by both this machine and grouped
 images so their payloads stay aligned.
 
