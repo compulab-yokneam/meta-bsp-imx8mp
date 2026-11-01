@@ -9,6 +9,7 @@ COMPULAB_MCM_IMX8PV2_DEVICETREES = " \
     compulab/sbc-mcm8pv2-allheads.dtb \
     compulab/sbc-mcm8pv2.dtbo \
     compulab/sbc-mcm8pv2-usbdev.dtbo \
+    compulab/sbc-mcm8pv2-pcie.dtbo \
     compulab/sbc-mcm8pv2-enet.dtbo \
     compulab/sbc-mcm8pv2-enet1.dtbo \
     compulab/sbc-mcm8pv2-lvds.dtbo \
