@@ -10,6 +10,7 @@
 * [`MCM-iMX8M-Plus - SMD solder-down System-on-Module`](https://www.compulab.com/products/computer-on-modules/mcm-imx8m-plus-nxp-i-mx-8m-plus-som-system-on-module/)
 * [`CL-SOM-iMX8Plus - NXP i.MX8M-Plus System-on-Module`](https://www.compulab.com/products/computer-on-modules/cl-som-imx8plus-nxp-i-mx-8m-plus-system-on-module-computer/)
 * [`IOT-GATE-IMX8PLUS - Industrial IoT Gateway`](https://www.compulab.com/products/iot-gateways/iot-gate-imx8plus-industrial-arm-iot-gateway/)
+* [`IOT-GATE-IMX8PV2 - Industrial IoT Gateway`](Documentation/iot-gate-imx8pv2.md)
 * [`IOT-DIN-IMX8PLUS IoT Edge Gateway`](https://www.compulab.com/products/iot-gateways/iot-din-imx8plus-industrial-iot-gateway/)
 * [`CL-SOM-iMX8Plus - NXP i.MX8M-Plus System-on-Module`](https://www.compulab.com/products/computer-on-modules/cl-som-imx8plus-nxp-i-mx-8m-plus-system-on-module-computer/)
 
@@ -31,6 +32,7 @@ mkdir compulab-nxp-bsp && cd compulab-nxp-bsp
 |mcm-imx8pv2|```export MACHINE=mcm-imx8pv2```|
 |som-imx8m-plus|```export MACHINE=som-imx8m-plus```|
 |iot-gate-imx8plus|```export MACHINE=iot-gate-imx8plus```|
+|iot-gate-imx8pv2|```export MACHINE=iot-gate-imx8pv2```|
 |sbc-iot-imx8plus|```export MACHINE=iot-gate-imx8plus```|
 |iotdin-imx8p|```export MACHINE=iotdin-imx8p```|
 |compulab-imx8mp|```export MACHINE=compulab-imx8mp```|
@@ -114,7 +116,7 @@ with:
 SUPER_EVK = "1"
 ```
 
-Enable the IOT-GATE and IOTDIN group with:
+Enable the IOT-GATE-IMX8PLUS, IOT-GATE-IMX8PV2 and IOTDIN group with:
 
 ```
 SUPER_IOT = "1"
@@ -171,7 +173,7 @@ Build every supported machine with both DRAM configurations:
 bitbake u-boot-compulab-multi
 ```
 
-The target builds 12 independent boot containers and creates the
+The target builds 14 independent boot containers and creates the
 `u-boot-compulab-multi` package. The tagged and untagged files are organized
 under `/boot/u-boot-compulab-multi/<machine>/`. The same directory layout is
 available in the deploy directory. See
@@ -180,7 +182,7 @@ for the supported matrix and exact paths.
 
 The family bundle is built only by the explicit command above; enabling the
 multiconfig file does not add it to normal image targets. This keeps
-`imx-image-full` from expanding its kernel and package tasks into all 12
+`imx-image-full` from expanding its kernel and package tasks into all 14
 U-Boot-only multiconfigs.
 
 For the faster, single-recipe family build used by the experimental firmware

@@ -22,6 +22,7 @@ mkdir -p compulab-kernel/build && cd compulab-kernel
 |mcm-imx8m-plus|```export MACHINE=mcm-imx8m-plus```|
 |som-imx8m-plus|```export MACHINE=som-imx8m-plus```|
 |iot-gate-imx8plus|```export MACHINE=iot-gate-imx8plus```|
+|iot-gate-imx8pv2|```export MACHINE=iot-gate-imx8pv2```|
 |iotdin-imx8p|```export MACHINE=iotdin-imx8p```|
 
 * Clone the source code:

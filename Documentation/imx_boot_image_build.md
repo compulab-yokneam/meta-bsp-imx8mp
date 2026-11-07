@@ -94,10 +94,11 @@ in one U-Boot build instead of creating two independent boot containers.
 
 ### Build the complete CompuLab i.MX8MP family
 
-The family build covers these six U-Boot machines:
+The family build covers these seven U-Boot machines:
 
 ```
 iot-gate-imx8plus
+iot-gate-imx8pv2
 iotdin-imx8p
 mcm-imx8m-plus
 som-imx8m-plus
@@ -105,7 +106,7 @@ ucm-imx8m-plus
 ucm-imx8m-plus-sbev
 ```
 
-Each machine is built independently for `d1d8` and `d2d4`, producing 12 boot
+Each machine is built independently for `d1d8` and `d2d4`, producing 14 boot
 containers. Re-enter an existing build through the CompuLab setup helper so
 the family multiconfig files are installed:
 

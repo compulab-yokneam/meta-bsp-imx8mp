@@ -9,6 +9,7 @@ WKS_FILE:compulab-family-groups = "compulab-imx8mp-groups.wks.in"
 WKS_BOOT_SIZE:compulab-family-groups = "256M"
 
 require machine-payload/iot-gate-imx8plus.inc
+require machine-payload/iot-gate-imx8pv2.inc
 require machine-payload/iotdin-imx8p.inc
 require machine-payload/mcm-imx8m-plus.inc
 require machine-payload/mcm-imx8pv2.inc
@@ -27,6 +28,7 @@ COMPULAB_IMX8MP_EVK_MACHINES = " \
 
 COMPULAB_IMX8MP_IOT_MACHINES = " \
 	iot-gate-imx8plus \
+	iot-gate-imx8pv2 \
 	iotdin-imx8p \
 "
 
@@ -40,6 +42,7 @@ COMPULAB_IMX8MP_EVK_DEVICETREES = " \
 
 COMPULAB_IMX8MP_IOT_DEVICETREES = " \
 	${COMPULAB_IOT_GATE_IMX8PLUS_DEVICETREES} \
+	${COMPULAB_IOT_GATE_IMX8PV2_DEVICETREES} \
 	${COMPULAB_IOTDIN_IMX8P_DEVICETREES} \
 "
 
@@ -54,6 +57,7 @@ COMPULAB_IMX8MP_IOT_IMAGE_INSTALL = " \
 
 COMPULAB_IMX8MP_IOT_CORE_IMAGE_EXTRA_INSTALL = " \
 	${COMPULAB_IOT_GATE_IMX8PLUS_CORE_IMAGE_EXTRA_INSTALL} \
+	${COMPULAB_IOT_GATE_IMX8PV2_CORE_IMAGE_EXTRA_INSTALL} \
 	${COMPULAB_IOTDIN_IMX8P_CORE_IMAGE_EXTRA_INSTALL} \
 "
 
