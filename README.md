@@ -6,7 +6,7 @@
 ## Supported Compulab Products
 
 * [`UCM-iMX8M-Plus - NXP i.MX8M Plus System-on-Module`](https://www.compulab.com/products/computer-on-modules/ucm-imx8m-plus-nxp-i-mx-8m-plus-som-system-on-module-computer/)
-* [`MCM-iMX8Pv2 on SBC-MCM8PV2`](Documentation/mcm-imx8pv2.md) (initial Ethernet and display support)
+* [`MCM-iMX8Pv2 on SBC-MCM8PV2`](Documentation/mcm-imx8pv2.md)
 * [`MCM-iMX8M-Plus - SMD solder-down System-on-Module`](https://www.compulab.com/products/computer-on-modules/mcm-imx8m-plus-nxp-i-mx-8m-plus-som-system-on-module/)
 * [`CL-SOM-iMX8Plus - NXP i.MX8M-Plus System-on-Module`](https://www.compulab.com/products/computer-on-modules/cl-som-imx8plus-nxp-i-mx-8m-plus-system-on-module-computer/)
 * [`IOT-GATE-IMX8PLUS - Industrial IoT Gateway`](https://www.compulab.com/products/iot-gateways/iot-gate-imx8plus-industrial-arm-iot-gateway/)
