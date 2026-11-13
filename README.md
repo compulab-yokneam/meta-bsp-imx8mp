@@ -152,6 +152,8 @@ sudo uuu -bmap -v -b emmc_all flash.bin.tagged mx-image-full-${MACHINE}.wic.zst/
 
 ## Additional documentation
 
+- [Adding a machine](Documentation/adding-a-machine.md): step-by-step file checklist,
+  configuration examples, grouped payloads, bootloader builds, and validation.
 - [Advanced Features](Documentation/advanced-features.md): grouped family images,
   multiple DRAM configurations, and multiple-machine bootloader builds.
 - [Optional generic-family firmware updater](Documentation/generic-family-firmware-updater.md):
