@@ -1,8 +1,8 @@
 # CompuLab i.MX8M Plus BSP Build Flow
 
 This document describes the source-level build flow of
-[`meta-bsp-imx8mp`](https://github.com/compulab-yokneam/meta-bsp-imx8mp/tree/wrynose-6.18.20-2.0.0),
-branch `wrynose-6.18.20-2.0.0`, reviewed at commit
+[`meta-bsp-imx8mp`](https://github.com/compulab-yokneam/meta-bsp-imx8mp/tree/wrynose-6.18.20-2.0.0_u-boot-2026.04),
+branch `wrynose-6.18.20-2.0.0_u-boot-2026.04`, reviewed at commit
 `6f474d3422bf8e84aa685e16409e083a09e073f4`.
 The branch's [README](https://github.com/compulab-yokneam/meta-bsp-imx8mp/blob/6f474d3422bf8e84aa685e16409e083a09e073f4/README.md)
 identifies it as a development branch. This review did not include a build.

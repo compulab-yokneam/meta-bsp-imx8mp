@@ -45,7 +45,7 @@ repo init -u https://github.com/nxp-imx/imx-manifest.git -b imx-linux-wrynose -m
 
 * CompuLab
 ```
-wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/wrynose-6.18.20-2.0.0/scripts/meta-bsp-imx8mp.xml
+wget --directory-prefix .repo/local_manifests https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx8mp/wrynose-6.18.20-2.0.0_u-boot-2026.04/scripts/meta-bsp-imx8mp.xml
 ```
 
 * Sync Them all
@@ -60,7 +60,7 @@ source compulab-setup-env build-${MACHINE}
 ```
 
 * For machines using DRAM subsets (all except `mcm-imx8pv2`), enable the required dram setting's subset:<br>
-Use [Get the product DRAM configuration ](https://github.com/compulab-yokneam/meta-bsp-imx8mp/blob/wrynose-6.18.20-2.0.0/Documentation/dram.md) for more details
+Use [Get the product DRAM configuration ](https://github.com/compulab-yokneam/meta-bsp-imx8mp/blob/wrynose-6.18.20-2.0.0_u-boot-2026.04/Documentation/dram.md) for more details
 
 ```
 sed -i '$ a DRAM_CONF = "d2d4"' ${BUILDDIR}/conf/local.conf
