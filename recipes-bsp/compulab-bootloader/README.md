@@ -7,12 +7,14 @@
 The packages implement an automatic bootloader update mechanism for the
 generic `compulab-imx8mp` machine:
 
+- The bundle uses U-Boot 2026.04 from `u-boot-compulab_v2026.04-imx8mp`.
+  Each build selects `compulab-imx8mp_defconfig` and its target `.config`,
+  producing one all-capacity image per machine.
 - `compulab-bootloader` builds and packages boot containers for the complete
-  CompuLab i.MX8MP product family, including the supported `d1d8` and `d2d4`
-  DRAM configurations. It is a firmware payload package, not the
+  eight supported CompuLab i.MX8MP hardware targets, including MCM-iMX8Pv2. It is a firmware payload package, not the
   `virtual/bootloader` provider used to create the initial image.
 - `cl-firmware` installs and enables a oneshot systemd service. The service
-  reads the product name and DRAM option from the board EEPROM, maps them to
+  reads the product name from the board EEPROM, maps it to
   the corresponding packaged boot container, and compares that container with
   the bootloader in `/dev/mmcblk2boot0`.
 - When the images differ, the service writes the selected bootloader to eMMC
@@ -32,9 +34,20 @@ both packages to the image from `conf/local.conf`:
 CORE_IMAGE_EXTRA_INSTALL:append = " compulab-bootloader cl-firmware"
 ```
 
-The recipe always builds the complete family matrix. Each machine/DRAM pair
-uses a separate U-Boot build directory, and the installed payload includes
+By default the recipe builds the complete family matrix; a machine can set
+`COMPULAB_BOOTLOADER_MACHINES` to select a subset. Each target uses a separate
+U-Boot build directory. Installed images are named `imx-boot_<machine>` and
+`imx-boot_with-env_<machine>`, without a DRAM suffix. The payload includes
 `/boot/compulab-bootloader/SHA256SUMS` for integrity checks.
 
 Enabling `cl-firmware` authorizes an automatic write to eMMC boot0 during
 system startup. Keep a tested recovery path available while evaluating it.
+
+## Host validation
+
+The filename-selection test mocks EEPROM output and does not access eMMC
+or invoke the update/reboot functions:
+
+```sh
+python3 scripts/test-cl-firmware-selection.py
+```

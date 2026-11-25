@@ -9,12 +9,12 @@ export MACHINE=iot-gate-imx8pv2
 source compulab-setup-env build-${MACHINE}
 ```
 
-Set `DRAM_CONF` in `conf/local.conf` to the board's DRAM subset, either
-`d1d8` or `d2d4`. The default is `d2d4`.
+One U-Boot image supports D1/D2/D4/D8 and enables the MRR probe. There
+is no DRAM-subset selection or DRAM suffix in the bootloader filenames.
 
-The machine selects `iot-gate-imx8pv2_defconfig` for U-Boot and
+The machine selects `compulab-imx8mp_defconfig iot-gate-imx8pv2.config` for U-Boot and
 `iot-gate-imx8pv2.dtb` as its U-Boot device tree. It uses the family U-Boot
-branch `u-boot-compulab_v2023.04-d1d8_d2d4` and the kernel branch
+branch `u-boot-compulab_v2026.04-imx8mp` and the kernel branch
 `linux-compulab_v6.18.20`.
 
 Build the image or bootloader with:
@@ -52,8 +52,8 @@ SUPER_IOT = "1"
 The group can be enabled for any CompuLab i.MX8MP machine. The selected
 machine continues to control the bootloader and default device tree.
 
-Both `d1d8` and `d2d4` variants are included in the family bootloader
-matrix. Re-enter the build through `compulab-setup-env` after updating the
+The all-capacity image is included in the family bootloader matrix.
+Re-enter the build through `compulab-setup-env` after updating the
 layer so the new multiconfig templates are installed. See
-[the boot firmware guide](imx_boot_image_build.md#build-the-complete-compulab-imx8mp-family)
+[the boot firmware guide](imx_boot_image_build.md#build-every-supported-hardware-target)
 for the `u-boot-compulab-multi` workflow and artifact paths.

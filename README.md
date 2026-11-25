@@ -59,18 +59,15 @@ repo sync
 source compulab-setup-env build-${MACHINE}
 ```
 
-* For machines using DRAM subsets (all except `mcm-imx8pv2`), enable the required dram setting's subset:<br>
-Use [Get the product DRAM configuration ](https://github.com/compulab-yokneam/meta-bsp-imx8mp/blob/wrynose-6.18.20-2.0.0_u-boot-2026.04/Documentation/dram.md) for more details
+U-Boot 2026.04 uses `u-boot-compulab_v2026.04-imx8mp` for every supported
+machine. The recipe selects `compulab-imx8mp_defconfig` followed by the
+machine's target `.config`. The generic `compulab-imx8mp` machine uses
+`ucm-imx8m-plus.config` as its boot target.
 
-```
-sed -i '$ a DRAM_CONF = "d2d4"' ${BUILDDIR}/conf/local.conf
-```
-
-* Enable the d1d8 dram setting's subset:
-```
-sed -i '/DRAM_CONF/d' ${BUILDDIR}/conf/local.conf
-sed -i '$ a DRAM_CONF = "d1d8"' ${BUILDDIR}/conf/local.conf
-```
+Each machine has one bootloader image with D1/D2/D4/D8 support and the
+LPDDR4 MRR probe, including probing with a valid EEPROM ID. `DRAM_CONF`
+is no longer used. Remove old DRAM-subset settings and any
+`require .../conf/dram-multiconfig.conf` line from existing build configurations.
 
 ## Get back to the build environment
 In order to use the already created build environment issue these commands:

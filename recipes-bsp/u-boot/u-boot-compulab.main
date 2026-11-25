@@ -1,12 +1,10 @@
 DESCRIPTION = "CompuLab i.MX8 U-Boot"
 require recipes-bsp/u-boot/u-boot.inc
 require u-boot-compulab-env.inc
-require u-boot-compulab_${PV}.inc
 require u-boot-compulab/imx8mp.inc
+require u-boot-compulab_${PV}.inc
 
 PROVIDES += "u-boot imx-boot"
-
-COMPULAB_DRAM_MULTICONFIG ??= "0"
 
 LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
@@ -15,36 +13,20 @@ DEPENDS += " flex-native bison-native bc-native dtc-native gnutls-native python3
 
 SPL_BINARY = ""
 UUU_BOOTLOADER = "1"
-UBOOT_VERSION_EXTENSION = "-${CL_RELEASE}-${DRAM_CONF}"
+UBOOT_VERSION_EXTENSION = "-${CL_RELEASE}"
 LOCALVERSION = "${UBOOT_VERSION_EXTENSION}"
 
 inherit fsl-u-boot-localversion imx-boot-container uuu_bootloader_tag
 
-COMPULAB_DRAM_MULTICONFIGS = "d1d8 d2d4"
-COMPULAB_DRAM_MULTICONFIG_DEFAULT ??= "d2d4"
-COMPULAB_DRAM_MULTICONFIG_ENABLED = "${@'1' if not d.getVar('BB_CURRENT_MC') and bb.utils.contains('BBMULTICONFIG', 'd1d8 d2d4', True, False, d) else '0'}"
-COMPULAB_DRAM_MULTICONFIG_DEPENDS = "${@' '.join('mc::%s:u-boot-compulab:do_deploy' % mc for mc in (d.getVar('COMPULAB_DRAM_MULTICONFIGS') or '').split() if mc != d.getVar('DRAM_CONF')) if d.getVar('COMPULAB_DRAM_MULTICONFIG_ENABLED') == '1' else ''}"
-
 UBOOT_COMPULAB_FIRMWARE_DEPLOY = "${DEPLOYDIR}/u-boot-compulab-firmware"
 
-do_install[mcdepends] += "${COMPULAB_DRAM_MULTICONFIG_DEPENDS}"
 do_deploy[depends] += " \
     ${@' '.join('%s:do_deploy' % recipe for recipe in (d.getVar('IMX_EXTRA_FIRMWARE') or '').split())} \
     ${IMX_DEFAULT_ATF_PROVIDER}:do_deploy \
     optee-os:do_deploy \
 "
 
-python __anonymous() {
-    if d.getVar("COMPULAB_DRAM_MULTICONFIG_ENABLED") == "1":
-        d.setVar("DRAM_CONF", d.getVar("COMPULAB_DRAM_MULTICONFIG_DEFAULT"))
-}
-
 do_deploy:append () {
-    for file in flash.bin.tagged flash.bin;do
-    if [ -f "${DEPLOYDIR}/${file}" ]; then
-        ln -sf ${file} ${DEPLOYDIR}/${file}.${DRAM_CONF}
-    fi
-    done
     if [ -f "${DEPLOYDIR}/flash.bin" ]; then
         ln -sf flash.bin ${DEPLOYDIR}/imx-boot
     fi
@@ -63,7 +45,6 @@ do_deploy:append () {
 }
 
 do_install() {
-    uboot_machine="${@d.getVar('UBOOT_MACHINE').replace(' ', '')}"
     install -d ${D}/boot
     install -m 0644 ${KCONFIG_CONFIG_ROOTDIR}/flash.bin ${D}/boot/
     install -m 0644 ${KCONFIG_CONFIG_ROOTDIR}/flash.bin \
@@ -71,26 +52,8 @@ do_install() {
     stat -L -cUUUBURNXXOEUZX7+A-XY5601QQWWZ%sEND \
         ${D}/boot/flash.bin.tagged >> ${D}/boot/flash.bin.tagged
 
-    if [ "${COMPULAB_DRAM_MULTICONFIG_ENABLED}" = "1" ]; then
-        for dram_conf in ${COMPULAB_DRAM_MULTICONFIGS}; do
-            if [ "${DRAM_CONF}" = "${dram_conf}" ]; then
-                source_file="${KCONFIG_CONFIG_ROOTDIR}/flash.bin"
-            else
-                source_file="${TOPDIR}/tmp-${dram_conf}/deploy/images/${MACHINE}/flash.bin.${dram_conf}"
-            fi
-            install -m 0644 "${source_file}" \
-                "${D}/boot/flash.bin-${MACHINE}-${dram_conf}"
-            install -m 0644 "${source_file}" \
-                "${D}/boot/flash.bin-${MACHINE}-${dram_conf}.tagged"
-            stat -L -cUUUBURNXXOEUZX7+A-XY5601QQWWZ%sEND \
-                "${D}/boot/flash.bin-${MACHINE}-${dram_conf}.tagged" \
-                >> "${D}/boot/flash.bin-${MACHINE}-${dram_conf}.tagged"
-        done
-    else
-        ln -sf flash.bin ${D}/boot/flash.bin-${MACHINE}-${DRAM_CONF}
-        ln -sf flash.bin.tagged \
-            ${D}/boot/flash.bin-${MACHINE}-${DRAM_CONF}.tagged
-    fi
+    ln -sf flash.bin ${D}/boot/flash.bin-${MACHINE}
+    ln -sf flash.bin.tagged ${D}/boot/flash.bin-${MACHINE}.tagged
 }
 
 FILES:${PN} = " \

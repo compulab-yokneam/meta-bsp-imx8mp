@@ -1,5 +1,5 @@
-COMPULAB_UBOOT_CONFIG_FRAGMENTS = "d0.config ${DRAM_CONF}.config"
-COMPULAB_UBOOT_CONFIG_FRAGMENTS:mcm-imx8pv2 = "d0.config d1.config d2.config d4.config d8.config lpddr_mrr_probe.config"
+# The common defconfig enables all DRAM capacities and both MRR probe options.
+COMPULAB_UBOOT_CONFIG_FRAGMENTS = "${UBOOT_CONFIG_BASENAME}.config"
 
 UBOOT_CONFIG_FRAGMENTS[sd] = "${COMPULAB_UBOOT_CONFIG_FRAGMENTS}"
 UBOOT_CONFIG_FRAGMENTS[mfgtool] = "${COMPULAB_UBOOT_CONFIG_FRAGMENTS}"

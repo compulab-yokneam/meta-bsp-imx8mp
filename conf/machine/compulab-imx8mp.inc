@@ -73,7 +73,7 @@ IMXBOOT_TARGETS_BASENAME = "flash_evk"
 PREFERRED_RROVIDER_u-boot-fw-utils = "libubootenv-bin"
 
 # Family default; a child machine, distro, or local.conf may override it.
-PREFERRED_VERSION_u-boot-compulab ??= "2023.04"
+PREFERRED_VERSION_u-boot-compulab ??= "2026.04"
 
 MACHINE_FIRMWARE:remove = " linux-firmware-ath10k "
 
@@ -85,15 +85,11 @@ DISTRO_FEATURES:remove = "sysvinit"
 
 IMX_DEFAULT_BSP = "nxp"
 
-# Default dram configuration
-DRAM_CONF ??= "d2d4"
-
-# U-Boot defconfig; the machine specific file
-# can have its own variables
+# Each machine selects a target fragment after the shared U-Boot defconfig.
 UBOOT_CONFIG ??= "sd"
 UBOOT_CONFIG_BASENAME = "${MACHINE}"
-UBOOT_CONFIG[sd] = "${UBOOT_CONFIG_BASENAME}_defconfig"
-UBOOT_CONFIG[mfgtool] = "${UBOOT_CONFIG_BASENAME}_defconfig"
+UBOOT_CONFIG[sd] = "compulab-imx8mp_defconfig"
+UBOOT_CONFIG[mfgtool] = "compulab-imx8mp_defconfig"
 
 # i.MX8MP does not use System Manager firmware.
 SYSTEM_MANAGER_FIRMWARE_NAME:compulab-mx8mp = ""

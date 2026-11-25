@@ -86,9 +86,11 @@ source compulab-setup-env build-${MACHINE}
 bitbake imx-image-full
 ```
 
-Select the DRAM configuration appropriate to the hardware. The layer documents
-`d1d8` and `d2d4` configurations, with a different configuration approach for
-MCM-iMX8Pv2. See the [DRAM documentation](https://github.com/compulab-yokneam/meta-bsp-imx8mp/blob/6f474d3422bf8e84aa685e16409e083a09e073f4/Documentation/dram.md).
+This branch now defaults to U-Boot 2026.04 from
+`u-boot-compulab_v2026.04-imx8mp`, using the common defconfig and one target
+fragment. All D1/D2/D4/D8 timings and both MRR probe options are enabled by
+default. Every machine uses one all-capacity image, without a DRAM suffix.
+The old DRAM-subset configuration is no longer used.
 
 The SDK is a separate build task:
 
@@ -98,13 +100,13 @@ bitbake imx-image-full -c populate_sdk
 
 ## Optional Build Extensions
 
-The layer supports grouped family images and multiple machine/DRAM bootloader
+The layer supports grouped family images and multiple-machine bootloader
 builds. These extend the standard per-machine flow and are described in the
 [advanced features documentation](https://github.com/compulab-yokneam/meta-bsp-imx8mp/blob/6f474d3422bf8e84aa685e16409e083a09e073f4/Documentation/advanced-features.md).
 
 - `SUPER_EVK` and `SUPER_IOT` add related device payloads to an image. The selected
   machine still controls the bootloader and default device tree.
-- DRAM multiconfig builds create boot containers for both `d1d8` and `d2d4`.
+- Each machine uses one all-capacity boot container.
 - The explicit `u-boot-compulab-multi` target builds a family bootloader bundle;
   it is separate from the normal image build.
 

@@ -1,161 +1,74 @@
-# Building Boot Firmware for CompuLab's i.MX8M Plus products
+# Building boot firmware
 
-## [External Build](https://github.com/compulab-yokneam/u-boot-compulab/blob/u-boot-compulab_v2023.04/README.md)
+This layer supports U-Boot 2026.04 from
+`u-boot-compulab_v2026.04-imx8mp`. All machines use
+`compulab-imx8mp_defconfig` followed by their target `.config` file.
+The generic `compulab-imx8mp` machine uses `ucm-imx8m-plus.config`.
+Each hardware target has one image with D1/D2/D4/D8 timings and MRR probing.
 
-## Internal Build
+## Build the selected machine
 
-### Yocto devtool method
-
-Use this method in order to modify and create the imx-boot binary in the Yocto environment.<br>
-
-* Get back to the build environment:
-In order to use the already created build environment issue these commands:
-```
-cd /path/to/compulab-nxp-bsp
-repo sync
-source setup-environment build-${MACHINE}
+```sh
+bitbake u-boot-compulab
 ```
 
-* Get the latest u-boot source code:
-```
-devtool modify u-boot-compulab
-```
+The normal artifacts are in `${BUILDDIR}/tmp/deploy/images/${MACHINE}`:
 
-* Goto the u-boot-compulab source tree:
-```
-cd ${BUILDDIR}/workspace/sources/u-boot-compulab
-```
+- `flash.bin`: the boot container.
+- `flash.bin.tagged`: the UUU-tagged container used by image generation.
+- `imx-boot` and `imx-boot.tagged`: canonical aliases for image tools.
+- `u-boot-compulab-firmware/`: compressed ATF, OP-TEE and DDR firmware used
+  by this build.
 
-* Build the u-boot-compulab:
-```
-devtool build u-boot-compulab
-```
+The installed package provides `/boot/flash.bin`, `/boot/flash.bin.tagged`
+and machine-named aliases, without a DRAM suffix.
 
-* Make and commit the changes
-* Apply changes from external source tree to recipe:
-```
-devtool update-recipe u-boot-compulab
-```
+## Build every supported hardware target
 
-* Remove the workspace layer:
-```
- bitbake-layers remove-layer  ${BUILDDIR}/workspace
-```
+Re-enter the environment through `compulab-setup-env` to install the updated
+multiconfig templates. Enable the family configuration in `local.conf`:
 
-* Build the complete bootloader container:
-```
-bitbake -k u-boot-compulab
-```
-
-### Build all DRAM variants in one invocation
-
-Initialize or re-enter the build through the CompuLab setup helper:
-
-```
-source compulab-setup-env <build-directory>
-```
-
-The helper installs the `d1d8` and `d2d4` multiconfig files under
-`${BUILDDIR}/conf/multiconfig`, including for an existing build directory. To
-build both boot containers without changing the default `DRAM_CONF` in
-`local.conf`, run:
-
-```
-bitbake \
-    -R ${BUILDDIR}/../sources/meta-bsp-imx8mp/conf/dram-multiconfig.conf \
-    u-boot-compulab
-```
-
-The resulting `u-boot-compulab` package contains both boot containers:
-
-```
-/boot/flash.bin-${MACHINE}-d1d8
-/boot/flash.bin-${MACHINE}-d1d8.tagged
-/boot/flash.bin-${MACHINE}-d2d4
-/boot/flash.bin-${MACHINE}-d2d4.tagged
-```
-
-The base configuration is forced to `d2d4` for this build. Its canonical
-`flash.bin`, `flash.bin.tagged`, `imx-boot`, and `imx-boot.tagged` deploy files
-are therefore the `d2d4` container. WKS consumes `imx-boot.tagged` for the
-SD-card image. The additional `d1d8` container is built in an isolated
-multiconfig work directory:
-
-```
-${BUILDDIR}/tmp/deploy/images/${MACHINE}/flash.bin
-${BUILDDIR}/tmp/deploy/images/${MACHINE}/flash.bin.d2d4
-${BUILDDIR}/tmp/deploy/images/${MACHINE}/flash.bin.tagged.d2d4
-${BUILDDIR}/tmp-d1d8/deploy/images/${MACHINE}/flash.bin.d1d8
-${BUILDDIR}/tmp-d1d8/deploy/images/${MACHINE}/flash.bin.tagged.d1d8
-```
-
-Do not use `DRAM_CONF = "d1d8 d2d4"`: that combines configuration fragments
-in one U-Boot build instead of creating two independent boot containers.
-
-### Build the complete CompuLab i.MX8MP family
-
-The family build covers these seven U-Boot machines:
-
-```
-iot-gate-imx8plus
-iot-gate-imx8pv2
-iotdin-imx8p
-mcm-imx8m-plus
-som-imx8m-plus
-ucm-imx8m-plus
-ucm-imx8m-plus-sbev
-```
-
-Each machine is built independently for `d1d8` and `d2d4`, producing 14 boot
-containers. Re-enter an existing build through the CompuLab setup helper so
-the family multiconfig files are installed:
-
-```
-source compulab-setup-env <build-directory>
-```
-
-Use the family configuration instead of `dram-multiconfig.conf` in
-`${BUILDDIR}/conf/local.conf`:
-
-```
+```bitbake
 require ${TOPDIR}/../sources/meta-bsp-imx8mp/conf/u-boot-family-multiconfig.conf
 ```
 
-Then issue one build command:
+Then run:
 
-```
+```sh
 bitbake u-boot-compulab-multi
 ```
 
-The aggregate package is not added to regular image targets automatically.
-This is intentional: attaching its cross-config dependencies to an image task
-would also expand the image's recursive packaging dependencies and build a
-kernel in every U-Boot multiconfig.
+This builds eight all-capacity containers: IOT-GATE-IMX8PLUS,
+IOT-GATE-IMX8PV2, IOTDIN-IMX8P, MCM-iMX8M-Plus, MCM-iMX8Pv2,
+SOM-iMX8M-Plus, UCM-iMX8M-Plus and UCM-iMX8M-Plus SBEV.
+Each target has an isolated `${TOPDIR}/tmp-<multiconfig>` work/deploy tree.
+The aggregate package and deploy tree contain:
 
-Every machine and DRAM pair has a separate work and deploy directory. For
-example:
-
-```
-${BUILDDIR}/tmp-ucm-imx8m-plus-d1d8/deploy/images/ucm-imx8m-plus/flash.bin.d1d8
-${BUILDDIR}/tmp-ucm-imx8m-plus-d2d4/deploy/images/ucm-imx8m-plus/flash.bin.d2d4
+```text
+u-boot-compulab-multi/<machine>/flash.bin
+u-boot-compulab-multi/<machine>/flash.bin.tagged
 ```
 
-The aggregate target copies tagged and untagged images into its package:
+The bundle is only built by the explicit aggregate target. Enabling these
+multiconfigs does not add cross-machine dependencies to normal image builds.
+The generic machine is an image configuration, not an additional hardware
+bootloader target.
 
-```
-/boot/u-boot-compulab-multi/<machine>/flash.bin-d1d8
-/boot/u-boot-compulab-multi/<machine>/flash.bin-d1d8.tagged
-/boot/u-boot-compulab-multi/<machine>/flash.bin-d2d4
-/boot/u-boot-compulab-multi/<machine>/flash.bin-d2d4.tagged
-```
+## Single-recipe family bundle
 
-The same tree is deployed under:
+`bitbake compulab-bootloader` builds the family in per-machine directories
+without multiconfig. It packages `imx-boot_<machine>` and
+`imx-boot_with-env_<machine>` under `/boot/compulab-bootloader/`, together
+with `SHA256SUMS`. See the [bundle documentation](../recipes-bsp/compulab-bootloader/README.md).
 
-```
-${BUILDDIR}/tmp/deploy/images/${MACHINE}/u-boot-compulab-multi/
-```
+## Existing build directories
 
-The generic `compulab-imx8mp` machine is not part of the matrix because it
-does not have a `compulab-imx8mp_defconfig`. It can still be the base machine
-running the aggregate recipe because all U-Boot builds execute in their own
-multiconfig contexts.
+Remove old `DRAM_CONF` assignments and any include of
+`conf/dram-multiconfig.conf`. These are no longer part of the build flow.
+The setup helper installs missing per-machine multiconfig templates;
+old per-DRAM copies are no longer selected by the family configuration.
+
+## External build
+
+Use the [U-Boot 2026.04 instructions](https://github.com/compulab-yokneam/u-boot-compulab/blob/u-boot-compulab_v2026.04-imx8mp/doc/board/compulab/imx8mp-2026.rst)
+with the exported firmware for a matching external build.

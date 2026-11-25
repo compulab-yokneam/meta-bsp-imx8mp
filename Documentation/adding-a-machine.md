@@ -13,9 +13,8 @@ root, where `compulab-setup-env` and `sources/` are located.
 Before editing the layer, identify:
 
 - The Linux DTB to boot by default and any additional DTBs or overlays.
-- The U-Boot defconfig, U-Boot DTB, and Linux `fdtfile` selected by U-Boot.
-- The supported DRAM configurations: split `d1d8`/`d2d4`, or one image that
-  supports all capacities.
+- The U-Boot target `.config`, U-Boot DTB, and Linux `fdtfile` selected by U-Boot.
+- The supported DRAM parts and their profiles in the all-capacity bootloader.
 - Required firmware, userspace packages, machine features, and modules that
   need explicit loading.
 - Whether other machines should receive this board's payload through
@@ -42,9 +41,9 @@ addresses, tuning, and provider selections.
 | `recipes-utils/my-board-config/my-board-config_1.0.bb` | Create a package recipe | Only for a new board configuration application |
 | `recipes-bsp/my-board-firmware/my-board-firmware_1.0.bb` | Create a firmware recipe | Only if existing firmware packages do not cover the board |
 | `tools/my-board/*.sh` | Create setup hooks | Only for board-specific initialization of a new build directory |
-| [recipes-bsp/u-boot/u-boot-compulab_2023.04.inc](../recipes-bsp/u-boot/u-boot-compulab_2023.04.inc) | Add a machine-specific source branch override | Only if the normal branch lacks the board |
+| [recipes-bsp/u-boot/u-boot-compulab_2026.04.inc](../recipes-bsp/u-boot/u-boot-compulab_2026.04.inc) | Add a machine-specific source branch override | Only if the normal branch lacks the board |
 | [recipes-bsp/u-boot/u-boot-compulab/imx8mp.inc](../recipes-bsp/u-boot/u-boot-compulab/imx8mp.inc) | Override the DRAM fragments | Only for a different DRAM-selection scheme |
-| `templates/multiconfig/my-board-d1d8.conf` and `my-board-d2d4.conf` | Create | To join the family multiconfig build |
+| `templates/multiconfig/my-board.conf` | Create | To join the family multiconfig build |
 | [conf/u-boot-family-multiconfig.conf](../conf/u-boot-family-multiconfig.conf) | Extend both configuration lists | To join the family multiconfig build |
 | [recipes-bsp/compulab-bootloader/README.md](../recipes-bsp/compulab-bootloader/README.md) | Update the supported bundle matrix | If single-recipe bundle membership changes |
 | [Documentation/imx_boot_image_build.md](imx_boot_image_build.md) and [advanced-features.md](advanced-features.md) | Update machine lists and container counts | If the documented build matrix changes |
@@ -139,12 +138,13 @@ KERNEL_MODULE_AUTOLOAD += " ${COMPULAB_MY_BOARD_KERNEL_MODULE_AUTOLOAD} "
 The common include already selects:
 
 - Linux provider `linux-compulab` and `compulab_v8_defconfig`.
-- U-Boot provider `u-boot-compulab` and `${MACHINE}_defconfig`.
-- Default `DRAM_CONF = "d2d4"` through a weak default.
+- U-Boot provider `u-boot-compulab`, `compulab-imx8mp_defconfig`, and
+  `${MACHINE}.config` for target selection.
+- One all-capacity bootloader per hardware target, without DRAM-subset variables.
 - Common i.MX8MP tuning, firmware, console, and machine features.
 
-Thus `MACHINE=my-board` normally selects `my-board_defconfig` automatically.
-If the board deliberately shares another defconfig, set
+Thus `MACHINE=my-board` normally selects `my-board.config` automatically.
+If the board deliberately shares another target configuration, set
 `UBOOT_CONFIG_BASENAME = "existing-board"` in its machine file.
 
 `UBOOT_DTB_NAME` refers to the U-Boot device tree. Check the U-Boot board
@@ -167,14 +167,15 @@ In the Linux repository, add or verify:
 
 In the U-Boot repository, add or verify:
 
-- `configs/my-board_defconfig` and its board/Kconfig integration.
+- `configs/my-board.config` and its board/Kconfig integration, used after
+  `configs/compulab-imx8mp_defconfig`.
 - The U-Boot device tree, DRAM setup, and boot environment.
 - The DRAM fragments consumed by the recipe.
 
 The layer's source branches are selected in
 [linux-compulab_6.18.20.inc](../recipes-kernel/linux/linux-compulab_6.18.20.inc)
 and
-[u-boot-compulab_2023.04.inc](../recipes-bsp/u-boot/u-boot-compulab_2023.04.inc).
+[u-boot-compulab_2026.04.inc](../recipes-bsp/u-boot/u-boot-compulab_2026.04.inc).
 If U-Boot support is on a different branch, add a scoped override there:
 
 ```bitbake
@@ -186,14 +187,9 @@ Publish the source commits, or use a configured `devtool` workspace during
 local development. An unpushed workspace change is not automatically
 available to a fresh BSP checkout.
 
-For ordinary split-DRAM boards, the U-Boot recipe already merges
-`d0.config ${DRAM_CONF}.config`. For an all-capacity image, follow
-[mcm-imx8pv2.conf](../conf/machine/mcm-imx8pv2.conf) and its fragment override
-in
-[imx8mp.inc](../recipes-bsp/u-boot/u-boot-compulab/imx8mp.inc):
-set the appropriate DRAM label, disable split-DRAM multiconfig handling, and
-select the real fragments. Do not assume that an all-capacity label names a
-single existing `.config` file.
+The common defconfig enables all four DRAM capacities and both MRR probe
+options. The recipe applies `${UBOOT_CONFIG_BASENAME}.config` for target
+selection. No DRAM-subset variable or additional capacity fragment is used.
 
 ## 7. Optionally add grouped-image support
 
@@ -245,9 +241,9 @@ groups include feed the optional `compulab-bootloader` recipe. They are
 **bootloader-bundle lists**, not the switch that adds DTBs to grouped images.
 
 Add `my-board` to the appropriate list only when the bundle's source branch
-contains `my-board_defconfig` and the board supports its `d1d8`/`d2d4`
-fragment workflow. The recipe builds each listed machine for both subsets
-by default. Update the documented matrix and container counts as well.
+contains `my-board.config` and the all-capacity DRAM profiles for the board.
+The recipe builds one image per listed machine. Update the documented
+matrix and container count as well.
 
 A machine-specific source-branch or fragment override for
 `u-boot-compulab` does not automatically affect the separate
@@ -260,43 +256,32 @@ updater to map a new EEPROM product identity to that container.
 
 ### Multiconfig bundle: u-boot-compulab-multi
 
-Create `templates/multiconfig/my-board-d1d8.conf`:
+Create `templates/multiconfig/my-board.conf`:
 
 ```bitbake
 MACHINE = "my-board"
-DRAM_CONF = "d1d8"
-COMPULAB_DRAM_MULTICONFIG = "0"
 TMPDIR = "${TOPDIR}/tmp-${BB_CURRENT_MC}"
 ```
 
-Create `templates/multiconfig/my-board-d2d4.conf` with the same content except
-`DRAM_CONF = "d2d4"`.
-
-In `conf/u-boot-family-multiconfig.conf`, extend **both** lists:
+In `conf/u-boot-family-multiconfig.conf`, extend both lists:
 
 ```bitbake
-COMPULAB_UBOOT_MULTI_CONFIGS += "my-board-d1d8 my-board-d2d4"
-
-COMPULAB_UBOOT_MULTI_MATRIX += " \
-    my-board-d1d8:my-board:d1d8 \
-    my-board-d2d4:my-board:d2d4 \
-"
+COMPULAB_UBOOT_MULTI_CONFIGS += "my-board"
+COMPULAB_UBOOT_MULTI_MATRIX += "my-board:my-board"
 ```
 
-Each matrix entry is `multiconfig:machine:DRAM_CONF`. The recipe rejects
-mismatches between these lists. Keep per-configuration `TMPDIR` isolation.
+Each matrix entry is `multiconfig:machine`. The recipe rejects mismatches
+between the lists. Keep per-configuration `TMPDIR` isolation.
 
 Re-enter the environment through `compulab-setup-env` to copy new templates
 into `${BUILDDIR}/conf/multiconfig`. The helper copies missing files only;
 if you change an existing template, update its build-directory copy too.
-Do not enable both `dram-multiconfig.conf` and
-`u-boot-family-multiconfig.conf` in the same build.
 
 ## 9. Document and validate the machine
 
 Add the product and `export MACHINE=my-board` row to the main README.
 Create a board guide when necessary, and link it from the README's final
-Additional documentation chapter. Record the default DTB, DRAM selection,
+Additional documentation chapter. Record the default DTB, supported DRAM profiles,
 available overlays, and any interfaces still awaiting validation.
 
 If the board needs setup-time customization, `compulab-setup-env` sources
@@ -323,7 +308,7 @@ Inspect the expanded values, not just the source text:
 | Environment | Check |
 |---|---|
 | `kernel.env` | `MACHINE`, `KBUILD_DEFCONFIG`, `KERNEL_DEVICETREE`, and the source branch |
-| `u-boot.env` | `UBOOT_MACHINE`, `UBOOT_DTB_NAME`, `DRAM_CONF`, `COMPULAB_UBOOT_CONFIG_FRAGMENTS`, and the source branch |
+| `u-boot.env` | `UBOOT_MACHINE`, `UBOOT_DTB_NAME`, `COMPULAB_UBOOT_CONFIG_FRAGMENTS`, and the source branch |
 | `image.env` | `IMAGE_INSTALL`, `MACHINE_FIRMWARE`, `MACHINE_FEATURES`, and `KERNEL_MODULE_AUTOLOAD` |
 
 Resolve dependencies and then build:

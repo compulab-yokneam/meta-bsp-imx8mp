@@ -17,10 +17,10 @@ require machine-payload/som-imx8m-plus.inc
 require machine-payload/ucm-imx8m-plus.inc
 require machine-payload/ucm-imx8m-plus-sbev.inc
 
-# Split-DRAM machines supported by the optional family bootloader bundle.
-# Grouped-image device trees below also include the all-capacity MCM-iMX8Pv2.
+# Hardware targets supported by the optional all-capacity bootloader bundle.
 COMPULAB_IMX8MP_EVK_MACHINES = " \
 	mcm-imx8m-plus \
+	mcm-imx8pv2 \
 	som-imx8m-plus \
 	ucm-imx8m-plus \
 	ucm-imx8m-plus-sbev \

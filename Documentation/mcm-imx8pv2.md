@@ -2,12 +2,13 @@
 
 This guide covers the `mcm-imx8pv2` machine: the CompuLab MCM-iMX8Pv2
 module on the SBC-MCM8PV2 carrier board. They describe the support present
-in U-Boot 2023.04 and Linux 6.18.20 in the current development BSP.
+in U-Boot 2026.04 and Linux 6.18.20 in the current development BSP.
 
 ## Machine configuration
 
 Use `MACHINE=mcm-imx8pv2`. This machine selects
-`mcm-imx8pv2_defconfig` for U-Boot and `compulab_v8_defconfig` for Linux.
+`compulab-imx8mp_defconfig mcm-imx8pv2.config` for U-Boot and
+`compulab_v8_defconfig` for Linux.
 The default Linux device tree is `compulab/mcm-imx8pv2.dtb`, which combines
 the module and carrier board. It is listed first in the payload and matches
 U-Boot's default `fdtfile=mcm-imx8pv2.dtb`. The module-only device tree is
@@ -20,7 +21,7 @@ when building from another build directory.
 ## Bootloader features
 
 The machine uses `u-boot-compulab` from the
-`u-boot-compulab_v2023.04-d1d8_d2d4-devel` branch.
+`u-boot-compulab_v2026.04-imx8mp` branch, shared by all supported machines.
 
 ### DRAM
 
@@ -32,13 +33,15 @@ ranges to Linux.
 The machine builds this image with the following configuration:
 
 ```text
-mcm-imx8pv2_defconfig d0.config d1.config d2.config d4.config d8.config lpddr_mrr_probe.config
+compulab-imx8mp_defconfig mcm-imx8pv2.config
 ```
 
-The deployed image is labeled `d1d2d4d8`; this machine does not use the
-`d1d8`/`d2d4` multiconfig split. The optional family-wide bootloader bundle
-covers the split-DRAM machines and does not include this development
-U-Boot target.
+The common defconfig already enables all four DRAM subsets and both MRR
+probe options, so the capacity and probe fragments are not needed separately.
+
+Like the other supported machines, MCM-iMX8Pv2 uses one all-capacity
+bootloader image. It is also included in the optional family bootloader
+bundles, without separate DRAM variants.
 
 The machine also enables the experimental LPDDR4 mode-register-read (MRR)
 probe, including probing when the EEPROM already contains identification.

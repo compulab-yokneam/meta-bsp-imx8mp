@@ -1,5 +1,5 @@
 SUMMARY = "CompuLab i.MX8MP U-Boot boot container bundle"
-DESCRIPTION = "Aggregate independently built machine and DRAM boot containers"
+DESCRIPTION = "Aggregate independently built all-capacity machine boot containers"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
@@ -28,7 +28,7 @@ python __anonymous() {
     matrix_configs = []
     for entry in matrix:
         fields = entry.split(":")
-        if len(fields) != 3 or not all(fields):
+        if len(fields) != 2 or not all(fields):
             bb.fatal("Invalid COMPULAB_UBOOT_MULTI_MATRIX entry: %s" % entry)
         matrix_configs.append(fields[0])
 
@@ -48,27 +48,25 @@ do_install() {
 
     for entry in ${COMPULAB_UBOOT_MULTI_MATRIX}; do
         multiconfig="${entry%%:*}"
-        remainder="${entry#*:}"
-        machine="${remainder%%:*}"
-        dram_conf="${remainder##*:}"
+        machine="${entry#*:}"
         source_dir="${TOPDIR}/tmp-${multiconfig}/deploy/images/${machine}"
         destination_dir="${destination_root}/${machine}"
 
         install -d "${destination_dir}"
 
-        source_file="${source_dir}/flash.bin.${dram_conf}"
+        source_file="${source_dir}/flash.bin"
         if [ ! -s "${source_file}" ]; then
             bbfatal "Missing U-Boot image: ${source_file}"
         fi
         install -m 0644 "${source_file}" \
-            "${destination_dir}/flash.bin-${dram_conf}"
+            "${destination_dir}/flash.bin"
 
-        source_file="${source_dir}/flash.bin.tagged.${dram_conf}"
+        source_file="${source_dir}/flash.bin.tagged"
         if [ ! -s "${source_file}" ]; then
             bbfatal "Missing tagged U-Boot image: ${source_file}"
         fi
         install -m 0644 "${source_file}" \
-            "${destination_dir}/flash.bin-${dram_conf}.tagged"
+            "${destination_dir}/flash.bin.tagged"
     done
 }
 
@@ -78,17 +76,15 @@ do_deploy() {
 
     install -d "${destination_root}"
     for entry in ${COMPULAB_UBOOT_MULTI_MATRIX}; do
-        remainder="${entry#*:}"
-        machine="${remainder%%:*}"
-        dram_conf="${remainder##*:}"
+        machine="${entry#*:}"
         source_dir="${source_root}/${machine}"
         destination_dir="${destination_root}/${machine}"
 
         install -d "${destination_dir}"
-        install -m 0644 "${source_dir}/flash.bin-${dram_conf}" \
-            "${destination_dir}/flash.bin-${dram_conf}"
-        install -m 0644 "${source_dir}/flash.bin-${dram_conf}.tagged" \
-            "${destination_dir}/flash.bin-${dram_conf}.tagged"
+        install -m 0644 "${source_dir}/flash.bin" \
+            "${destination_dir}/flash.bin"
+        install -m 0644 "${source_dir}/flash.bin.tagged" \
+            "${destination_dir}/flash.bin.tagged"
     done
 }
 

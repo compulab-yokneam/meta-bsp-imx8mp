@@ -1,6 +1,18 @@
 # CompuLab i.MX8MP BSP release notes
 
-## Scope
+## U-Boot 2026.04 branch update
+
+This branch supports U-Boot 2026.04 only, from
+`u-boot-compulab_v2026.04-imx8mp`. All supported hardware targets use the
+common defconfig and a target fragment, with D1/D2/D4/D8 timings and both
+MRR probe options enabled. Each target has one all-capacity image; the old
+DRAM-subset variable, split builds and filename suffixes have been removed.
+The family bundles and firmware updater use the same per-machine image names.
+
+The following sections preserve the earlier baseline history. Their U-Boot
+version and DRAM-split descriptions document the previous implementation.
+
+## Historical baseline scope
 
 These notes describe changes added after commit `002beb7` through commit
 `f86f0f1` on the `wrynose-6.18.20-2.0.0` branch.
