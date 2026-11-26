@@ -23,6 +23,9 @@ The normal artifacts are in `${BUILDDIR}/tmp/deploy/images/${MACHINE}`:
 The installed package provides `/boot/flash.bin`, `/boot/flash.bin.tagged`
 and machine-named aliases, without a DRAM suffix.
 
+The `u-boot-compulab-env` package installs `/etc/fw_env.config` and the
+target's generated default environment at `/etc/u-boot-initial-env`.
+
 ## Build every supported hardware target
 
 Re-enter the environment through `compulab-setup-env` to install the updated
