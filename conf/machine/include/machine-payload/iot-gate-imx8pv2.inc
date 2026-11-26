@@ -18,7 +18,7 @@ COMPULAB_IOT_GATE_IMX8PV2_DEVICETREES = " \
 "
 
 COMPULAB_IOT_GATE_IMX8PV2_IMAGE_INSTALL = " \
-    iot-gate-imx8pv2-config \
+    cl-iotg-config-setup \
 "
 
 COMPULAB_IOT_GATE_IMX8PV2_CORE_IMAGE_EXTRA_INSTALL = " \
